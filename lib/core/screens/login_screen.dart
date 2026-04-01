@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../services/auth_service.dart';
 import '../theme/app_theme.dart';
@@ -38,9 +39,9 @@ class _LoginScreenState extends State<LoginScreen> {
       if (!mounted) return;
 
       if (roles.contains('super_admin') || roles.contains('office_staff')) {
-        Navigator.pushReplacementNamed(context, '/admin/dashboard');
+        context.go('/admin/dashboard');
       } else if (roles.contains('student')) {
-        Navigator.pushReplacementNamed(context, '/student/home');
+        context.go('/student/home');
       } else {
         setState(() => _errorMessage = 'Your account has no assigned role.');
       }

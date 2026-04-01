@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'core/theme/app_theme.dart';
+import 'router.dart';
 import 'supabase_config.dart';
-import 'core/screens/login_screen.dart';
-import 'admin/screens/dashboard_screen.dart';
-import 'student/screens/home_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,19 +23,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       title: 'Student Clearance Tracker',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-        useMaterial3: true,
-      ),
-      initialRoute: '/login',
-      routes: {
-        '/login':            (_) => const LoginScreen(),
-        '/admin/dashboard':  (_) => const AdminDashboardScreen(),
-        '/student/home':     (_) => const StudentHomeScreen(),
-      },
+      theme: AppTheme.lightTheme,
+      routerConfig: router,
     );
   }
 }
