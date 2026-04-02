@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import '../../core/theme/app_theme.dart';
-import '../../core/services/auth_service.dart';
 import 'sidebar_widget.dart';
 
 class AdminShell extends StatelessWidget {
