@@ -5,8 +5,8 @@ class StudentRepository {
   Future<List<Student>> getAll() async {
     final data = await supabase
         .from('students')
-        .select()
-        .order('last_name');
+        .select('*, user_profiles(*)')
+        .order('student_no');
     return data.map((json) => Student.fromJson(json)).toList();
   }
 

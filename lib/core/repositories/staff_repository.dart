@@ -1,13 +1,27 @@
 import '../../main.dart';
 import '../models/office_staff.dart';
+import '../models/office.dart';
 
 class StaffRepository {
   Future<List<OfficeStaff>> getAll() async {
     final data = await supabase
         .from('office_staff')
-        .select()
-        .order('last_name');
-    return data.map((json) => OfficeStaff.fromJson(json)).toList();
+        .select('*, user_profiles(*), staff_offices(office_id, offices(id, name))')
+        .order('employee_no');
+
+    return data.map((json) {
+      final staff      = OfficeStaff.fromJson(json);
+      final officeRows = json['staff_offices'] as List<dynamic>? ?? [];
+      final offices    = officeRows
+          .map((row) => Office.fromJson(row['offices']))
+          .toList();
+      return OfficeStaff(
+        id:         staff.id,
+        employeeNo: staff.employeeNo,
+        profile:    staff.profile,
+        offices:    offices,
+      );
+    }).toList();
   }
 
   Future<OfficeStaff> getById(String id) async {
@@ -27,17 +41,78 @@ class StaffRepository {
     return List<int>.from(data.map((row) => row['office_id']));
   }
 
-  Future<void> assignOffice(String staffId, int officeId) async {
-    await supabase
-        .from('staff_offices')
-        .insert({'staff_id': staffId, 'office_id': officeId});
+  // Create via Edge Function
+  Future<void> create({
+    required String      email,
+    required String      employeeNo,
+    required String      firstName,
+    String?              middleName,
+    required String      lastName,
+    required List<int>   officeIds,
+  }) async {
+    final response = await supabase.functions.invoke(
+      'create_staff',
+      body: {
+        'email':       email,
+        'employee_no': employeeNo,
+        'first_name':  firstName,
+        'middle_name': middleName,
+        'last_name':   lastName,
+        'office_ids':  officeIds,
+      },
+    );
+
+    if (response.status != 200) {
+      final error = response.data['error'] ?? 'Failed to create staff.';
+      throw Exception(error);
+    }
   }
 
-  Future<void> removeOffice(String staffId, int officeId) async {
+  // Edit — only updates profile + office assignments, not auth
+  Future<void> update({
+    required String    id,
+    required String    employeeNo,
+    required String    firstName,
+    String?            middleName,
+    required String    lastName,
+    required List<int> officeIds,
+  }) async {
+    // Update profile
+    await supabase
+        .from('office_staff')
+        .update({
+          'employee_no': employeeNo,
+          'first_name':  firstName,
+          'middle_name': middleName,
+          'last_name':   lastName,
+        })
+        .eq('id', id);
+
+    // Replace office assignments
     await supabase
         .from('staff_offices')
         .delete()
-        .eq('staff_id', staffId)
-        .eq('office_id', officeId);
+        .eq('staff_id', id);
+
+    if (officeIds.isNotEmpty) {
+      await supabase
+          .from('staff_offices')
+          .insert(officeIds
+              .map((oId) => {'staff_id': id, 'office_id': oId})
+              .toList());
+    }
+  }
+
+  // Delete via Edge Function
+  Future<void> delete(String userId) async {
+    final response = await supabase.functions.invoke(
+      'delete_user',
+      body: { 'user_id': userId },
+    );
+
+    if (response.status != 200) {
+      final error = response.data['error'] ?? 'Failed to delete user.';
+      throw Exception(error);
+    }
   }
 }
