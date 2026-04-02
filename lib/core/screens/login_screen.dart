@@ -20,10 +20,7 @@ class _LoginScreenState extends State<LoginScreen> {
   String? _errorMessage;
 
   Future<void> _handleLogin() async {
-    setState(() {
-      _isLoading    = true;
-      _errorMessage = null;
-    });
+    setState(() { _isLoading = true; _errorMessage = null; });
 
     try {
       final response = await _authService.signIn(
@@ -34,16 +31,46 @@ class _LoginScreenState extends State<LoginScreen> {
       final user = response.user;
       if (user == null) throw Exception('Login failed.');
 
-      final roles = await _authService.getUserRoles(user.id);
+      final roles   = await _authService.getUserRoles(user.id);
+      final profile = await _authService.getUserProfile(user.id);
 
       if (!mounted) return;
 
+      // Account status checks
+      if (profile == null) {
+        setState(() => _errorMessage = 'Account profile not found.');
+        await _authService.signOut();
+        return;
+      }
+
+      if (profile.isLocked) {
+        setState(() => _errorMessage = 
+          'Your account has been locked. Please contact the administrator.');
+        await _authService.signOut();
+        return;
+      }
+
+      if (profile.isInactive) {
+        setState(() => _errorMessage = 
+          'Your account is inactive. Please contact the administrator.');
+        await _authService.signOut();
+        return;
+      }
+
+      // Force password change on first login
+      if (profile.needsPasswordChange) {
+        context.go('/change-password');
+        return;
+      }
+
+      // Route based on role
       if (roles.contains('super_admin') || roles.contains('office_staff')) {
         context.go('/admin/dashboard');
       } else if (roles.contains('student')) {
         context.go('/student/home');
       } else {
         setState(() => _errorMessage = 'Your account has no assigned role.');
+        await _authService.signOut();
       }
     } on AuthException catch (e) {
       setState(() => _errorMessage = e.message);
