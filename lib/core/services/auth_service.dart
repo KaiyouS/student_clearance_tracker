@@ -1,5 +1,6 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../main.dart';
+import '../models/user_profile.dart';
 
 class AuthService {
   // Sign in with email and password
@@ -13,6 +14,19 @@ class AuthService {
   // Sign out
   Future<void> signOut() async {
     await supabase.auth.signOut();
+  }
+  
+  Future<UserProfile?> getUserProfile(String userId) async {
+    try {
+      final data = await supabase
+          .from('user_profiles')
+          .select()
+          .eq('id', userId)
+          .single();
+      return UserProfile.fromJson(data);
+    } catch (_) {
+      return null;
+    }
   }
 
   // Get the roles of a user from user_roles table
