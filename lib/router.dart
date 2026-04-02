@@ -4,6 +4,7 @@ import 'core/services/auth_service.dart';
 import 'admin/shell/admin_shell.dart';
 import 'admin/screens/dashboard_screen.dart';
 import 'admin/screens/offices_screen.dart';
+import 'admin/screens/prerequisites_screen.dart';
 import 'student/screens/home_screen.dart';
 import 'main.dart';
 
@@ -49,6 +50,10 @@ final router = GoRouter(
         GoRoute(
           path: '/admin/offices',
           builder: (context, state) => const OfficesScreen(),
+        ),
+        GoRoute(
+          path: '/admin/prerequisites',
+          builder: (context, state) => const PrerequisitesScreen(),
         ),
         // GoRoute(path: '/admin/staff', ...),
       ],

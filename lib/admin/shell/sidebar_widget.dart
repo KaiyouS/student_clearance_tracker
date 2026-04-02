@@ -64,7 +64,12 @@ class SidebarWidget extends StatelessWidget {
             path: '/admin/clearance',
             isActive: location == '/admin/clearance',
           ),
-
+          _NavItem(
+            icon:     Icons.account_tree_outlined,
+            label:    'Prerequisites',
+            path:     '/admin/prerequisites',
+            isActive: location == '/admin/prerequisites',
+          ),
           const Spacer(),
           const Divider(height: 1, color: AppTheme.border),
 
