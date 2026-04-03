@@ -1,4 +1,5 @@
 import 'package:go_router/go_router.dart';
+import 'admin/screens/office_requirements_screen.dart';
 import 'core/repositories/user_profile_repository.dart';
 import 'core/screens/change_password_screen.dart';
 import 'core/screens/login_screen.dart';
@@ -108,6 +109,10 @@ final router = GoRouter(
         GoRoute(
           path: '/admin/periods',
           builder: (context, state) => const AcademicPeriodsScreen(),
+        ),
+        GoRoute(
+          path: '/admin/requirements',
+          builder: (context, state) => const OfficeRequirementsScreen(),
         ),
       ],
     ),

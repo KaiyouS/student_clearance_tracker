@@ -71,6 +71,12 @@ class SidebarWidget extends StatelessWidget {
             isActive: location == '/admin/prerequisites',
           ),
           _NavItem(
+            icon:     Icons.rule_outlined,
+            label:    'Requirements',
+            path:     '/admin/requirements',
+            isActive: location == '/admin/requirements',
+          ),
+          _NavItem(
             icon:     Icons.account_balance_outlined,
             label:    'Schools',
             path:     '/admin/schools',
@@ -82,7 +88,7 @@ class SidebarWidget extends StatelessWidget {
             path:     '/admin/periods',
             isActive: location == '/admin/periods',
           ),
-                    const Spacer(),
+          const Spacer(),
           const Divider(height: 1, color: AppTheme.border),
 
           // Sign out
