@@ -69,7 +69,7 @@ Deno.serve(async (req) => {
       first_name,
       middle_name,
       last_name,
-      course,
+      program_id,
       year_level,
     } = await req.json()
 
@@ -115,7 +115,7 @@ Deno.serve(async (req) => {
       .insert({
         id:         userId,
         student_no,
-        course:     course || null,
+        program_id: program_id || null,
         year_level: year_level || null,
       })
 
