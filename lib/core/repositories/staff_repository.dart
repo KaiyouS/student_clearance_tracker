@@ -6,20 +6,22 @@ class StaffRepository {
   Future<List<OfficeStaff>> getAll() async {
     final data = await supabase
         .from('office_staff')
-        .select('*, user_profiles(*), staff_offices(office_id, offices(id, name))')
+        .select(
+          '*, user_profiles(*), staff_offices(office_id, offices(id, name))',
+        )
         .order('employee_no');
 
     return data.map((json) {
-      final staff      = OfficeStaff.fromJson(json);
+      final staff = OfficeStaff.fromJson(json);
       final officeRows = json['staff_offices'] as List<dynamic>? ?? [];
-      final offices    = officeRows
+      final offices = officeRows
           .map((row) => Office.fromJson(row['offices']))
           .toList();
       return OfficeStaff(
-        id:         staff.id,
+        id: staff.id,
         employeeNo: staff.employeeNo,
-        profile:    staff.profile,
-        offices:    offices,
+        profile: staff.profile,
+        offices: offices,
       );
     }).toList();
   }
@@ -43,22 +45,22 @@ class StaffRepository {
 
   // Create via Edge Function
   Future<void> create({
-    required String      email,
-    required String      employeeNo,
-    required String      firstName,
-    String?              middleName,
-    required String      lastName,
-    required List<int>   officeIds,
+    required String email,
+    required String employeeNo,
+    required String firstName,
+    String? middleName,
+    required String lastName,
+    required List<int> officeIds,
   }) async {
     final response = await supabase.functions.invoke(
       'create_staff',
       body: {
-        'email':       email,
+        'email': email,
         'employee_no': employeeNo,
-        'first_name':  firstName,
+        'first_name': firstName,
         'middle_name': middleName,
-        'last_name':   lastName,
-        'office_ids':  officeIds,
+        'last_name': lastName,
+        'office_ids': officeIds,
       },
     );
 
@@ -77,18 +79,23 @@ class StaffRepository {
     required String    lastName,
     required List<int> officeIds,
   }) async {
-    // Update profile
+    // ── Update name fields in user_profiles ──────────────
     await supabase
-        .from('office_staff')
+        .from('user_profiles')
         .update({
-          'employee_no': employeeNo,
           'first_name':  firstName,
           'middle_name': middleName,
           'last_name':   lastName,
         })
         .eq('id', id);
 
-    // Replace office assignments
+    // ── Update employee_no in office_staff ────────────────
+    await supabase
+        .from('office_staff')
+        .update({ 'employee_no': employeeNo })
+        .eq('id', id);
+
+    // ── Replace office assignments ────────────────────────
     await supabase
         .from('staff_offices')
         .delete()
@@ -107,7 +114,7 @@ class StaffRepository {
   Future<void> delete(String userId) async {
     final response = await supabase.functions.invoke(
       'delete_user',
-      body: { 'user_id': userId },
+      body: {'user_id': userId},
     );
 
     if (response.status != 200) {
