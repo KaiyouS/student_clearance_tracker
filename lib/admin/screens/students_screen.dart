@@ -53,7 +53,8 @@ class _StudentsScreenState extends State<StudentsScreen> {
           : _students.where((s) =>
               s.fullName.toLowerCase().contains(query.toLowerCase()) ||
               s.studentNo.toLowerCase().contains(query.toLowerCase()) ||
-              (s.course ?? '').toLowerCase().contains(query.toLowerCase())
+              s.programName.toLowerCase().contains(query.toLowerCase()) ||
+              s.schoolName.toLowerCase().contains(query.toLowerCase())
             ).toList();
     });
   }
@@ -74,7 +75,7 @@ class _StudentsScreenState extends State<StudentsScreen> {
                       ? null
                       : result['middle_name'],
         lastName:   result['last_name'],
-        course:     result['course'],
+        programId:  result['program_id'], 
         yearLevel:  result['year_level'],
       );
       _showSuccess(
@@ -103,7 +104,7 @@ class _StudentsScreenState extends State<StudentsScreen> {
                       ? null
                       : result['middle_name'],
         lastName:   result['last_name'],
-        course:     result['course'],
+        programId:  result['program_id'],
         yearLevel:  result['year_level'],
       );
       _showSuccess('Student updated.');
@@ -114,27 +115,28 @@ class _StudentsScreenState extends State<StudentsScreen> {
       setState(() => _isSaving = false);
     }
   }
+  
+  // TODO: decide if we should implement delete
+  // Future<void> _delete(Student student) async {
+  //   final confirmed = await ConfirmDialog.show(
+  //     context,
+  //     title:   'Delete Student',
+  //     message: 'Are you sure you want to delete "${student.fullName}"? '
+  //              'Their account will be permanently removed.',
+  //   );
+  //   if (!confirmed) return;
 
-  Future<void> _delete(Student student) async {
-    final confirmed = await ConfirmDialog.show(
-      context,
-      title:   'Delete Student',
-      message: 'Are you sure you want to delete "${student.fullName}"? '
-               'Their account will be permanently removed.',
-    );
-    if (!confirmed) return;
-
-    setState(() => _isSaving = true);
-    try {
-      await _repo.delete(student.id);
-      _showSuccess('Student deleted.');
-      _load();
-    } catch (e) {
-      _showError('Failed to delete student: $e');
-    } finally {
-      setState(() => _isSaving = false);
-    }
-  }
+  //   setState(() => _isSaving = true);
+  //   try {
+  //     await _repo.delete(student.id);
+  //     _showSuccess('Student deleted.');
+  //     _load();
+  //   } catch (e) {
+  //     _showError('Failed to delete student: $e');
+  //   } finally {
+  //     setState(() => _isSaving = false);
+  //   }
+  // }
 
   void _showSuccess(String message) {
     if (!mounted) return;
@@ -259,9 +261,10 @@ class _StudentsScreenState extends State<StudentsScreen> {
             columnWidths: const {
               0: FlexColumnWidth(2),    // name
               1: FixedColumnWidth(140), // student no
-              2: FlexColumnWidth(2),    // course
-              3: FixedColumnWidth(100), // year
-              4: FixedColumnWidth(120), // actions
+              2: FlexColumnWidth(2),    // program
+              3: FlexColumnWidth(2),    // school
+              4: FixedColumnWidth(100), // year
+              5: FixedColumnWidth(120), // actions
             },
             children: [
               TableRow(
@@ -270,7 +273,8 @@ class _StudentsScreenState extends State<StudentsScreen> {
                 children: [
                   _headerCell('Name'),
                   _headerCell('Student No.'),
-                  _headerCell('Course'),
+                  _headerCell('Program'),
+                  _headerCell('School'),
                   _headerCell('Year'),
                   _headerCell(''),
                 ],
@@ -302,9 +306,18 @@ class _StudentsScreenState extends State<StudentsScreen> {
                   ),
                   _dataCell(
                     Text(
-                      student.course ?? '—',
+                      student.programName,
                       style: const TextStyle(
-                        color:    AppTheme.textSecondary,
+                        color: AppTheme.textSecondary,
+                        fontSize: 13,
+                      ),
+                    ),
+                  ),
+                  _dataCell(
+                    Text(
+                      student.schoolName,
+                      style: const TextStyle(
+                        color: AppTheme.textSecondary,
                         fontSize: 13,
                       ),
                     ),
@@ -335,7 +348,8 @@ class _StudentsScreenState extends State<StudentsScreen> {
                           color:   AppTheme.danger,
                           tooltip: 'Delete',
                           onPressed:
-                              _isSaving ? null : () => _delete(student),
+                              null
+                              // _isSaving ? null : () => _delete(student),
                         ),
                       ],
                     ),

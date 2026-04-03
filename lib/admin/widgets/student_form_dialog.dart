@@ -1,19 +1,10 @@
 import 'package:flutter/material.dart';
+import '../../core/models/school.dart';
+import '../../core/models/program.dart';
 import '../../core/models/student.dart';
-
-// Common courses — extend as needed
-const List<String> kCourses = [
-  'BS Computer Science',
-  'BS Information Technology',
-  'BS Civil Engineering',
-  'BS Accountancy',
-  'BS Business Administration',
-  'BS Nursing',
-  'BS Biology',
-  'BS Psychology',
-  'AB Communication',
-  'AB Political Science',
-];
+import '../../core/repositories/school_repository.dart';
+import '../../core/repositories/program_repository.dart';
+import '../../core/theme/app_theme.dart';
 
 class StudentFormDialog extends StatefulWidget {
   final Student? student;
@@ -35,29 +26,87 @@ class StudentFormDialog extends StatefulWidget {
 }
 
 class _StudentFormDialogState extends State<StudentFormDialog> {
-  final _formKey             = GlobalKey<FormState>();
-  final _emailController     = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  final _emailController = TextEditingController();
   final _studentNoController = TextEditingController();
   final _firstNameController = TextEditingController();
-  final _middleNameController= TextEditingController();
-  final _lastNameController  = TextEditingController();
+  final _middleNameController = TextEditingController();
+  final _lastNameController = TextEditingController();
 
-  String? _selectedCourse;
-  int?    _selectedYearLevel;
+  final _schoolRepo = SchoolRepository();
+  final _programRepo = ProgramRepository();
+
+  List<School> _schools = [];
+  List<Program> _programs = [];
+  School? _selectedSchool;
+  Program? _selectedProgram;
+  int? _selectedYearLevel;
+
+  bool _loadingSchools = true;
+  bool _loadingPrograms = false;
 
   bool get _isEditing => widget.student != null;
 
   @override
   void initState() {
     super.initState();
+    _loadSchools();
     if (_isEditing) {
       final s = widget.student!;
-      _studentNoController.text  = s.studentNo;
-      _firstNameController.text  = s.profile?.firstName ?? '';
+      _studentNoController.text = s.studentNo;
+      _firstNameController.text = s.profile?.firstName ?? '';
       _middleNameController.text = s.profile?.middleName ?? '';
-      _lastNameController.text   = s.profile?.lastName ?? '';
-      _selectedCourse     = s.course;
-      _selectedYearLevel  = s.yearLevel;
+      _lastNameController.text = s.profile?.lastName ?? '';
+      _selectedYearLevel = s.yearLevel;
+      // Pre-select school and program from the joined data
+      if (s.program != null) {
+        _selectedProgram = s.program;
+        // School will be set after schools load
+      }
+    }
+  }
+
+  Future<void> _loadSchools() async {
+    try {
+      final schools = await _schoolRepo.getAll();
+      setState(() {
+        _schools = schools;
+        _loadingSchools = false;
+        // If editing, find and set the school from the program
+        if (_selectedProgram != null) {
+          _selectedSchool = schools.firstWhere(
+            (c) => c.id == _selectedProgram!.schoolId,
+            orElse: () => schools.first,
+          );
+          // Load programs for that school
+          _loadPrograms(_selectedSchool!.id);
+        }
+      });
+    } catch (_) {
+      setState(() => _loadingSchools = false);
+    }
+  }
+
+  Future<void> _loadPrograms(int schoolId) async {
+    setState(() {
+      _loadingPrograms = true;
+      _programs = [];
+    });
+    try {
+      final programs = await _programRepo.getBySchool(schoolId);
+      setState(() {
+        _programs = programs;
+        _loadingPrograms = false;
+        // Re-select program if editing
+        if (_selectedProgram != null) {
+          _selectedProgram = programs.firstWhere(
+            (p) => p.id == _selectedProgram!.id,
+            orElse: () => programs.first,
+          );
+        }
+      });
+    } catch (_) {
+      setState(() => _loadingPrograms = false);
     }
   }
 
@@ -74,13 +123,13 @@ class _StudentFormDialogState extends State<StudentFormDialog> {
   void _submit() {
     if (!_formKey.currentState!.validate()) return;
     Navigator.pop(context, {
-      'email':       _emailController.text.trim(),
-      'student_no':  _studentNoController.text.trim(),
-      'first_name':  _firstNameController.text.trim(),
+      'email': _emailController.text.trim(),
+      'student_no': _studentNoController.text.trim(),
+      'first_name': _firstNameController.text.trim(),
       'middle_name': _middleNameController.text.trim(),
-      'last_name':   _lastNameController.text.trim(),
-      'course':      _selectedCourse,
-      'year_level':  _selectedYearLevel,
+      'last_name': _lastNameController.text.trim(),
+      'program_id': _selectedProgram?.id,
+      'year_level': _selectedYearLevel,
     });
   }
 
@@ -100,12 +149,12 @@ class _StudentFormDialogState extends State<StudentFormDialog> {
                 // Email — create only
                 if (!_isEditing) ...[
                   TextFormField(
-                    controller:   _emailController,
+                    controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
-                    decoration:   const InputDecoration(
-                      labelText:  'Email',
+                    decoration: const InputDecoration(
+                      labelText: 'Email',
                       helperText:
-                          'Student will log in with student number as password.',
+                          'Student will log in with their student number as password.',
                     ),
                     validator: (v) {
                       if (v == null || v.trim().isEmpty) {
@@ -120,10 +169,10 @@ class _StudentFormDialogState extends State<StudentFormDialog> {
 
                 // Student No
                 TextFormField(
-                  controller:  _studentNoController,
-                  decoration:  const InputDecoration(
+                  controller: _studentNoController,
+                  decoration: const InputDecoration(
                     labelText: 'Student No.',
-                    hintText:  'e.g. 2021-00001',
+                    hintText: 'e.g. 2021-00001',
                   ),
                   validator: (v) => (v == null || v.trim().isEmpty)
                       ? 'Student number is required'
@@ -137,11 +186,11 @@ class _StudentFormDialogState extends State<StudentFormDialog> {
                     Expanded(
                       child: TextFormField(
                         controller: _firstNameController,
-                        decoration:
-                            const InputDecoration(labelText: 'First Name'),
-                        validator: (v) => (v == null || v.trim().isEmpty)
-                            ? 'Required'
-                            : null,
+                        decoration: const InputDecoration(
+                          labelText: 'First Name',
+                        ),
+                        validator: (v) =>
+                            (v == null || v.trim().isEmpty) ? 'Required' : null,
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -150,7 +199,7 @@ class _StudentFormDialogState extends State<StudentFormDialog> {
                         controller: _middleNameController,
                         decoration: const InputDecoration(
                           labelText: 'Middle Name',
-                          hintText:  'Optional',
+                          hintText: 'Optional',
                         ),
                       ),
                     ),
@@ -158,39 +207,85 @@ class _StudentFormDialogState extends State<StudentFormDialog> {
                     Expanded(
                       child: TextFormField(
                         controller: _lastNameController,
-                        decoration:
-                            const InputDecoration(labelText: 'Last Name'),
-                        validator: (v) => (v == null || v.trim().isEmpty)
-                            ? 'Required'
-                            : null,
+                        decoration: const InputDecoration(
+                          labelText: 'Last Name',
+                        ),
+                        validator: (v) =>
+                            (v == null || v.trim().isEmpty) ? 'Required' : null,
                       ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 16),
 
-                // Course dropdown
-                DropdownButtonFormField<String>(
-                  initialValue:       _selectedCourse,
-                  decoration:  const InputDecoration(labelText: 'Course'),
-                  hint: const Text('Select a course'),
-                  items: kCourses
-                      .map((c) => DropdownMenuItem(value: c, child: Text(c)))
+                // School dropdown
+                _loadingSchools
+                    ? const Center(child: CircularProgressIndicator())
+                    : DropdownButtonFormField<School>(
+                        initialValue: _selectedSchool,
+                        decoration: const InputDecoration(labelText: 'School'),
+                        hint: const Text('Select a school'),
+                        items: _schools
+                            .map(
+                              (c) => DropdownMenuItem(
+                                value: c,
+                                child: Text(c.name),
+                              ),
+                            )
+                            .toList(),
+                        onChanged: (school) {
+                          setState(() {
+                            _selectedSchool = school;
+                            _selectedProgram = null; // reset program
+                          });
+                          if (school != null) {
+                            _loadPrograms(school.id);
+                          }
+                        },
+                      ),
+                const SizedBox(height: 16),
+
+                // Program dropdown — disabled until school is selected
+                DropdownButtonFormField<Program>(
+                  initialValue: _selectedProgram,
+                  decoration: InputDecoration(
+                    labelText: 'Program',
+                    // Visual hint when no school selected yet
+                    disabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: const BorderSide(color: AppTheme.border),
+                    ),
+                  ),
+                  hint: Text(
+                    _selectedSchool == null
+                        ? 'Select a school first'
+                        : _loadingPrograms
+                        ? 'Loading...'
+                        : 'Select a program',
+                    style: const TextStyle(color: AppTheme.textSecondary),
+                  ),
+                  items: _programs
+                      .map(
+                        (p) => DropdownMenuItem(value: p, child: Text(p.name)),
+                      )
                       .toList(),
-                  onChanged: (v) => setState(() => _selectedCourse = v),
+                  // Disabled if no school selected or still loading
+                  onChanged: (_selectedSchool == null || _loadingPrograms)
+                      ? null
+                      : (program) => setState(() => _selectedProgram = program),
                 ),
                 const SizedBox(height: 16),
 
-                // Year level dropdown
+                // Year level
                 DropdownButtonFormField<int>(
-                  initialValue:      _selectedYearLevel,
+                  initialValue: _selectedYearLevel,
                   decoration: const InputDecoration(labelText: 'Year Level'),
                   hint: const Text('Select year level'),
                   items: [1, 2, 3, 4, 5]
-                      .map((y) => DropdownMenuItem(
-                            value: y,
-                            child: Text('Year $y'),
-                          ))
+                      .map(
+                        (y) =>
+                            DropdownMenuItem(value: y, child: Text('Year $y')),
+                      )
                       .toList(),
                   onChanged: (v) => setState(() => _selectedYearLevel = v),
                 ),
