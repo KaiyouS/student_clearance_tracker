@@ -4,6 +4,9 @@ import '../../core/repositories/student_repository.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/app_card.dart';
 import '../../core/widgets/confirm_dialog.dart';
+import '../../core/repositories/user_profile_repository.dart';
+import '../../core/widgets/account_status_badge.dart';
+import '../widgets/account_status_menu.dart';
 import '../widgets/student_form_dialog.dart';
 
 class StudentsScreen extends StatefulWidget {
@@ -15,7 +18,8 @@ class StudentsScreen extends StatefulWidget {
 
 class _StudentsScreenState extends State<StudentsScreen> {
   final _repo = StudentRepository();
-
+  final _profileRepo = UserProfileRepository();
+  
   List<Student> _students  = [];
   List<Student> _filtered  = [];
   bool          _isLoading = true;
@@ -113,6 +117,16 @@ class _StudentsScreenState extends State<StudentsScreen> {
       _showError('Failed to update student: $e');
     } finally {
       setState(() => _isSaving = false);
+    }
+  }
+  
+  Future<void> _updateStatus(Student student, String newStatus) async {
+    try {
+      await _profileRepo.updateStatus(student.id, newStatus);
+      _showSuccess('Account status updated to $newStatus.');
+      _load();
+    } catch (e) {
+      _showError('Failed to update status: $e');
     }
   }
   
@@ -264,7 +278,8 @@ class _StudentsScreenState extends State<StudentsScreen> {
               2: FlexColumnWidth(2),    // program
               3: FlexColumnWidth(2),    // school
               4: FixedColumnWidth(100), // year
-              5: FixedColumnWidth(120), // actions
+              5: FixedColumnWidth(130), // status
+              6: FixedColumnWidth(120), // actions
             },
             children: [
               TableRow(
@@ -276,6 +291,7 @@ class _StudentsScreenState extends State<StudentsScreen> {
                   _headerCell('Program'),
                   _headerCell('School'),
                   _headerCell('Year'),
+                  _headerCell('Status'),
                   _headerCell(''),
                 ],
               ),
@@ -332,6 +348,14 @@ class _StudentsScreenState extends State<StudentsScreen> {
                         fontSize: 13,
                       ),
                     ),
+                  ),
+                  _dataCell(
+                    student.profile != null
+                        ? AccountStatusMenu(
+                            currentStatus:   student.profile!.accountStatus,
+                            onStatusChanged: (s) => _updateStatus(student, s),
+                          )
+                        : const SizedBox.shrink(),
                   ),
                   _dataCell(
                     Row(

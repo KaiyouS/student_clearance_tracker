@@ -4,6 +4,9 @@ import '../../core/repositories/staff_repository.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/app_card.dart';
 import '../../core/widgets/confirm_dialog.dart';
+import '../../core/repositories/user_profile_repository.dart';
+import '../../core/widgets/account_status_badge.dart';
+import '../widgets/account_status_menu.dart';
 import '../widgets/staff_form_dialog.dart';
 
 class StaffScreen extends StatefulWidget {
@@ -15,6 +18,7 @@ class StaffScreen extends StatefulWidget {
 
 class _StaffScreenState extends State<StaffScreen> {
   final _repo = StaffRepository();
+  final _profileRepo = UserProfileRepository();
 
   List<OfficeStaff> _staff    = [];
   List<OfficeStaff> _filtered = [];
@@ -130,6 +134,16 @@ class _StaffScreenState extends State<StaffScreen> {
       _showError('Failed to delete staff: $e');
     } finally {
       setState(() => _isSaving = false);
+    }
+  }
+  
+  Future<void> _updateStatus(OfficeStaff staff, String newStatus) async {
+    try {
+      await _profileRepo.updateStatus(staff.id, newStatus);
+      _showSuccess('Account status updated to $newStatus.');
+      _load();
+    } catch (e) {
+      _showError('Failed to update status: $e');
     }
   }
 
@@ -263,7 +277,8 @@ class _StaffScreenState extends State<StaffScreen> {
               0: FlexColumnWidth(2),    // name
               1: FixedColumnWidth(140), // employee no
               2: FlexColumnWidth(3),    // offices
-              3: FixedColumnWidth(120), // actions
+              3: FixedColumnWidth(130), // status
+              4: FixedColumnWidth(120), // actions
             },
             children: [
               TableRow(
@@ -273,6 +288,7 @@ class _StaffScreenState extends State<StaffScreen> {
                   _headerCell('Name'),
                   _headerCell('Employee No.'),
                   _headerCell('Assigned Offices'),
+                  _headerCell('Status'),
                   _headerCell(''),
                 ],
               ),
@@ -322,6 +338,14 @@ class _StaffScreenState extends State<StaffScreen> {
                                 .map((o) => _OfficeBadge(name: o.name))
                                 .toList(),
                           ),
+                  ),
+                  _dataCell(
+                    staff.profile != null
+                        ? AccountStatusMenu(
+                            currentStatus:   staff.profile!.accountStatus,
+                            onStatusChanged: (s) => _updateStatus(staff, s),
+                          )
+                        : const SizedBox.shrink(),
                   ),
                   _dataCell(
                     Row(
