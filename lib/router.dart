@@ -4,6 +4,7 @@ import 'core/screens/change_password_screen.dart';
 import 'core/screens/login_screen.dart';
 import 'core/services/auth_service.dart';
 import 'admin/shell/admin_shell.dart';
+import 'admin/screens/academic_periods_screen.dart';
 import 'admin/screens/dashboard_screen.dart';
 import 'admin/screens/offices_screen.dart';
 import 'admin/screens/prerequisites_screen.dart';
@@ -103,6 +104,10 @@ final router = GoRouter(
         GoRoute(
           path: '/admin/schools',
           builder: (context, state) => const SchoolsScreen(),
+        ),
+        GoRoute(
+          path: '/admin/periods',
+          builder: (context, state) => const AcademicPeriodsScreen(),
         ),
       ],
     ),
