@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../repositories/user_profile_repository.dart';
 import '../services/auth_service.dart';
 import '../theme/app_theme.dart';
 
@@ -12,6 +13,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  final _profileRepo        = UserProfileRepository();
   final _emailController    = TextEditingController();
   final _passwordController = TextEditingController();
   final _authService        = AuthService();
@@ -32,7 +34,7 @@ class _LoginScreenState extends State<LoginScreen> {
       if (user == null) throw Exception('Login failed.');
 
       final roles   = await _authService.getUserRoles(user.id);
-      final profile = await _authService.getUserProfile(user.id);
+      final profile = await _profileRepo.getById(user.id);
 
       if (!mounted) return;
 
