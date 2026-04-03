@@ -70,6 +70,12 @@ class SidebarWidget extends StatelessWidget {
             path:     '/admin/prerequisites',
             isActive: location == '/admin/prerequisites',
           ),
+          _NavItem(
+            icon:     Icons.account_balance_outlined,
+            label:    'Schools',
+            path:     '/admin/schools',
+            isActive: location == '/admin/schools',
+          ),
           const Spacer(),
           const Divider(height: 1, color: AppTheme.border),
 

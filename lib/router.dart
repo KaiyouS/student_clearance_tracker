@@ -7,6 +7,7 @@ import 'admin/shell/admin_shell.dart';
 import 'admin/screens/dashboard_screen.dart';
 import 'admin/screens/offices_screen.dart';
 import 'admin/screens/prerequisites_screen.dart';
+import 'admin/screens/schools_screen.dart';
 import 'admin/screens/staff_screen.dart';
 import 'admin/screens/students_screen.dart';
 import 'student/screens/home_screen.dart';
@@ -98,6 +99,10 @@ final router = GoRouter(
         GoRoute(
           path: '/admin/students',
           builder: (context, state) => const StudentsScreen(),
+        ),
+        GoRoute(
+          path: '/admin/schools',
+          builder: (context, state) => const SchoolsScreen(),
         ),
       ],
     ),
