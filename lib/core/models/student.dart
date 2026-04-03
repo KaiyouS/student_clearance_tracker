@@ -1,40 +1,44 @@
+import 'program.dart';
 import 'user_profile.dart';
 
 class Student {
-  final String  id;
-  final String  studentNo;
-  final String? course;
-  final int?    yearLevel;
-
-  // Populated via join with user_profiles
+  final String   id;
+  final String   studentNo;
+  final int?     programId;
+  final int?     yearLevel;
+  final Program? program;    // populated via join
   final UserProfile? profile;
 
   const Student({
     required this.id,
     required this.studentNo,
-    this.course,
+    this.programId,
     this.yearLevel,
+    this.program,
     this.profile,
   });
 
-  // Convenience getter so existing code referencing fullName still works
-  String get fullName => profile?.fullName ?? '';
+  // Convenience getters
+  String get fullName    => profile?.fullName ?? '';
+  String get programName => program?.name ?? '—';
+  String get schoolName  => program?.school?.name ?? '—';
 
-  factory Student.fromJson(Map<String, dynamic> json) {
-    return Student(
-      id:        json['id'],
-      studentNo: json['student_no'],
-      course:    json['course'],
-      yearLevel: json['year_level'],
-      profile:   json['user_profiles'] != null
-                   ? UserProfile.fromJson(json['user_profiles'])
-                   : null,
-    );
-  }
+  factory Student.fromJson(Map<String, dynamic> json) => Student(
+    id:        json['id'],
+    studentNo: json['student_no'],
+    programId: json['program_id'],
+    yearLevel: json['year_level'],
+    program:   json['programs'] != null
+                 ? Program.fromJson(json['programs'])
+                 : null,
+    profile:   json['user_profiles'] != null
+                 ? UserProfile.fromJson(json['user_profiles'])
+                 : null,
+  );
 
   Map<String, dynamic> toJson() => {
     'student_no': studentNo,
-    'course':     course,
+    'program_id': programId,
     'year_level': yearLevel,
   };
 }
