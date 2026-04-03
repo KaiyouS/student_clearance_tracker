@@ -1,0 +1,197 @@
+import 'package:flutter/material.dart';
+import '../../core/models/academic_period.dart';
+import '../../core/theme/app_theme.dart';
+
+class AcademicPeriodFormDialog extends StatefulWidget {
+  final AcademicPeriod? period;
+
+  const AcademicPeriodFormDialog({super.key, this.period});
+
+  static Future<Map<String, dynamic>?> show(
+    BuildContext context, {
+    AcademicPeriod? period,
+  }) {
+    return showDialog<Map<String, dynamic>>(
+      context: context,
+      builder: (_) => AcademicPeriodFormDialog(period: period),
+    );
+  }
+
+  @override
+  State<AcademicPeriodFormDialog> createState() =>
+      _AcademicPeriodFormDialogState();
+}
+
+class _AcademicPeriodFormDialogState
+    extends State<AcademicPeriodFormDialog> {
+  final _formKey         = GlobalKey<FormState>();
+  final _labelController = TextEditingController();
+
+  DateTime? _startDate;
+  DateTime? _endDate;
+
+  bool get _isEditing => widget.period != null;
+
+  @override
+  void initState() {
+    super.initState();
+    if (_isEditing) {
+      _labelController.text = widget.period!.label;
+      _startDate            = widget.period!.startDate;
+      _endDate              = widget.period!.endDate;
+    }
+  }
+
+  @override
+  void dispose() {
+    _labelController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _pickDate({required bool isStart}) async {
+    final initial = isStart
+        ? (_startDate ?? DateTime.now())
+        : (_endDate   ?? DateTime.now());
+
+    final picked = await showDatePicker(
+      context:     context,
+      initialDate: initial,
+      firstDate:   DateTime(2000),
+      lastDate:    DateTime(2100),
+    );
+
+    if (picked != null) {
+      setState(() {
+        if (isStart) {
+          _startDate = picked;
+        } else {
+          _endDate = picked;
+        }
+      });
+    }
+  }
+
+  String _formatDate(DateTime? date) {
+    if (date == null) return 'Select date';
+    return '${date.year}-'
+        '${date.month.toString().padLeft(2, '0')}-'
+        '${date.day.toString().padLeft(2, '0')}';
+  }
+
+  void _submit() {
+    if (!_formKey.currentState!.validate()) return;
+    Navigator.pop(context, {
+      'label':      _labelController.text.trim(),
+      'start_date': _startDate,
+      'end_date':   _endDate,
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text(_isEditing ? 'Edit Period' : 'Add Academic Period'),
+      content: SizedBox(
+        width: 480,
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Label
+              TextFormField(
+                controller:  _labelController,
+                decoration:  const InputDecoration(
+                  labelText: 'Label',
+                  hintText:  'e.g. AY 2024-2025 Semester 1',
+                ),
+                validator: (v) => (v == null || v.trim().isEmpty)
+                    ? 'Label is required'
+                    : null,
+                textInputAction: TextInputAction.next,
+              ),
+              const SizedBox(height: 16),
+
+              // Date range row
+              Row(
+                children: [
+                  // Start date
+                  Expanded(
+                    child: _DatePickerField(
+                      label:   'Start Date',
+                      value:   _formatDate(_startDate),
+                      onTap:   () => _pickDate(isStart: true),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  const Text(
+                    '–',
+                    style: TextStyle(color: AppTheme.textSecondary),
+                  ),
+                  const SizedBox(width: 12),
+                  // End date
+                  Expanded(
+                    child: _DatePickerField(
+                      label: 'End Date',
+                      value: _formatDate(_endDate),
+                      onTap: () => _pickDate(isStart: false),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Cancel'),
+        ),
+        ElevatedButton(
+          onPressed: _submit,
+          child: Text(_isEditing ? 'Save Changes' : 'Add Period'),
+        ),
+      ],
+    );
+  }
+}
+
+// ── Simple date picker field ──────────────────────────────────
+class _DatePickerField extends StatelessWidget {
+  final String label;
+  final String value;
+  final VoidCallback onTap;
+
+  const _DatePickerField({
+    required this.label,
+    required this.value,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap:        onTap,
+      borderRadius: BorderRadius.circular(8),
+      child: InputDecorator(
+        decoration: InputDecoration(
+          labelText:   label,
+          suffixIcon:  const Icon(
+            Icons.calendar_today_outlined,
+            size: 16,
+          ),
+        ),
+        child: Text(
+          value,
+          style: TextStyle(
+            color: value == 'Select date'
+                ? AppTheme.textSecondary
+                : AppTheme.textPrimary,
+            fontSize: 14,
+          ),
+        ),
+      ),
+    );
+  }
+}

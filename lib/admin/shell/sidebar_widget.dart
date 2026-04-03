@@ -76,7 +76,13 @@ class SidebarWidget extends StatelessWidget {
             path:     '/admin/schools',
             isActive: location == '/admin/schools',
           ),
-          const Spacer(),
+          _NavItem(
+            icon:     Icons.calendar_month_outlined,
+            label:    'Academic Periods',
+            path:     '/admin/periods',
+            isActive: location == '/admin/periods',
+          ),
+                    const Spacer(),
           const Divider(height: 1, color: AppTheme.border),
 
           // Sign out
