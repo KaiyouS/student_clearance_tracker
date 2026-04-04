@@ -1,4 +1,5 @@
 import 'package:go_router/go_router.dart';
+import 'admin/screens/admin_clearance_screen.dart';
 import 'admin/screens/office_requirements_screen.dart';
 import 'core/repositories/user_profile_repository.dart';
 import 'core/screens/change_password_screen.dart';
@@ -113,6 +114,10 @@ final router = GoRouter(
         GoRoute(
           path: '/admin/requirements',
           builder: (context, state) => const OfficeRequirementsScreen(),
+        ),
+        GoRoute(
+          path: '/admin/clearance',
+          builder: (context, state) => const AdminClearanceScreen(),
         ),
       ],
     ),
