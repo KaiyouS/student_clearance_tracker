@@ -122,4 +122,12 @@ class StaffRepository {
       throw Exception(error);
     }
   }
+  
+  Future<List<Office>> getAllOffices() async {
+    final data = await supabase
+        .from('offices')
+        .select()
+        .order('name');
+    return data.map((json) => Office.fromJson(json)).toList();
+  }
 }
