@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'core/providers/staff_provider.dart';
 import 'core/theme/app_theme.dart';
 import 'router.dart';
 import 'supabase_config.dart';
@@ -22,11 +24,14 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      title: 'Student Clearance Tracker',
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightTheme,
-      routerConfig: router,
+    return ChangeNotifierProvider(
+      create: (_) => StaffProvider(),
+      child: MaterialApp.router(
+        title:                  'Student Clearance Tracker',
+        debugShowCheckedModeBanner: false,
+        theme:                  AppTheme.lightTheme,
+        routerConfig:           router,
+      ),
     );
   }
 }

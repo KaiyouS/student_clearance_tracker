@@ -14,6 +14,10 @@ import 'admin/screens/schools_screen.dart';
 import 'admin/screens/staff_screen.dart';
 import 'admin/screens/students_screen.dart';
 import 'student/screens/home_screen.dart';
+import 'package:provider/provider.dart';
+import 'core/providers/staff_provider.dart';
+import 'staff/shell/staff_shell.dart';
+import 'staff/screens/staff_clearance_screen.dart';
 import 'main.dart';
 
 final _authService = AuthService();
@@ -59,6 +63,21 @@ final router = GoRouter(
     if (isChangingPw) {
       final roles = await _authService.getUserRoles(session.user.id);
       return _shellRoute(roles);
+    }
+    
+    final isAdminRoute = location.startsWith('/admin');
+    final isStaffRoute = location.startsWith('/staff');
+
+    if (isAdminRoute) {
+      final roles = await _authService.getUserRoles(session.user.id);
+      if (!roles.contains('super_admin')) return '/staff/clearance';
+    }
+
+    if (isStaffRoute) {
+      final roles = await _authService.getUserRoles(session.user.id);
+      if (!roles.contains('office_staff') && !roles.contains('super_admin')) {
+        return '/login';
+      }
     }
 
     // Already logged in, trying to visit /login → redirect to shell
@@ -121,7 +140,18 @@ final router = GoRouter(
         ),
       ],
     ),
-
+    
+    // Staff routes
+    ShellRoute(
+      builder: (context, state, child) => StaffShell(child: child),
+      routes: [
+        GoRoute(
+          path:    '/staff/clearance',
+          builder: (context, state) => const StaffClearanceScreen(),
+        ),
+      ],
+    ),
+    
     // Student routes — wrapped in shell (bottom nav layout) later
     GoRoute(
       path: '/student/home',
@@ -131,10 +161,8 @@ final router = GoRouter(
 );
 
 String _shellRoute(List<String> roles) {
-  if (roles.contains('super_admin') || roles.contains('office_staff')) {
-    return '/admin/dashboard';
-  } else if (roles.contains('student')) {
-    return '/student/home';
-  }
+  if (roles.contains('super_admin'))  return '/admin/dashboard';
+  if (roles.contains('office_staff')) return '/staff/clearance';
+  if (roles.contains('student'))      return '/student/home';
   return '/login';
 }
