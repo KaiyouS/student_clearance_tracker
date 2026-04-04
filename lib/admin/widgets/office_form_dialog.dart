@@ -22,9 +22,9 @@ class OfficeFormDialog extends StatefulWidget {
 }
 
 class _OfficeFormDialogState extends State<OfficeFormDialog> {
-  final _nameController        = TextEditingController();
+  final _nameController = TextEditingController();
   final _descriptionController = TextEditingController();
-  final _formKey               = GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>();
 
   bool get _isEditing => widget.office != null;
 
@@ -32,7 +32,7 @@ class _OfficeFormDialogState extends State<OfficeFormDialog> {
   void initState() {
     super.initState();
     if (_isEditing) {
-      _nameController.text        = widget.office!.name;
+      _nameController.text = widget.office!.name;
       _descriptionController.text = widget.office!.description ?? '';
     }
   }
@@ -46,8 +46,8 @@ class _OfficeFormDialogState extends State<OfficeFormDialog> {
 
   void _submit() {
     if (!_formKey.currentState!.validate()) return;
-    Navigator.pop(context, {
-      'name':        _nameController.text.trim(),
+    Navigator.of(context, rootNavigator: true).pop({
+      'name': _nameController.text.trim(),
       'description': _descriptionController.text.trim(),
     });
   }

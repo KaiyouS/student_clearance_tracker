@@ -22,9 +22,8 @@ class AcademicPeriodFormDialog extends StatefulWidget {
       _AcademicPeriodFormDialogState();
 }
 
-class _AcademicPeriodFormDialogState
-    extends State<AcademicPeriodFormDialog> {
-  final _formKey         = GlobalKey<FormState>();
+class _AcademicPeriodFormDialogState extends State<AcademicPeriodFormDialog> {
+  final _formKey = GlobalKey<FormState>();
   final _labelController = TextEditingController();
 
   DateTime? _startDate;
@@ -37,8 +36,8 @@ class _AcademicPeriodFormDialogState
     super.initState();
     if (_isEditing) {
       _labelController.text = widget.period!.label;
-      _startDate            = widget.period!.startDate;
-      _endDate              = widget.period!.endDate;
+      _startDate = widget.period!.startDate;
+      _endDate = widget.period!.endDate;
     }
   }
 
@@ -51,13 +50,13 @@ class _AcademicPeriodFormDialogState
   Future<void> _pickDate({required bool isStart}) async {
     final initial = isStart
         ? (_startDate ?? DateTime.now())
-        : (_endDate   ?? DateTime.now());
+        : (_endDate ?? DateTime.now());
 
     final picked = await showDatePicker(
-      context:     context,
+      context: context,
       initialDate: initial,
-      firstDate:   DateTime(2000),
-      lastDate:    DateTime(2100),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
     );
 
     if (picked != null) {
@@ -80,10 +79,10 @@ class _AcademicPeriodFormDialogState
 
   void _submit() {
     if (!_formKey.currentState!.validate()) return;
-    Navigator.pop(context, {
-      'label':      _labelController.text.trim(),
+    Navigator.of(context, rootNavigator: true).pop({
+      'label': _labelController.text.trim(),
       'start_date': _startDate,
-      'end_date':   _endDate,
+      'end_date': _endDate,
     });
   }
 
@@ -100,10 +99,10 @@ class _AcademicPeriodFormDialogState
             children: [
               // Label
               TextFormField(
-                controller:  _labelController,
-                decoration:  const InputDecoration(
+                controller: _labelController,
+                decoration: const InputDecoration(
                   labelText: 'Label',
-                  hintText:  'e.g. AY 2024-2025 Semester 1',
+                  hintText: 'e.g. AY 2024-2025 Semester 1',
                 ),
                 validator: (v) => (v == null || v.trim().isEmpty)
                     ? 'Label is required'
@@ -118,9 +117,9 @@ class _AcademicPeriodFormDialogState
                   // Start date
                   Expanded(
                     child: _DatePickerField(
-                      label:   'Start Date',
-                      value:   _formatDate(_startDate),
-                      onTap:   () => _pickDate(isStart: true),
+                      label: 'Start Date',
+                      value: _formatDate(_startDate),
+                      onTap: () => _pickDate(isStart: true),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -172,15 +171,12 @@ class _DatePickerField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap:        onTap,
+      onTap: onTap,
       borderRadius: BorderRadius.circular(8),
       child: InputDecorator(
         decoration: InputDecoration(
-          labelText:   label,
-          suffixIcon:  const Icon(
-            Icons.calendar_today_outlined,
-            size: 16,
-          ),
+          labelText: label,
+          suffixIcon: const Icon(Icons.calendar_today_outlined, size: 16),
         ),
         child: Text(
           value,

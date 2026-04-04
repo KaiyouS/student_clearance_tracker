@@ -15,16 +15,16 @@ class SchoolsScreen extends StatefulWidget {
 }
 
 class _SchoolsScreenState extends State<SchoolsScreen> {
-  final _schoolRepo  = SchoolRepository();
+  final _schoolRepo = SchoolRepository();
   final _programRepo = ProgramRepository();
 
-  List<School>   _schools   = [];
-  List<Program>  _programs  = [];
-  School?        _selected;
-  bool           _loadingSchools   = true;
-  bool           _loadingPrograms  = false;
-  bool           _isSaving         = false;
-  String?        _error;
+  List<School> _schools = [];
+  List<Program> _programs = [];
+  School? _selected;
+  bool _loadingSchools = true;
+  bool _loadingPrograms = false;
+  bool _isSaving = false;
+  String? _error;
 
   @override
   void initState() {
@@ -35,11 +35,14 @@ class _SchoolsScreenState extends State<SchoolsScreen> {
   // ── Data ──────────────────────────────────────────────────
 
   Future<void> _loadSchools() async {
-    setState(() { _loadingSchools = true; _error = null; });
+    setState(() {
+      _loadingSchools = true;
+      _error = null;
+    });
     try {
       final schools = await _schoolRepo.getAll();
       setState(() {
-        _schools       = schools;
+        _schools = schools;
         _loadingSchools = false;
         // Re-select same school if it was selected
         if (_selected != null) {
@@ -51,16 +54,22 @@ class _SchoolsScreenState extends State<SchoolsScreen> {
         }
       });
     } catch (e) {
-      setState(() { _error = e.toString(); _loadingSchools = false; });
+      setState(() {
+        _error = e.toString();
+        _loadingSchools = false;
+      });
     }
   }
 
   Future<void> _loadPrograms(int schoolId) async {
-    setState(() { _loadingPrograms = true; _programs = []; });
+    setState(() {
+      _loadingPrograms = true;
+      _programs = [];
+    });
     try {
       final programs = await _programRepo.getBySchool(schoolId);
       setState(() {
-        _programs       = programs;
+        _programs = programs;
         _loadingPrograms = false;
       });
     } catch (e) {
@@ -77,7 +86,11 @@ class _SchoolsScreenState extends State<SchoolsScreen> {
     setState(() => _isSaving = true);
     try {
       await _schoolRepo.create(
-        School(id: 0, name: result['name']!, description: result['description']),
+        School(
+          id: 0,
+          name: result['name']!,
+          description: result['description'],
+        ),
       );
       _showSuccess('School created.');
       _loadSchools();
@@ -97,8 +110,8 @@ class _SchoolsScreenState extends State<SchoolsScreen> {
       await _schoolRepo.update(
         school.id,
         School(
-          id:          school.id,
-          name:        result['name']!,
+          id: school.id,
+          name: result['name']!,
           description: result['description'],
         ),
       );
@@ -114,9 +127,10 @@ class _SchoolsScreenState extends State<SchoolsScreen> {
   Future<void> _deleteSchool(School school) async {
     final confirmed = await ConfirmDialog.show(
       context,
-      title:   'Delete School',
-      message: 'Are you sure you want to delete "${school.name}"? '
-               'This will also delete all programs under it.',
+      title: 'Delete School',
+      message:
+          'Are you sure you want to delete "${school.name}"? '
+          'This will also delete all programs under it.',
     );
     if (!confirmed) return;
 
@@ -124,7 +138,10 @@ class _SchoolsScreenState extends State<SchoolsScreen> {
     try {
       await _schoolRepo.delete(school.id);
       if (_selected?.id == school.id) {
-        setState(() { _selected = null; _programs = []; });
+        setState(() {
+          _selected = null;
+          _programs = [];
+        });
       }
       _showSuccess('School deleted.');
       _loadSchools();
@@ -145,11 +162,7 @@ class _SchoolsScreenState extends State<SchoolsScreen> {
     setState(() => _isSaving = true);
     try {
       await _programRepo.create(
-        Program(
-          id:       0,
-          name:     result['name']!,
-          schoolId: _selected!.id,
-        ),
+        Program(id: 0, name: result['name']!, schoolId: _selected!.id),
       );
       _showSuccess('Program created.');
       _loadPrograms(_selected!.id);
@@ -168,11 +181,7 @@ class _SchoolsScreenState extends State<SchoolsScreen> {
     try {
       await _programRepo.update(
         program.id,
-        Program(
-          id:       program.id,
-          name:     result['name']!,
-          schoolId: _selected!.id,
-        ),
+        Program(id: program.id, name: result['name']!, schoolId: _selected!.id),
       );
       _showSuccess('Program updated.');
       _loadPrograms(_selected!.id);
@@ -186,9 +195,10 @@ class _SchoolsScreenState extends State<SchoolsScreen> {
   Future<void> _deleteProgram(Program program) async {
     final confirmed = await ConfirmDialog.show(
       context,
-      title:   'Delete Program',
-      message: 'Are you sure you want to delete "${program.name}"? '
-               'Students assigned to this program will have no program.',
+      title: 'Delete Program',
+      message:
+          'Are you sure you want to delete "${program.name}"? '
+          'Students assigned to this program will have no program.',
     );
     if (!confirmed) return;
 
@@ -239,16 +249,16 @@ class _SchoolsScreenState extends State<SchoolsScreen> {
                       Text(
                         'Schools & Programs',
                         style: TextStyle(
-                          fontSize:   28,
+                          fontSize: 28,
                           fontWeight: FontWeight.bold,
-                          color:      AppTheme.textPrimary,
+                          color: AppTheme.textPrimary,
                         ),
                       ),
                       SizedBox(height: 4),
                       Text(
                         'Manage schools and the programs they offer.',
                         style: TextStyle(
-                          color:    AppTheme.textSecondary,
+                          color: AppTheme.textSecondary,
                           fontSize: 14,
                         ),
                       ),
@@ -259,7 +269,8 @@ class _SchoolsScreenState extends State<SchoolsScreen> {
                   const Padding(
                     padding: EdgeInsets.only(right: 16),
                     child: SizedBox(
-                      width: 20, height: 20,
+                      width: 20,
+                      height: 20,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     ),
                   ),
@@ -284,10 +295,7 @@ class _SchoolsScreenState extends State<SchoolsScreen> {
           children: [
             Text(_error!, style: const TextStyle(color: AppTheme.danger)),
             const SizedBox(height: 8),
-            ElevatedButton(
-              onPressed: _loadSchools,
-              child: const Text('Retry'),
-            ),
+            ElevatedButton(onPressed: _loadSchools, child: const Text('Retry')),
           ],
         ),
       );
@@ -313,14 +321,14 @@ class _SchoolsScreenState extends State<SchoolsScreen> {
                           'Schools',
                           style: TextStyle(
                             fontWeight: FontWeight.w600,
-                            fontSize:   14,
-                            color:      AppTheme.textPrimary,
+                            fontSize: 14,
+                            color: AppTheme.textPrimary,
                           ),
                         ),
                       ),
                       IconButton(
-                        icon:    const Icon(Icons.add, size: 20),
-                        color:   AppTheme.primary,
+                        icon: const Icon(Icons.add, size: 20),
+                        color: AppTheme.primary,
                         tooltip: 'Add School',
                         onPressed: _isSaving ? null : _createSchool,
                       ),
@@ -345,14 +353,15 @@ class _SchoolsScreenState extends State<SchoolsScreen> {
                           separatorBuilder: (_, _) =>
                               const Divider(height: 1, color: AppTheme.border),
                           itemBuilder: (context, i) {
-                            final school     = _schools[i];
+                            final school = _schools[i];
                             final isSelected = _selected?.id == school.id;
 
                             return ListTile(
-                              selected:          isSelected,
-                              selectedColor:     AppTheme.primary,
-                              selectedTileColor:
-                                  AppTheme.primary.withValues(alpha: 0.08),
+                              selected: isSelected,
+                              selectedColor: AppTheme.primary,
+                              selectedTileColor: AppTheme.primary.withValues(
+                                alpha: 0.08,
+                              ),
                               title: Text(
                                 school.name,
                                 style: const TextStyle(fontSize: 13),
@@ -360,8 +369,8 @@ class _SchoolsScreenState extends State<SchoolsScreen> {
                               subtitle: school.description != null
                                   ? Text(
                                       school.description!,
-                                      maxLines:  1,
-                                      overflow:  TextOverflow.ellipsis,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
                                       style: const TextStyle(fontSize: 11),
                                     )
                                   : null,
@@ -369,20 +378,22 @@ class _SchoolsScreenState extends State<SchoolsScreen> {
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   IconButton(
-                                    icon:    const Icon(
-                                      Icons.edit_outlined, size: 16,
+                                    icon: const Icon(
+                                      Icons.edit_outlined,
+                                      size: 16,
                                     ),
-                                    color:   AppTheme.primary,
+                                    color: AppTheme.primary,
                                     tooltip: 'Edit',
                                     onPressed: _isSaving
                                         ? null
                                         : () => _editSchool(school),
                                   ),
                                   IconButton(
-                                    icon:    const Icon(
-                                      Icons.delete_outline, size: 16,
+                                    icon: const Icon(
+                                      Icons.delete_outline,
+                                      size: 16,
                                     ),
-                                    color:   AppTheme.danger,
+                                    color: AppTheme.danger,
                                     tooltip: 'Delete',
                                     onPressed: _isSaving
                                         ? null
@@ -437,9 +448,9 @@ class _SchoolsScreenState extends State<SchoolsScreen> {
                     Text(
                       school.name,
                       style: const TextStyle(
-                        fontSize:   18,
+                        fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color:      AppTheme.textPrimary,
+                        color: AppTheme.textPrimary,
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -448,7 +459,7 @@ class _SchoolsScreenState extends State<SchoolsScreen> {
                           ? 'Loading...'
                           : '${_programs.length} program${_programs.length != 1 ? 's' : ''}',
                       style: const TextStyle(
-                        color:    AppTheme.textSecondary,
+                        color: AppTheme.textSecondary,
                         fontSize: 13,
                       ),
                     ),
@@ -457,7 +468,7 @@ class _SchoolsScreenState extends State<SchoolsScreen> {
               ),
               ElevatedButton.icon(
                 onPressed: _isSaving ? null : _createProgram,
-                icon:  const Icon(Icons.add, size: 16),
+                icon: const Icon(Icons.add, size: 16),
                 label: const Text('Add Program'),
               ),
             ],
@@ -472,7 +483,7 @@ class _SchoolsScreenState extends State<SchoolsScreen> {
             const Center(
               child: Padding(
                 padding: EdgeInsets.all(32),
-                child:   CircularProgressIndicator(),
+                child: CircularProgressIndicator(),
               ),
             )
           else if (_programs.isEmpty)
@@ -495,43 +506,40 @@ class _SchoolsScreenState extends State<SchoolsScreen> {
                   final program = _programs[i];
                   return ListTile(
                     leading: Container(
-                      width:  32,
+                      width: 32,
                       height: 32,
                       decoration: BoxDecoration(
-                        color:        AppTheme.primary.withValues(alpha: 0.1),
+                        color: AppTheme.primary.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: const Icon(
                         Icons.school_outlined,
-                        size:  16,
+                        size: 16,
                         color: AppTheme.primary,
                       ),
                     ),
                     title: Text(
                       program.name,
                       style: const TextStyle(
-                        fontSize:   14,
+                        fontSize: 14,
                         fontWeight: FontWeight.w500,
-                        color:      AppTheme.textPrimary,
+                        color: AppTheme.textPrimary,
                       ),
                     ),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         IconButton(
-                          icon:    const Icon(
-                            Icons.edit_outlined, size: 18,
-                          ),
-                          color:   AppTheme.primary,
+                          icon: const Icon(Icons.edit_outlined, size: 18),
+                          color: AppTheme.primary,
                           tooltip: 'Edit',
-                          onPressed:
-                              _isSaving ? null : () => _editProgram(program),
+                          onPressed: _isSaving
+                              ? null
+                              : () => _editProgram(program),
                         ),
                         IconButton(
-                          icon:    const Icon(
-                            Icons.delete_outline, size: 18,
-                          ),
-                          color:   AppTheme.danger,
+                          icon: const Icon(Icons.delete_outline, size: 18),
+                          color: AppTheme.danger,
                           tooltip: 'Delete',
                           onPressed: _isSaving
                               ? null
@@ -569,8 +577,8 @@ class _SchoolFormDialog extends StatefulWidget {
 }
 
 class _SchoolFormDialogState extends State<_SchoolFormDialog> {
-  final _formKey             = GlobalKey<FormState>();
-  final _nameController        = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
   final _descriptionController = TextEditingController();
 
   bool get _isEditing => widget.school != null;
@@ -579,7 +587,7 @@ class _SchoolFormDialogState extends State<_SchoolFormDialog> {
   void initState() {
     super.initState();
     if (_isEditing) {
-      _nameController.text        = widget.school!.name;
+      _nameController.text = widget.school!.name;
       _descriptionController.text = widget.school!.description ?? '';
     }
   }
@@ -593,11 +601,11 @@ class _SchoolFormDialogState extends State<_SchoolFormDialog> {
 
   void _submit() {
     if (!_formKey.currentState!.validate()) return;
-    Navigator.pop(context, {
-      'name':        _nameController.text.trim(),
+    Navigator.of(context, rootNavigator: true).pop({
+      'name': _nameController.text.trim(),
       'description': _descriptionController.text.trim().isEmpty
-                       ? null
-                       : _descriptionController.text.trim(),
+          ? null
+          : _descriptionController.text.trim(),
     });
   }
 
@@ -613,20 +621,19 @@ class _SchoolFormDialogState extends State<_SchoolFormDialog> {
             mainAxisSize: MainAxisSize.min,
             children: [
               TextFormField(
-                controller:  _nameController,
-                decoration:  const InputDecoration(labelText: 'School Name'),
-                validator:   (v) => (v == null || v.trim().isEmpty)
-                    ? 'Name is required'
-                    : null,
+                controller: _nameController,
+                decoration: const InputDecoration(labelText: 'School Name'),
+                validator: (v) =>
+                    (v == null || v.trim().isEmpty) ? 'Name is required' : null,
                 textInputAction: TextInputAction.next,
               ),
               const SizedBox(height: 16),
               TextFormField(
-                controller:  _descriptionController,
-                decoration:  const InputDecoration(
+                controller: _descriptionController,
+                decoration: const InputDecoration(
                   labelText: 'Description (optional)',
                 ),
-                maxLines:       3,
+                maxLines: 3,
                 textInputAction: TextInputAction.done,
                 onFieldSubmitted: (_) => _submit(),
               ),
@@ -668,7 +675,7 @@ class _ProgramFormDialog extends StatefulWidget {
 }
 
 class _ProgramFormDialogState extends State<_ProgramFormDialog> {
-  final _formKey        = GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
 
   bool get _isEditing => widget.program != null;
@@ -689,9 +696,10 @@ class _ProgramFormDialogState extends State<_ProgramFormDialog> {
 
   void _submit() {
     if (!_formKey.currentState!.validate()) return;
-    Navigator.pop(context, {
-      'name': _nameController.text.trim(),
-    });
+    Navigator.of(
+      context,
+      rootNavigator: true,
+    ).pop({'name': _nameController.text.trim()});
   }
 
   @override
@@ -703,11 +711,10 @@ class _ProgramFormDialogState extends State<_ProgramFormDialog> {
         child: Form(
           key: _formKey,
           child: TextFormField(
-            controller:      _nameController,
-            decoration:      const InputDecoration(labelText: 'Program Name'),
-            validator:       (v) => (v == null || v.trim().isEmpty)
-                ? 'Name is required'
-                : null,
+            controller: _nameController,
+            decoration: const InputDecoration(labelText: 'Program Name'),
+            validator: (v) =>
+                (v == null || v.trim().isEmpty) ? 'Name is required' : null,
             textInputAction: TextInputAction.done,
             onFieldSubmitted: (_) => _submit(),
           ),

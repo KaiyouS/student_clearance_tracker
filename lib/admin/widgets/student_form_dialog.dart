@@ -122,7 +122,7 @@ class _StudentFormDialogState extends State<StudentFormDialog> {
 
   void _submit() {
     if (!_formKey.currentState!.validate()) return;
-    Navigator.pop(context, {
+    Navigator.of(context, rootNavigator: true).pop({
       'email': _emailController.text.trim(),
       'student_no': _studentNoController.text.trim(),
       'first_name': _firstNameController.text.trim(),

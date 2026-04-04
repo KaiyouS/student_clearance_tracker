@@ -24,16 +24,16 @@ class StaffFormDialog extends StatefulWidget {
 }
 
 class _StaffFormDialogState extends State<StaffFormDialog> {
-  final _formKey            = GlobalKey<FormState>();
-  final _emailController      = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  final _emailController = TextEditingController();
   final _employeeNoController = TextEditingController();
-  final _firstNameController  = TextEditingController();
+  final _firstNameController = TextEditingController();
   final _middleNameController = TextEditingController();
-  final _lastNameController   = TextEditingController();
+  final _lastNameController = TextEditingController();
 
-  List<Office> _allOffices     = [];
-  List<int>    _selectedOffices = [];
-  bool         _loadingOffices  = true;
+  List<Office> _allOffices = [];
+  List<int> _selectedOffices = [];
+  bool _loadingOffices = true;
 
   bool get _isEditing => widget.staff != null;
 
@@ -44,9 +44,9 @@ class _StaffFormDialogState extends State<StaffFormDialog> {
     if (_isEditing) {
       final s = widget.staff!;
       _employeeNoController.text = s.employeeNo;
-      _firstNameController.text  = s.firstName;
+      _firstNameController.text = s.firstName;
       _middleNameController.text = s.middleName ?? '';
-      _lastNameController.text   = s.lastName;
+      _lastNameController.text = s.lastName;
       _selectedOffices = s.offices?.map((o) => o.id).toList() ?? [];
     }
   }
@@ -55,7 +55,7 @@ class _StaffFormDialogState extends State<StaffFormDialog> {
     try {
       final offices = await OfficeRepository().getAll();
       setState(() {
-        _allOffices    = offices;
+        _allOffices = offices;
         _loadingOffices = false;
       });
     } catch (_) {
@@ -85,13 +85,13 @@ class _StaffFormDialogState extends State<StaffFormDialog> {
 
   void _submit() {
     if (!_formKey.currentState!.validate()) return;
-    Navigator.pop(context, {
-      'email':       _emailController.text.trim(),
+    Navigator.of(context, rootNavigator: true).pop({
+      'email': _emailController.text.trim(),
       'employee_no': _employeeNoController.text.trim(),
-      'first_name':  _firstNameController.text.trim(),
+      'first_name': _firstNameController.text.trim(),
       'middle_name': _middleNameController.text.trim(),
-      'last_name':   _lastNameController.text.trim(),
-      'office_ids':  List<int>.from(_selectedOffices),
+      'last_name': _lastNameController.text.trim(),
+      'office_ids': List<int>.from(_selectedOffices),
     });
   }
 
@@ -132,8 +132,7 @@ class _StaffFormDialogState extends State<StaffFormDialog> {
                 // Employee No
                 TextFormField(
                   controller: _employeeNoController,
-                  decoration:
-                      const InputDecoration(labelText: 'Employee No.'),
+                  decoration: const InputDecoration(labelText: 'Employee No.'),
                   validator: (v) => (v == null || v.trim().isEmpty)
                       ? 'Employee number is required'
                       : null,
@@ -146,11 +145,11 @@ class _StaffFormDialogState extends State<StaffFormDialog> {
                     Expanded(
                       child: TextFormField(
                         controller: _firstNameController,
-                        decoration:
-                            const InputDecoration(labelText: 'First Name'),
-                        validator: (v) => (v == null || v.trim().isEmpty)
-                            ? 'Required'
-                            : null,
+                        decoration: const InputDecoration(
+                          labelText: 'First Name',
+                        ),
+                        validator: (v) =>
+                            (v == null || v.trim().isEmpty) ? 'Required' : null,
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -159,7 +158,7 @@ class _StaffFormDialogState extends State<StaffFormDialog> {
                         controller: _middleNameController,
                         decoration: const InputDecoration(
                           labelText: 'Middle Name',
-                          hintText:  'Optional',
+                          hintText: 'Optional',
                         ),
                       ),
                     ),
@@ -167,11 +166,11 @@ class _StaffFormDialogState extends State<StaffFormDialog> {
                     Expanded(
                       child: TextFormField(
                         controller: _lastNameController,
-                        decoration:
-                            const InputDecoration(labelText: 'Last Name'),
-                        validator: (v) => (v == null || v.trim().isEmpty)
-                            ? 'Required'
-                            : null,
+                        decoration: const InputDecoration(
+                          labelText: 'Last Name',
+                        ),
+                        validator: (v) =>
+                            (v == null || v.trim().isEmpty) ? 'Required' : null,
                       ),
                     ),
                   ],
@@ -190,10 +189,7 @@ class _StaffFormDialogState extends State<StaffFormDialog> {
                 const SizedBox(height: 4),
                 const Text(
                   'Select one or more offices this staff member can sign for.',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: AppTheme.textSecondary,
-                  ),
+                  style: TextStyle(fontSize: 12, color: AppTheme.textSecondary),
                 ),
                 const SizedBox(height: 8),
 
@@ -214,19 +210,17 @@ class _StaffFormDialogState extends State<StaffFormDialog> {
                         separatorBuilder: (_, __) =>
                             const Divider(height: 1, color: AppTheme.border),
                         itemBuilder: (context, i) {
-                          final office   = _allOffices[i];
-                          final selected =
-                              _selectedOffices.contains(office.id);
+                          final office = _allOffices[i];
+                          final selected = _selectedOffices.contains(office.id);
                           return CheckboxListTile(
-                            dense:         true,
-                            value:         selected,
+                            dense: true,
+                            value: selected,
                             title: Text(
                               office.name,
                               style: const TextStyle(fontSize: 13),
                             ),
                             activeColor: AppTheme.primary,
-                            controlAffinity:
-                                ListTileControlAffinity.leading,
+                            controlAffinity: ListTileControlAffinity.leading,
                             onChanged: (_) => _toggleOffice(office.id),
                           );
                         },

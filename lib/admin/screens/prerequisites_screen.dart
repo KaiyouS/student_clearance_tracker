@@ -15,12 +15,12 @@ class PrerequisitesScreen extends StatefulWidget {
 class _PrerequisitesScreenState extends State<PrerequisitesScreen> {
   final _repo = OfficeRepository();
 
-  List<Office>         _allOffices     = [];
+  List<Office> _allOffices = [];
   Map<int, List<Office>> _prerequisites = {};
-  Office?              _selected;
-  bool                 _isLoading      = true;
-  bool                 _isSaving       = false;
-  String?              _error;
+  Office? _selected;
+  bool _isLoading = true;
+  bool _isSaving = false;
+  String? _error;
 
   @override
   void initState() {
@@ -31,14 +31,17 @@ class _PrerequisitesScreenState extends State<PrerequisitesScreen> {
   // ── Data ──────────────────────────────────────────────────
 
   Future<void> _load() async {
-    setState(() { _isLoading = true; _error = null; });
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
     try {
-      final offices  = await _repo.getAll();
-      final prereqs  = await _repo.getAllPrerequisites();
+      final offices = await _repo.getAll();
+      final prereqs = await _repo.getAllPrerequisites();
       setState(() {
-        _allOffices    = offices;
+        _allOffices = offices;
         _prerequisites = prereqs;
-        _isLoading     = false;
+        _isLoading = false;
         // Re-select the same office if it was selected before
         if (_selected != null) {
           _selected = offices.firstWhere(
@@ -48,7 +51,10 @@ class _PrerequisitesScreenState extends State<PrerequisitesScreen> {
         }
       });
     } catch (e) {
-      setState(() { _error = e.toString(); _isLoading = false; });
+      setState(() {
+        _error = e.toString();
+        _isLoading = false;
+      });
     }
   }
 
@@ -62,11 +68,14 @@ class _PrerequisitesScreenState extends State<PrerequisitesScreen> {
   // - Would not create a circular dependency
   List<Office> _availableToAdd(Office office) {
     final current = _prerequisitesFor(office).map((o) => o.id).toSet();
-    return _allOffices.where((o) =>
-      o.id != office.id &&
-      !current.contains(o.id) &&
-      !_wouldCreateCycle(office.id, o.id)
-    ).toList();
+    return _allOffices
+        .where(
+          (o) =>
+              o.id != office.id &&
+              !current.contains(o.id) &&
+              !_wouldCreateCycle(office.id, o.id),
+        )
+        .toList();
   }
 
   // Simple cycle check: would adding requiresOfficeId as a prerequisite
@@ -103,9 +112,10 @@ class _PrerequisitesScreenState extends State<PrerequisitesScreen> {
   Future<void> _removePrerequisite(Office office, Office requires) async {
     final confirmed = await ConfirmDialog.show(
       context,
-      title:        'Remove Prerequisite',
-      message:      'Remove "${requires.name}" as a prerequisite '
-                    'for "${office.name}"?',
+      title: 'Remove Prerequisite',
+      message:
+          'Remove "${requires.name}" as a prerequisite '
+          'for "${office.name}"?',
       confirmLabel: 'Remove',
     );
     if (!confirmed) return;
@@ -123,7 +133,7 @@ class _PrerequisitesScreenState extends State<PrerequisitesScreen> {
 
   Future<void> _showAddDialog(Office office) async {
     // Build disabled map with reasons for ALL other offices
-    final disabledIds     = <int>{};
+    final disabledIds = <int>{};
     final disabledReasons = <int, String>{};
 
     for (final o in _allOffices) {
@@ -147,8 +157,8 @@ class _PrerequisitesScreenState extends State<PrerequisitesScreen> {
     final chosen = await showDialog<Office>(
       context: context,
       builder: (context) => _AddPrerequisiteDialog(
-        offices:        _allOffices,   // ← pass ALL offices now
-        disabledIds:    disabledIds,
+        offices: _allOffices, // ← pass ALL offices now
+        disabledIds: disabledIds,
         disabledReasons: disabledReasons,
       ),
     );
@@ -159,10 +169,7 @@ class _PrerequisitesScreenState extends State<PrerequisitesScreen> {
   void _showError(String message) {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: AppTheme.danger,
-      ),
+      SnackBar(content: Text(message), backgroundColor: AppTheme.danger),
     );
   }
 
@@ -234,16 +241,14 @@ class _PrerequisitesScreenState extends State<PrerequisitesScreen> {
                 separatorBuilder: (_, __) =>
                     const Divider(height: 1, color: AppTheme.border),
                 itemBuilder: (context, i) {
-                  final office    = _allOffices[i];
+                  final office = _allOffices[i];
                   final isSelected = _selected?.id == office.id;
-                  final prereqCount =
-                      (_prerequisites[office.id] ?? []).length;
+                  final prereqCount = (_prerequisites[office.id] ?? []).length;
 
                   return ListTile(
-                    selected:      isSelected,
+                    selected: isSelected,
                     selectedColor: AppTheme.primary,
-                    selectedTileColor:
-                        AppTheme.primary.withValues(alpha: 0.08),
+                    selectedTileColor: AppTheme.primary.withValues(alpha: 0.08),
                     title: Text(
                       office.name,
                       style: const TextStyle(fontSize: 14),
@@ -251,7 +256,8 @@ class _PrerequisitesScreenState extends State<PrerequisitesScreen> {
                     trailing: prereqCount > 0
                         ? Container(
                             padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 2,
+                              horizontal: 8,
+                              vertical: 2,
                             ),
                             decoration: BoxDecoration(
                               color: AppTheme.primary.withValues(alpha: 0.1),
@@ -321,7 +327,7 @@ class _PrerequisitesScreenState extends State<PrerequisitesScreen> {
                       prereqs.isEmpty
                           ? 'No prerequisites — can be signed at any time.'
                           : 'Must be preceded by ${prereqs.length} '
-                            'office${prereqs.length > 1 ? 's' : ''}.',
+                                'office${prereqs.length > 1 ? 's' : ''}.',
                       style: const TextStyle(
                         color: AppTheme.textSecondary,
                         fontSize: 13,
@@ -339,7 +345,7 @@ class _PrerequisitesScreenState extends State<PrerequisitesScreen> {
               else
                 ElevatedButton.icon(
                   onPressed: () => _showAddDialog(office),
-                  icon:  const Icon(Icons.add, size: 16),
+                  icon: const Icon(Icons.add, size: 16),
                   label: const Text('Add Prerequisite'),
                 ),
             ],
@@ -361,62 +367,62 @@ class _PrerequisitesScreenState extends State<PrerequisitesScreen> {
               ),
             )
           else
-            ...prereqs.map((req) => Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16, vertical: 12,
-                ),
-                decoration: BoxDecoration(
-                  color: AppTheme.background,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: AppTheme.border),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(
-                      Icons.arrow_forward,
-                      size: 16,
-                      color: AppTheme.textSecondary,
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            req.name,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w500,
-                              color: AppTheme.textPrimary,
-                            ),
-                          ),
-                          if (req.description != null)
+            ...prereqs.map(
+              (req) => Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppTheme.background,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: AppTheme.border),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.arrow_forward,
+                        size: 16,
+                        color: AppTheme.textSecondary,
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
                             Text(
-                              req.description!,
+                              req.name,
                               style: const TextStyle(
-                                fontSize: 12,
-                                color: AppTheme.textSecondary,
+                                fontWeight: FontWeight.w500,
+                                color: AppTheme.textPrimary,
                               ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
                             ),
-                        ],
+                            if (req.description != null)
+                              Text(
+                                req.description!,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  color: AppTheme.textSecondary,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                          ],
+                        ),
                       ),
-                    ),
-                    IconButton(
-                      icon: const Icon(
-                        Icons.remove_circle_outline,
-                        size: 18,
+                      IconButton(
+                        icon: const Icon(Icons.remove_circle_outline, size: 18),
+                        color: AppTheme.danger,
+                        tooltip: 'Remove',
+                        onPressed: () => _removePrerequisite(office, req),
                       ),
-                      color: AppTheme.danger,
-                      tooltip: 'Remove',
-                      onPressed: () => _removePrerequisite(office, req),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            )),
+            ),
 
           // Explains what the arrows mean
           if (prereqs.isNotEmpty) ...[
@@ -460,10 +466,10 @@ class _PrerequisitesScreenState extends State<PrerequisitesScreen> {
 
 // ── Add Prerequisite Dialog ──────────────────────────────────
 class _AddPrerequisiteDialog extends StatefulWidget {
-  final List<Office>      offices;
-  final Set<int>          disabledIds;
-  final Map<int, String>  disabledReasons;
-  
+  final List<Office> offices;
+  final Set<int> disabledIds;
+  final Map<int, String> disabledReasons;
+
   const _AddPrerequisiteDialog({
     required this.offices,
     required this.disabledIds,
@@ -476,21 +482,18 @@ class _AddPrerequisiteDialog extends StatefulWidget {
 
 class _AddPrerequisiteDialogState extends State<_AddPrerequisiteDialog> {
   Office? _chosen;
-  String  _search = '';
+  String _search = '';
 
   // Changed: receives all offices + the ones that are invalid + already added
   List<Office> get _filtered => _search.isEmpty
       ? widget.offices
       : widget.offices
-          .where((o) =>
-              o.name.toLowerCase().contains(_search.toLowerCase()))
-          .toList();
+            .where((o) => o.name.toLowerCase().contains(_search.toLowerCase()))
+            .toList();
 
-  bool _isDisabled(Office office) =>
-      widget.disabledIds.contains(office.id);
+  bool _isDisabled(Office office) => widget.disabledIds.contains(office.id);
 
-  String? _disabledReason(Office office) =>
-      widget.disabledReasons[office.id];
+  String? _disabledReason(Office office) => widget.disabledReasons[office.id];
 
   @override
   Widget build(BuildContext context) {
@@ -504,7 +507,7 @@ class _AddPrerequisiteDialogState extends State<_AddPrerequisiteDialog> {
             TextField(
               onChanged: (v) => setState(() => _search = v),
               decoration: const InputDecoration(
-                hintText:   'Search offices...',
+                hintText: 'Search offices...',
                 prefixIcon: Icon(Icons.search),
               ),
             ),
@@ -517,9 +520,9 @@ class _AddPrerequisiteDialogState extends State<_AddPrerequisiteDialog> {
                   separatorBuilder: (_, __) =>
                       const Divider(height: 1, color: AppTheme.border),
                   itemBuilder: (context, i) {
-                    final office   = _filtered[i];
+                    final office = _filtered[i];
                     final disabled = _isDisabled(office);
-                    final reason   = _disabledReason(office);
+                    final reason = _disabledReason(office);
 
                     return ListTile(
                       title: Text(
@@ -540,17 +543,18 @@ class _AddPrerequisiteDialogState extends State<_AddPrerequisiteDialog> {
                               ),
                             )
                           : office.description != null
-                              ? Text(
-                                  office.description!,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(fontSize: 12),
-                                )
-                              : null,
+                          ? Text(
+                              office.description!,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(fontSize: 12),
+                            )
+                          : null,
                       selected: _chosen?.id == office.id,
                       selectedColor: AppTheme.primary,
-                      selectedTileColor:
-                          AppTheme.primary.withValues(alpha: 0.08),
+                      selectedTileColor: AppTheme.primary.withValues(
+                        alpha: 0.08,
+                      ),
                       // Disabled tiles show a lock icon instead
                       trailing: disabled
                           ? const Tooltip(
@@ -580,8 +584,9 @@ class _AddPrerequisiteDialogState extends State<_AddPrerequisiteDialog> {
           child: const Text('Cancel'),
         ),
         ElevatedButton(
-          onPressed:
-              _chosen == null ? null : () => Navigator.pop(context, _chosen),
+          onPressed: _chosen == null
+              ? null
+              : () => Navigator.of(context, rootNavigator: true).pop(_chosen),
           child: const Text('Add'),
         ),
       ],

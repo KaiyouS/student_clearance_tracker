@@ -5,7 +5,7 @@ class ConfirmDialog extends StatelessWidget {
   final String title;
   final String message;
   final String confirmLabel;
-  final Color  confirmColor;
+  final Color confirmColor;
 
   const ConfirmDialog({
     super.key,
@@ -21,13 +21,13 @@ class ConfirmDialog extends StatelessWidget {
     required String title,
     required String message,
     String confirmLabel = 'Delete',
-    Color  confirmColor = AppTheme.danger,
+    Color confirmColor = AppTheme.danger,
   }) async {
     final result = await showDialog<bool>(
       context: context,
       builder: (_) => ConfirmDialog(
-        title:        title,
-        message:      message,
+        title: title,
+        message: message,
         confirmLabel: confirmLabel,
         confirmColor: confirmColor,
       ),
@@ -42,7 +42,8 @@ class ConfirmDialog extends StatelessWidget {
       content: Text(message),
       actions: [
         TextButton(
-          onPressed: () => Navigator.pop(context, false),
+          onPressed: () =>
+              Navigator.of(context, rootNavigator: true).pop(false),
           child: const Text('Cancel'),
         ),
         ElevatedButton(
@@ -50,7 +51,7 @@ class ConfirmDialog extends StatelessWidget {
             backgroundColor: confirmColor,
             foregroundColor: Colors.white,
           ),
-          onPressed: () => Navigator.pop(context, true),
+          onPressed: () => Navigator.of(context, rootNavigator: true).pop(true),
           child: Text(confirmLabel),
         ),
       ],
