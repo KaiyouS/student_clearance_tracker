@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../repositories/user_profile_repository.dart';
+import '../providers/staff_provider.dart';
 import '../services/auth_service.dart';
 import '../theme/app_theme.dart';
 
@@ -37,6 +39,12 @@ class _LoginScreenState extends State<LoginScreen> {
       final profile = await _profileRepo.getById(user.id);
 
       if (!mounted) return;
+
+      if (roles.contains('office_staff')) {
+        if (context.mounted) {
+          await context.read<StaffProvider>().loadProfile(user.id);
+        }
+      }
 
       // Account status checks
       if (profile == null) {
