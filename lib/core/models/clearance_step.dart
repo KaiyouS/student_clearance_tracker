@@ -1,16 +1,15 @@
 class ClearanceStep {
-  final int      id;
-  final String   studentId;
-  final int      officeId;
-  final int      academicPeriodId;
-  final String   status; // 'pending' | 'signed' | 'flagged'
-  final String?  remarks;
+  final int       id;
+  final String    studentId;
+  final int       officeId;
+  final int       academicPeriodId;
+  final String    status;
+  final String?   remarks;
   final DateTime? updatedAt;
-  final String?  updatedBy;
-
-  // Optionally populated via joins
-  final String?  studentName;
-  final String?  officeName;
+  final String?   updatedBy;
+  final String?   officeName;
+  final String?   studentName;
+  final String?   studentNo;
 
   const ClearanceStep({
     required this.id,
@@ -21,11 +20,16 @@ class ClearanceStep {
     this.remarks,
     this.updatedAt,
     this.updatedBy,
-    this.studentName,
     this.officeName,
+    this.studentName,
+    this.studentNo,
   });
 
   factory ClearanceStep.fromJson(Map<String, dynamic> json) {
+    // Handle nested joins from different query shapes
+    final officeData  = json['offices'];
+    final studentData = json['students'];
+
     return ClearanceStep(
       id:                json['id'],
       studentId:         json['student_id'],
@@ -37,9 +41,13 @@ class ClearanceStep {
                            ? DateTime.parse(json['updated_at'])
                            : null,
       updatedBy:         json['updated_by'],
-      // From joins (may or may not be present)
-      studentName:       json['students']?['full_name'],
-      officeName:        json['offices']?['name'],
+      officeName:        officeData?['name'],
+      studentName:       studentData?['user_profiles']?['full_name'],
+      studentNo:         studentData?['student_no'],
     );
   }
+
+  bool get isSigned  => status == 'signed';
+  bool get isFlagged => status == 'flagged';
+  bool get isPending => status == 'pending';
 }
