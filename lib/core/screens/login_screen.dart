@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../repositories/user_profile_repository.dart';
 import '../providers/staff_provider.dart';
+import '../providers/student_provider.dart';
 import '../services/auth_service.dart';
 import '../theme/app_theme.dart';
 
@@ -71,6 +72,12 @@ class _LoginScreenState extends State<LoginScreen> {
       if (profile.needsPasswordChange) {
         context.go('/change-password');
         return;
+      }
+      
+      if (roles.contains('student')) {
+        if (context.mounted) {
+          await context.read<StudentProvider>().loadData(user.id);
+        }
       }
 
       // Route based on role
