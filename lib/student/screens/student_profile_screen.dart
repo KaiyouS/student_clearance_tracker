@@ -172,7 +172,7 @@ class StudentProfileScreen extends StatelessWidget {
             SizedBox(
               width: double.infinity,
               child: OutlinedButton.icon(
-                onPressed: () => context.go('/change-password'),
+                onPressed: () => context.push('/update-password'),
                 icon:  const Icon(Icons.lock_reset_outlined),
                 label: const Text('Change Password'),
               ),
