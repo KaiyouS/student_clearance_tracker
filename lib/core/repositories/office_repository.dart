@@ -159,4 +159,18 @@ class OfficeRepository {
     }
     return result;
   }
+  
+  Future<Map<int, List<int>>> getPrerequisiteMap() async {
+    final data = await supabase
+        .from('office_prerequisites')
+        .select('office_id, requires_office_id');
+
+    final Map<int, List<int>> result = {};
+    for (final row in data) {
+      final officeId = row['office_id']          as int;
+      final reqId    = row['requires_office_id'] as int;
+      result.putIfAbsent(officeId, () => []).add(reqId);
+    }
+    return result;
+  }
 }
