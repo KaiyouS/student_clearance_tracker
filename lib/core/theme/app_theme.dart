@@ -118,4 +118,29 @@ class AppTheme {
       ),
     ),
   );
+
+static Color surfaceOf(BuildContext context) =>
+    Theme.of(context).brightness == Brightness.dark
+        ? darkSurface
+        : surface;
+
+static Color borderOf(BuildContext context) =>
+    Theme.of(context).brightness == Brightness.dark
+        ? darkBorder
+        : border;
+
+static Color textPrimaryOf(BuildContext context) =>
+    Theme.of(context).brightness == Brightness.dark
+        ? darkTextPrimary
+        : textPrimary;
+
+static Color textSecondaryOf(BuildContext context) =>
+    Theme.of(context).brightness == Brightness.dark
+        ? darkTextSecondary
+        : textSecondary;
+
+static Color backgroundOf(BuildContext context) =>
+    Theme.of(context).brightness == Brightness.dark
+        ? darkBackground
+        : background;
 }
