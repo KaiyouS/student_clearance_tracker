@@ -17,6 +17,7 @@ import 'student/screens/home_screen.dart';
 import 'student/shell/student_shell.dart';
 import 'student/screens/student_clearance_screen.dart';
 import 'student/screens/student_profile_screen.dart';
+import 'student/screens/update_password_screen.dart';
 // import 'package:provider/provider.dart';
 // import 'core/providers/staff_provider.dart';
 import 'staff/shell/staff_shell.dart';
@@ -33,6 +34,7 @@ final router = GoRouter(
 
     final isLoggingIn    = location == '/login';
     final isChangingPw   = location == '/change-password';
+    final isUpdatingPw   = location == '/update-password'; 
 
     // Not logged in → always go to login
     if (session == null) {
@@ -60,7 +62,10 @@ final router = GoRouter(
     if (profile.needsPasswordChange) {
       return isChangingPw ? null : '/change-password';
     }
-
+    
+    // TODO: check the behavior of this code on the admin site (manually visiting the url)
+    if (isChangingPw || isUpdatingPw) return null;
+    
     // Password is fine but still trying to visit /change-password
     // → redirect to correct shell
     if (isChangingPw) {
@@ -106,7 +111,10 @@ final router = GoRouter(
       path: '/change-password',
       builder: (context, state) => const ChangePasswordScreen(),
     ),
-    
+    GoRoute(
+      path:    '/update-password',
+      builder: (context, state) => const UpdatePasswordScreen(),
+    ),
     // Admin routes — wrapped in shell (sidebar layout)
     ShellRoute(
       builder: (context, state, child) => AdminShell(child: child),
