@@ -5,35 +5,51 @@ import '../../core/models/office.dart';
 import '../../core/providers/staff_provider.dart';
 import '../../core/services/auth_service.dart';
 import '../../core/theme/app_theme.dart';
+import '../../main.dart';
 
-class StaffShell extends StatelessWidget {
+class StaffShell extends StatefulWidget {
   final Widget child;
   const StaffShell({super.key, required this.child});
+
+  @override
+  State<StaffShell> createState() => _StaffShellState();
+}
+
+class _StaffShellState extends State<StaffShell> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final provider = context.read<StaffProvider>();
+      final user = supabase.auth.currentUser;
+      if (user != null && !provider.initialized) {
+        provider.loadProfile(user.id);
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<StaffProvider>();
 
     if (provider.isLoading) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     return Scaffold(
       backgroundColor: AppTheme.background,
       appBar: AppBar(
         backgroundColor: AppTheme.surface,
-        elevation:       0,
+        elevation: 0,
         title: Row(
           children: [
             // App name
             const Text(
               'Clearance Tracker',
               style: TextStyle(
-                fontSize:   16,
+                fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color:      AppTheme.primary,
+                color: AppTheme.primary,
               ),
             ),
             const SizedBox(width: 24),
@@ -42,16 +58,13 @@ class StaffShell extends StatelessWidget {
             if (provider.assignedOffices.isEmpty)
               const Text(
                 'No offices assigned',
-                style: TextStyle(
-                  color:    AppTheme.danger,
-                  fontSize: 13,
-                ),
+                style: TextStyle(color: AppTheme.danger, fontSize: 13),
               )
             else
               _OfficeSelector(
-                offices:        provider.assignedOffices,
+                offices: provider.assignedOffices,
                 selectedOffice: provider.selectedOffice,
-                onChanged:      provider.selectOffice,
+                onChanged: provider.selectOffice,
               ),
           ],
         ),
@@ -59,14 +72,12 @@ class StaffShell extends StatelessWidget {
           // Staff name
           if (provider.profile != null)
             Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 8, vertical: 12,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
               child: Row(
                 children: [
                   const Icon(
                     Icons.person_outline,
-                    size:  16,
+                    size: 16,
                     color: AppTheme.textSecondary,
                   ),
                   const SizedBox(width: 4),
@@ -74,7 +85,7 @@ class StaffShell extends StatelessWidget {
                     provider.profile!.fullName,
                     style: const TextStyle(
                       fontSize: 13,
-                      color:    AppTheme.textSecondary,
+                      color: AppTheme.textSecondary,
                     ),
                   ),
                 ],
@@ -86,17 +97,10 @@ class StaffShell extends StatelessWidget {
               await AuthService().signOut();
               if (context.mounted) context.go('/login');
             },
-            icon:  const Icon(
-              Icons.logout,
-              size:  16,
-              color: AppTheme.danger,
-            ),
+            icon: const Icon(Icons.logout, size: 16, color: AppTheme.danger),
             label: const Text(
               'Sign Out',
-              style: TextStyle(
-                color:   AppTheme.danger,
-                fontSize: 13,
-              ),
+              style: TextStyle(color: AppTheme.danger, fontSize: 13),
             ),
           ),
           const SizedBox(width: 8),
@@ -106,15 +110,15 @@ class StaffShell extends StatelessWidget {
           child: Divider(height: 1, color: AppTheme.border),
         ),
       ),
-      body: child,
+      body: widget.child,
     );
   }
 }
 
 // ── Office selector dropdown ──────────────────────────────────
 class _OfficeSelector extends StatelessWidget {
-  final List<Office>     offices;
-  final Office?          selectedOffice;
+  final List<Office> offices;
+  final Office? selectedOffice;
   final ValueChanged<Office> onChanged;
 
   const _OfficeSelector({
@@ -128,33 +132,30 @@ class _OfficeSelector extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
       decoration: BoxDecoration(
-        color:        AppTheme.primary.withValues(alpha: 0.08),
+        color: AppTheme.primary.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: AppTheme.primary.withValues(alpha: 0.3),
-        ),
+        border: Border.all(color: AppTheme.primary.withValues(alpha: 0.3)),
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<Office>(
-          value:       selectedOffice,
-          isDense:     true,
+          value: selectedOffice,
+          isDense: true,
           icon: const Icon(
             Icons.keyboard_arrow_down,
-            size:  16,
+            size: 16,
             color: AppTheme.primary,
           ),
           style: const TextStyle(
             fontSize: 13,
-            color:    AppTheme.primary,
+            color: AppTheme.primary,
             fontWeight: FontWeight.w600,
           ),
           items: offices
-              .map((o) => DropdownMenuItem(
-                    value: o,
-                    child: Text(o.name),
-                  ))
+              .map((o) => DropdownMenuItem(value: o, child: Text(o.name)))
               .toList(),
-          onChanged: (o) { if (o != null) onChanged(o); },
+          onChanged: (o) {
+            if (o != null) onChanged(o);
+          },
         ),
       ),
     );
