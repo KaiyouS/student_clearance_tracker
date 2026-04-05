@@ -11,13 +11,18 @@ import 'supabase_config.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Supabase.initialize(
-    url: SupabaseConfig.url,
-    anonKey: SupabaseConfig.anonKey,
-  );
+  // Ensure Supabase only initializes once
+  try {
+    await Supabase.initialize(
+      url:     SupabaseConfig.url,
+      anonKey: SupabaseConfig.anonKey,
+    );
+  } catch (e) {
+    // Already initialized — safe to ignore
+    debugPrint('Supabase already initialized: $e');
+  }
 
   await NotificationService.instance.initialize();
-
   runApp(const MyApp());
 }
 
