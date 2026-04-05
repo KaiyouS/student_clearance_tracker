@@ -69,8 +69,12 @@ class StudentProvider extends ChangeNotifier {
   bool get isComplete   => totalSteps > 0 && signedSteps == totalSteps;
   bool get hasSteps     => totalSteps > 0;
 
+  bool _initialized     =  false;
+  bool get initialized  => _initialized;
+
   // ── Load ──────────────────────────────────────────────────
   Future<void> loadData(String userId) async {
+    _initialized = true;
     setState(() { _isLoading = true; _error = null; });
     try {
       final results = await Future.wait([

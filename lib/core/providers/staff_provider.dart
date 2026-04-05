@@ -15,8 +15,12 @@ class StaffProvider extends ChangeNotifier {
   Office?      get selectedOffice  => _selectedOffice;
   List<Office> get assignedOffices => _assignedOffices;
   bool         get isLoading       => _isLoading;
+  
+  bool _initialized    =  false;
+  bool get initialized => _initialized;
 
   Future<void> loadProfile(String userId) async {
+    _initialized = true;
     _isLoading = true;
     notifyListeners();
 
