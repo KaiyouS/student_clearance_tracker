@@ -4,12 +4,17 @@ import 'package:student_clearance_tracker/core/services/notification_service.dar
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'core/providers/staff_provider.dart';
 import 'core/providers/student_provider.dart';
+import 'core/providers/theme_provider.dart';
 import 'core/theme/app_theme.dart';
 import 'router.dart';
 import 'supabase_config.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Load theme before app renders to avoid flash
+  final themeProvider = ThemeProvider();
+  await themeProvider.load();
 
   // Ensure Supabase only initializes once
   try {
@@ -23,26 +28,32 @@ void main() async {
   }
 
   await NotificationService.instance.initialize();
-  runApp(const MyApp());
+  runApp(MyApp(themeProvider: themeProvider));
 }
 
 final supabase = Supabase.instance.client;
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final ThemeProvider themeProvider;
+  const MyApp({super.key, required this.themeProvider});
 
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider.value(value: themeProvider),
         ChangeNotifierProvider(create: (_) => StaffProvider()),
         ChangeNotifierProvider(create: (_) => StudentProvider()),
       ],
-      child: MaterialApp.router(
-        title:                  'Student Clearance Tracker',
-        debugShowCheckedModeBanner: false,
-        theme:                  AppTheme.lightTheme,
-        routerConfig:           router,
+      child: Consumer<ThemeProvider>(
+        builder: (context, theme, _) => MaterialApp.router(
+          title:                     'Clearance Tracker',
+          debugShowCheckedModeBanner: false,
+          theme:                     AppTheme.lightTheme,
+          darkTheme:                 AppTheme.darkTheme,
+          themeMode:                 theme.themeMode,
+          routerConfig:              router,
+        ),
       ),
     );
   }
