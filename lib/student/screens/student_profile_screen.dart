@@ -5,6 +5,7 @@ import '../../core/providers/student_provider.dart';
 import '../../core/services/auth_service.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/account_status_badge.dart';
+import '../../core/widgets/theme_toggle.dart';
 import '../../main.dart';
 
 class StudentProfileScreen extends StatelessWidget {
@@ -140,7 +141,28 @@ class StudentProfileScreen extends StatelessWidget {
                 _InfoRow(
                   label: 'Status',
                   value: profile.accountStatus,
-                  isLast: true,
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16, vertical: 12,
+                  ),
+                  child: Row(
+                    children: [
+                      SizedBox(
+                        width: 110,
+                        child: Text(
+                          'Theme',
+                          style: TextStyle(
+                            fontSize: 13,
+                            color:    isDark
+                                ? AppTheme.darkTextSecondary
+                                : AppTheme.textSecondary,
+                          ),
+                        ),
+                      ),
+                      const Expanded(child: ThemeToggle()),
+                    ],
+                  ),
                 ),
               ],
             ),

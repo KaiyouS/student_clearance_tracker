@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/services/auth_service.dart';
+import '../../core/widgets/theme_toggle.dart';
 
 class SidebarWidget extends StatelessWidget {
   const SidebarWidget({super.key});
@@ -90,7 +91,10 @@ class SidebarWidget extends StatelessWidget {
           ),
           const Spacer(),
           const Divider(height: 1, color: AppTheme.border),
-
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            child: ThemeToggle(),
+          ),
           // Sign out
           _SignOutButton(),
           const SizedBox(height: 8),
