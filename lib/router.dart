@@ -14,8 +14,11 @@ import 'admin/screens/schools_screen.dart';
 import 'admin/screens/staff_screen.dart';
 import 'admin/screens/students_screen.dart';
 import 'student/screens/home_screen.dart';
-import 'package:provider/provider.dart';
-import 'core/providers/staff_provider.dart';
+import 'student/shell/student_shell.dart';
+import 'student/screens/student_clearance_screen.dart';
+import 'student/screens/student_profile_screen.dart';
+// import 'package:provider/provider.dart';
+// import 'core/providers/staff_provider.dart';
 import 'staff/shell/staff_shell.dart';
 import 'staff/screens/staff_clearance_screen.dart';
 import 'main.dart';
@@ -67,6 +70,7 @@ final router = GoRouter(
     
     final isAdminRoute = location.startsWith('/admin');
     final isStaffRoute = location.startsWith('/staff');
+    final isStudentRoute = location.startsWith('/student');
 
     if (isAdminRoute) {
       final roles = await _authService.getUserRoles(session.user.id);
@@ -78,6 +82,11 @@ final router = GoRouter(
       if (!roles.contains('office_staff') && !roles.contains('super_admin')) {
         return '/login';
       }
+    }
+    
+    if (isStudentRoute) {
+      final roles = await _authService.getUserRoles(session.user.id);
+      if (!roles.contains('student')) return '/login';
     }
 
     // Already logged in, trying to visit /login → redirect to shell
@@ -152,10 +161,23 @@ final router = GoRouter(
       ],
     ),
     
-    // Student routes — wrapped in shell (bottom nav layout) later
-    GoRoute(
-      path: '/student/home',
-      builder: (context, state) => const StudentHomeScreen(),
+    // Student routes
+    ShellRoute(
+      builder: (context, state, child) => StudentShell(child: child),
+      routes: [
+        GoRoute(
+          path:    '/student/home',
+          builder: (context, state) => const StudentHomeScreen(),
+        ),
+        GoRoute(
+          path:    '/student/clearance',
+          builder: (context, state) => const StudentClearanceScreen(),
+        ),
+        GoRoute(
+          path:    '/student/profile',
+          builder: (context, state) => const StudentProfileScreen(),
+        ),
+      ],
     ),
   ],
 );
