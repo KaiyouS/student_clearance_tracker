@@ -10,6 +10,7 @@ class ClearanceStep {
   final String?   officeName;
   final String?   studentName;
   final String?   studentNo;
+  final String?   officeDescription;
 
   const ClearanceStep({
     required this.id,
@@ -23,6 +24,7 @@ class ClearanceStep {
     this.officeName,
     this.studentName,
     this.studentNo,
+    this.officeDescription,
   });
 
   factory ClearanceStep.fromJson(Map<String, dynamic> json) {
@@ -44,6 +46,7 @@ class ClearanceStep {
       officeName:        officeData?['name'],
       studentName:       studentData?['user_profiles']?['full_name'],
       studentNo:         studentData?['student_no'],
+      officeDescription: officeData?['description'],
     );
   }
 
