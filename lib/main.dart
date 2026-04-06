@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:student_clearance_tracker/core/services/notification_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'core/providers/staff_provider.dart';
 import 'core/providers/student_provider.dart';
@@ -19,7 +18,7 @@ void main() async {
   // Ensure Supabase only initializes once
   try {
     await Supabase.initialize(
-      url:     SupabaseConfig.url,
+      url: SupabaseConfig.url,
       anonKey: SupabaseConfig.anonKey,
     );
   } catch (e) {
@@ -27,7 +26,6 @@ void main() async {
     debugPrint('Supabase already initialized: $e');
   }
 
-  await NotificationService.instance.initialize();
   runApp(MyApp(themeProvider: themeProvider));
 }
 
@@ -47,12 +45,12 @@ class MyApp extends StatelessWidget {
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, theme, _) => MaterialApp.router(
-          title:                     'Clearance Tracker',
+          title: 'Clearance Tracker',
           debugShowCheckedModeBanner: false,
-          theme:                     AppTheme.lightTheme,
-          darkTheme:                 AppTheme.darkTheme,
-          themeMode:                 theme.themeMode,
-          routerConfig:              router,
+          theme: AppTheme.lightTheme,
+          darkTheme: AppTheme.darkTheme,
+          themeMode: theme.themeMode,
+          routerConfig: router,
         ),
       ),
     );

@@ -12,17 +12,14 @@ import '../repositories/clearance_repository.dart';
 import '../repositories/office_repository.dart';
 import '../repositories/student_repository.dart';
 import '../repositories/user_profile_repository.dart';
-import '../services/notification_service.dart';
 
 class InAppNotification {
-  final String  officeName;
-  final String  status;
+  final String officeName;
+  final String status;
   final DateTime time;
 
-  InAppNotification({
-    required this.officeName,
-    required this.status,
-  }) : time = DateTime.now();
+  InAppNotification({required this.officeName, required this.status})
+    : time = DateTime.now();
 
   String get message => status == 'signed'
       ? '$officeName has signed your clearance ✅'
@@ -30,19 +27,19 @@ class InAppNotification {
 }
 
 class StudentProvider extends ChangeNotifier {
-  final _studentRepo  = StudentRepository();
+  final _studentRepo = StudentRepository();
   final _clearanceRepo = ClearanceRepository();
-  final _officeRepo   = OfficeRepository();
-  final _periodRepo   = AcademicPeriodRepository();
-  final _profileRepo  = UserProfileRepository();
+  final _officeRepo = OfficeRepository();
+  final _periodRepo = AcademicPeriodRepository();
+  final _profileRepo = UserProfileRepository();
 
   // State
-  UserProfile?     _profile;
-  Student?         _student;
-  AcademicPeriod?  _currentPeriod;
-  List<ClearanceStep>  _steps          = [];
-  List<StepWithInfo>   _stepsWithInfo  = [];
-  Map<int, List<int>>  _prereqMap      = {};
+  UserProfile? _profile;
+  Student? _student;
+  AcademicPeriod? _currentPeriod;
+  List<ClearanceStep> _steps = [];
+  List<StepWithInfo> _stepsWithInfo = [];
+  Map<int, List<int>> _prereqMap = {};
 
   // In-app notifications (for web banner + mobile)
   final List<InAppNotification> _notifications = [];
@@ -50,32 +47,36 @@ class StudentProvider extends ChangeNotifier {
   // Realtime
   RealtimeChannel? _channel;
 
-  bool    _isLoading = true;
+  bool _isLoading = true;
   String? _error;
 
   // ── Getters ───────────────────────────────────────────────
-  UserProfile?          get profile       => _profile;
-  Student?              get student        => _student;
-  AcademicPeriod?       get currentPeriod  => _currentPeriod;
-  List<StepWithInfo>    get steps          => _stepsWithInfo;
-  List<InAppNotification> get notifications => List.unmodifiable(_notifications);
-  bool                  get isLoading      => _isLoading;
-  String?               get error          => _error;
+  UserProfile? get profile => _profile;
+  Student? get student => _student;
+  AcademicPeriod? get currentPeriod => _currentPeriod;
+  List<StepWithInfo> get steps => _stepsWithInfo;
+  List<InAppNotification> get notifications =>
+      List.unmodifiable(_notifications);
+  bool get isLoading => _isLoading;
+  String? get error => _error;
 
-  int  get totalSteps   => _steps.length;
-  int  get signedSteps  => _steps.where((s) => s.isSigned).length;
-  int  get pendingSteps => _steps.where((s) => s.isPending).length;
-  int  get flaggedSteps => _steps.where((s) => s.isFlagged).length;
-  bool get isComplete   => totalSteps > 0 && signedSteps == totalSteps;
-  bool get hasSteps     => totalSteps > 0;
+  int get totalSteps => _steps.length;
+  int get signedSteps => _steps.where((s) => s.isSigned).length;
+  int get pendingSteps => _steps.where((s) => s.isPending).length;
+  int get flaggedSteps => _steps.where((s) => s.isFlagged).length;
+  bool get isComplete => totalSteps > 0 && signedSteps == totalSteps;
+  bool get hasSteps => totalSteps > 0;
 
-  bool _initialized     =  false;
-  bool get initialized  => _initialized;
+  bool _initialized = false;
+  bool get initialized => _initialized;
 
   // ── Load ──────────────────────────────────────────────────
   Future<void> loadData(String userId) async {
     _initialized = true;
-    setState(() { _isLoading = true; _error = null; });
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
     try {
       final results = await Future.wait([
         _profileRepo.getById(userId),
@@ -84,16 +85,13 @@ class StudentProvider extends ChangeNotifier {
         _officeRepo.getPrerequisiteMap(),
       ]);
 
-      _profile       = results[0] as UserProfile?;
-      _student       = results[1] as Student;
+      _profile = results[0] as UserProfile?;
+      _student = results[1] as Student;
       _currentPeriod = results[2] as AcademicPeriod?;
-      _prereqMap     = results[3] as Map<int, List<int>>;
+      _prereqMap = results[3] as Map<int, List<int>>;
 
       if (_currentPeriod != null) {
-        _steps = await _clearanceRepo.getByStudent(
-          userId,
-          _currentPeriod!.id,
-        );
+        _steps = await _clearanceRepo.getByStudent(userId, _currentPeriod!.id);
       }
 
       _stepsWithInfo = _computeStepsWithInfo(_steps, _prereqMap);
@@ -101,7 +99,10 @@ class StudentProvider extends ChangeNotifier {
 
       setState(() => _isLoading = false);
     } catch (e) {
-      setState(() { _error = e.toString(); _isLoading = false; });
+      setState(() {
+        _error = e.toString();
+        _isLoading = false;
+      });
     }
   }
 
@@ -115,26 +116,23 @@ class StudentProvider extends ChangeNotifier {
     _channel = supabase
         .channel('student-steps-$userId')
         .onPostgresChanges(
-          event:  PostgresChangeEvent.update,
+          event: PostgresChangeEvent.update,
           schema: 'public',
-          table:  'clearance_steps',
+          table: 'clearance_steps',
           filter: PostgresChangeFilter(
-            type:   PostgresChangeFilterType.eq,
+            type: PostgresChangeFilterType.eq,
             column: 'student_id',
-            value:  userId,
+            value: userId,
           ),
           callback: (payload) => _handleStepUpdate(payload, userId),
         )
         .subscribe();
   }
 
-  void _handleStepUpdate(
-    PostgresChangePayload payload,
-    String userId,
-  ) {
-    final newRecord  = payload.newRecord;
-    final stepId     = newRecord['id']     as int;
-    final newStatus  = newRecord['status'] as String;
+  void _handleStepUpdate(PostgresChangePayload payload, String userId) {
+    final newRecord = payload.newRecord;
+    final stepId = newRecord['id'] as int;
+    final newStatus = newRecord['status'] as String;
 
     // Only notify on signed or flagged
     if (newStatus != 'signed' && newStatus != 'flagged') return;
@@ -146,20 +144,14 @@ class StudentProvider extends ChangeNotifier {
         : 'An office';
 
     // In-app notification (for web banner)
-    _notifications.add(InAppNotification(
-      officeName: officeName,
-      status:     newStatus,
-    ));
-
-    // Device notification (mobile only)
-    NotificationService.instance.showStepUpdate(officeName, newStatus);
+    _notifications.add(
+      InAppNotification(officeName: officeName, status: newStatus),
+    );
 
     // Reload steps
     if (_currentPeriod != null) {
-      _clearanceRepo
-          .getByStudent(userId, _currentPeriod!.id)
-          .then((steps) {
-        _steps         = steps;
+      _clearanceRepo.getByStudent(userId, _currentPeriod!.id).then((steps) {
+        _steps = steps;
         _stepsWithInfo = _computeStepsWithInfo(steps, _prereqMap);
         notifyListeners();
       });
@@ -177,11 +169,11 @@ class StudentProvider extends ChangeNotifier {
 
   // ── Prerequisite chain computation ────────────────────────
   List<StepWithInfo> _computeStepsWithInfo(
-    List<ClearanceStep>  steps,
-    Map<int, List<int>>  prereqMap,
+    List<ClearanceStep> steps,
+    Map<int, List<int>> prereqMap,
   ) {
     final stepOfficeIds = steps.map((s) => s.officeId).toSet();
-    final officeToStep  = { for (final s in steps) s.officeId: s };
+    final officeToStep = {for (final s in steps) s.officeId: s};
 
     // Compute topological levels
     final levels = <int, int>{};
@@ -199,10 +191,9 @@ class StudentProvider extends ChangeNotifier {
 
         if (prereqs.isEmpty) {
           levels[oid] = 0;
-          changed     = true;
+          changed = true;
         } else if (prereqs.every(levels.containsKey)) {
-          levels[oid] =
-              prereqs.map((id) => levels[id]!).reduce(max) + 1;
+          levels[oid] = prereqs.map((id) => levels[id]!).reduce(max) + 1;
           changed = true;
         }
       }
@@ -233,10 +224,10 @@ class StudentProvider extends ChangeNotifier {
       }
 
       return StepWithInfo(
-        step:       step,
-        isBlocked:  isBlocked,
+        step: step,
+        isBlocked: isBlocked,
         waitingFor: waitingFor,
-        level:      levels[step.officeId] ?? 0,
+        level: levels[step.officeId] ?? 0,
       );
     }).toList();
 

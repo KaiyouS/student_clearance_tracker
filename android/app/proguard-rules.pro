@@ -47,9 +47,6 @@
 -keepattributes EnclosingMethod
 -keepattributes InnerClasses
 
-# ── flutter_local_notifications ───────────────────────────────
--keep class com.dexterous.** { *; }
-
 # ── Gson (used internally by some packages) ──────────────────
 -keep class com.google.gson.** { *; }
 -keepattributes Signature
