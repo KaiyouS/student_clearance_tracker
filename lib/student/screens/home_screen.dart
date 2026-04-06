@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import '../../core/models/step_with_info.dart';
 import '../../core/providers/student_provider.dart';
 import '../../core/theme/app_theme.dart';
 import '../../main.dart';
@@ -71,6 +72,11 @@ class StudentHomeScreen extends StatelessWidget {
             // Overall clearance status card
             _ClearanceStatusCard(provider: provider),
             const SizedBox(height: 16),
+
+            if (provider.hasSteps && !provider.isComplete) ...[
+              _NextStepCard(step: provider.nextActionableStep),
+              const SizedBox(height: 16),
+            ],
 
             // Stats row
             if (provider.hasSteps) ...[
@@ -305,6 +311,125 @@ class _NoClearanceCard extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _NextStepCard extends StatelessWidget {
+  final StepWithInfo? step;
+  const _NextStepCard({required this.step});
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    // All remaining steps are blocked — nothing actionable
+    if (step == null) {
+      return Container(
+        width:   double.infinity,
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color:        isDark ? AppTheme.darkSurface : AppTheme.surface,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isDark ? AppTheme.darkBorder : AppTheme.border,
+          ),
+        ),
+        child: Row(
+          children: [
+            const Icon(
+              Icons.lock_clock_outlined,
+              color: AppTheme.warning,
+              size:  20,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                'No steps are ready to sign yet — '
+                'waiting for prerequisites.',
+                style: TextStyle(
+                  fontSize: 13,
+                  color:    isDark
+                      ? AppTheme.darkTextSecondary
+                      : AppTheme.textSecondary,
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return GestureDetector(
+      onTap: () => context.go('/student/clearance'),
+      child: Container(
+        width:   double.infinity,
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              AppTheme.primary.withValues(alpha: 0.12),
+              AppTheme.primary.withValues(alpha: 0.04),
+            ],
+          ),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: AppTheme.primary.withValues(alpha: 0.3),
+          ),
+        ),
+        child: Row(
+          children: [
+            // Pulsing icon to draw attention
+            Container(
+              width:  40,
+              height: 40,
+              decoration: BoxDecoration(
+                color:  AppTheme.primary.withValues(alpha: 0.15),
+                shape:  BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.arrow_circle_right_outlined,
+                color: AppTheme.primary,
+                size:  22,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Next Step',
+                    style: TextStyle(
+                      fontSize:   11,
+                      fontWeight: FontWeight.w600,
+                      color:      AppTheme.primary,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    step!.step.officeName ?? '—',
+                    style: const TextStyle(
+                      fontSize:   15,
+                      fontWeight: FontWeight.bold,
+                      color:      AppTheme.primary,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  const Text(
+                    'Tap to view clearance steps →',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color:    AppTheme.primary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
