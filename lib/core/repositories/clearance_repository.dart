@@ -100,4 +100,33 @@ class ClearanceRepository {
     });
     return result as bool;
   }
+
+  Future<List<Map<String, dynamic>>> getStepLogs(int stepId) async {
+    final data = await supabase
+        .from('clearance_step_logs')
+        .select('''
+          id,
+          old_status,
+          new_status,
+          remarks,
+          changed_at,
+          changed_by,
+          office_staff (
+            user_profiles ( full_name )
+          )
+        ''')
+        .eq('clearance_step_id', stepId)
+        .order('changed_at', ascending: true);
+
+    return List<Map<String, dynamic>>.from(data);
+  }
+
+  Future<ClearanceStep> getStepById(int stepId) async {
+    final data = await supabase
+        .from('clearance_steps')
+        .select('*, offices(name, description)')
+        .eq('id', stepId)
+        .single();
+    return ClearanceStep.fromJson(data);
+  }
 }
