@@ -34,4 +34,25 @@ class UserProfileRepository {
         .update({ 'account_status': status })
         .eq('id', userId);
   }
+  
+  // Get clearance_last_visited for the current user
+  Future<DateTime?> getClearanceLastVisited(String userId) async {
+    try {
+      final data = await supabase
+          .from('user_profiles')
+          .select('clearance_last_visited')
+          .eq('id', userId)
+          .single();
+      
+      final raw = data['clearance_last_visited'];
+      return raw != null ? DateTime.parse(raw) : null;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  // Calls the DB function — updates clearance_last_visited to NOW()
+  Future<void> markClearanceVisited() async {
+    await supabase.rpc('mark_clearance_as_read');
+  }
 }

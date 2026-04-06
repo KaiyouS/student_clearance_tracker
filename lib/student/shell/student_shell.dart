@@ -59,12 +59,20 @@ class _StudentShellState extends State<StudentShell> {
       bottomNavigationBar: NavigationBar(
         selectedIndex: currentIndex,
         onDestinationSelected: (i) {
+          
+          final leavingClearance = currentIndex == 1 && i != 1;
+
+          if (leavingClearance) {
+            provider.clearChangedSteps();
+          }
+
           switch (i) {
             case 0:
               context.go('/student/home');
               break;
             case 1:
               context.go('/student/clearance');
+              context.read<StudentProvider>().markClearanceVisited();
               break;
             case 2:
               context.go('/student/profile');
@@ -79,13 +87,13 @@ class _StudentShellState extends State<StudentShell> {
           ),
           NavigationDestination(
             icon: Badge(
-              isLabelVisible: provider.flaggedSteps > 0,
-              label: Text(provider.flaggedSteps.toString()),
+              isLabelVisible: provider.unseenUpdates > 0,
+              label: Text(provider.unseenUpdates.toString()),
               child: const Icon(Icons.checklist_outlined),
             ),
             selectedIcon: Badge(
-              isLabelVisible: provider.flaggedSteps > 0,
-              label: Text(provider.flaggedSteps.toString()),
+              isLabelVisible: provider.unseenUpdates > 0,
+              label: Text(provider.unseenUpdates.toString()),
               child: const Icon(Icons.checklist),
             ),
             label: 'Clearance',

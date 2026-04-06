@@ -101,6 +101,7 @@ class _StepsList extends StatelessWidget {
                 item:       steps[i],
                 isLast:     i == steps.length - 1,
                 prevLevel:  i > 0 ? steps[i - 1].level : null,
+                wasChanged: context.watch<StudentProvider>().wasStepChanged(steps[i].step.id),
               ),
               childCount: steps.length,
             ),
@@ -116,11 +117,13 @@ class _StepCard extends StatelessWidget {
   final StepWithInfo item;
   final bool         isLast;
   final int?         prevLevel;
+  final bool         wasChanged;
 
   const _StepCard({
     required this.item,
     required this.isLast,
     required this.prevLevel,
+    required this.wasChanged,
   });
 
   @override
@@ -210,10 +213,28 @@ class _StepCard extends StatelessWidget {
                             step.officeName ?? '—',
                             style: const TextStyle(
                               fontWeight: FontWeight.w600,
-                              fontSize:   14,
+                              fontSize: 14,
                             ),
                           ),
                         ),
+                        if (wasChanged)
+                          Container(
+                            margin: const EdgeInsets.only(right: 8),
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                            decoration: BoxDecoration(
+                              color: AppTheme.primary.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: AppTheme.primary.withValues(alpha: 0.4)),
+                            ),
+                            child: const Text(
+                              'Updated',
+                              style: TextStyle(
+                                color: AppTheme.primary,
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
                         _StatusBadge(status: step.status),
                       ],
                     ),

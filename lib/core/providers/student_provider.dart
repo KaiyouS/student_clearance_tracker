@@ -77,6 +77,7 @@ class StudentProvider extends ChangeNotifier {
       _isLoading = true;
       _error = null;
     });
+
     try {
       final results = await Future.wait([
         _profileRepo.getById(userId),
@@ -94,6 +95,7 @@ class StudentProvider extends ChangeNotifier {
         _steps = await _clearanceRepo.getByStudent(userId, _currentPeriod!.id);
       }
 
+      await _computeUnseenUpdates(userId);
       _stepsWithInfo = _computeStepsWithInfo(_steps, _prereqMap);
       _subscribeToChanges(userId);
 
@@ -107,6 +109,51 @@ class StudentProvider extends ChangeNotifier {
   }
 
   // ── Realtime ──────────────────────────────────────────────
+  int _unseenUpdates = 0;
+  int get unseenUpdates => _unseenUpdates;
+
+  // Called when clearance tab is tapped
+  Future<void> markClearanceVisited() async {
+    await _profileRepo.markClearanceVisited();
+    _lastVisitedAt = DateTime.now().toUtc();
+    _unseenUpdates = 0;
+    notifyListeners();
+  }
+
+  void clearChangedSteps() {
+    _changedStepIds.clear();
+    notifyListeners();
+  }
+
+  DateTime? _lastVisitedAt;
+  final Set<int> _changedStepIds = <int>{};
+  bool wasStepChanged(int stepId) => _changedStepIds.contains(stepId);
+  
+  Future<void> _computeUnseenUpdates(String userId) async {
+    try {
+      _lastVisitedAt = await _profileRepo.getClearanceLastVisited(userId);
+
+      if (_lastVisitedAt == null) {
+        _changedStepIds.clear();
+        _unseenUpdates = 0;
+        return;
+      }
+
+      _changedStepIds
+        ..clear()
+        ..addAll(
+          _steps
+              .where((s) => s.updatedAt != null && s.updatedAt!.isAfter(_lastVisitedAt!))
+              .map((s) => s.id),
+        );
+
+      _unseenUpdates = _changedStepIds.length;
+    } catch (_) {
+      _changedStepIds.clear();
+      _unseenUpdates = 0;
+    }
+  }
+
   void _subscribeToChanges(String userId) {
     // Remove existing subscription if any
     if (_channel != null) {
@@ -128,33 +175,37 @@ class StudentProvider extends ChangeNotifier {
         )
         .subscribe();
   }
-
-  void _handleStepUpdate(PostgresChangePayload payload, String userId) {
+  
+  // TODO: don't increment if user is already on the clearance screen
+  void _handleStepUpdate(PostgresChangePayload payload, String userId) async {
     final newRecord = payload.newRecord;
-    final stepId = newRecord['id'] as int;
-    final newStatus = newRecord['status'] as String;
 
-    // Only notify on signed or flagged
-    if (newStatus != 'signed' && newStatus != 'flagged') return;
+    final stepId = newRecord['id'] as int?;
+    final newStatus = newRecord['status'] as String?;
 
-    // Find office name from current steps
-    final idx = _steps.indexWhere((s) => s.id == stepId);
-    final officeName = idx != -1
-        ? (_steps[idx].officeName ?? 'An office')
-        : 'An office';
+    if (stepId == null || newStatus == null) return;
 
-    // In-app notification (for web banner)
-    _notifications.add(
-      InAppNotification(officeName: officeName, status: newStatus),
-    );
+    // Optional in-app banner: only for meaningful status changes
+    if (newStatus == 'signed' || newStatus == 'flagged') {
+      final idx = _steps.indexWhere((s) => s.id == stepId);
+      final officeName = idx != -1 ? (_steps[idx].officeName ?? 'An office') : 'An office';
 
-    // Reload steps
+      _notifications.add(
+        InAppNotification(
+          officeName: officeName,
+          status: newStatus,
+        ),
+      );
+    }
+
+    // Refresh full step list so the clearance cards update immediately
     if (_currentPeriod != null) {
-      _clearanceRepo.getByStudent(userId, _currentPeriod!.id).then((steps) {
-        _steps = steps;
-        _stepsWithInfo = _computeStepsWithInfo(steps, _prereqMap);
-        notifyListeners();
-      });
+      final steps = await _clearanceRepo.getByStudent(userId, _currentPeriod!.id);
+      _steps = steps;
+      _stepsWithInfo = _computeStepsWithInfo(steps, _prereqMap);
+
+      // Recompute unseen count from last visited timestamp
+      await _computeUnseenUpdates(userId);
     }
 
     notifyListeners();
@@ -239,6 +290,16 @@ class StudentProvider extends ChangeNotifier {
     });
 
     return result;
+  }
+  
+  StepWithInfo? get nextActionableStep {
+    try {
+      return _stepsWithInfo.firstWhere(
+        (s) => s.step.isPending && !s.isBlocked,
+      );
+    } catch (_) {
+      return null;
+    }
   }
 
   void setState(VoidCallback fn) {

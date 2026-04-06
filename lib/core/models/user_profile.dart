@@ -6,6 +6,7 @@ class UserProfile {
   final String  fullName;
   final String  accountStatus;
   final bool    needsPasswordChange;
+  final DateTime? clearanceLastVisited; 
 
   const UserProfile({
     required this.id,
@@ -15,6 +16,7 @@ class UserProfile {
     required this.fullName,
     required this.accountStatus,
     required this.needsPasswordChange,
+    this.clearanceLastVisited,
   });
 
   factory UserProfile.fromJson(Map<String, dynamic> json) {
@@ -26,6 +28,9 @@ class UserProfile {
       fullName:             json['full_name'],
       accountStatus:        json['account_status'],
       needsPasswordChange:  json['needs_password_change'] ?? false,
+      clearanceLastVisited: json['clearance_last_visited'] != null
+                              ? DateTime.parse(json['clearance_last_visited'])
+                              : null,
     );
   }
 
