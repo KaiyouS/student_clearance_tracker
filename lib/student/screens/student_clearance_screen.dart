@@ -4,6 +4,7 @@ import '../../core/models/step_with_info.dart';
 import '../../core/providers/student_provider.dart';
 import '../../core/theme/app_theme.dart';
 import '../../main.dart';
+import 'step_detail_screen.dart';
 
 class StudentClearanceScreen extends StatelessWidget {
   const StudentClearanceScreen({super.key});
@@ -97,11 +98,20 @@ class _StepsList extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
           sliver: SliverList(
             delegate: SliverChildBuilderDelegate(
-              (context, i) => _StepCard(
-                item:       steps[i],
-                isLast:     i == steps.length - 1,
-                prevLevel:  i > 0 ? steps[i - 1].level : null,
-                wasChanged: context.watch<StudentProvider>().wasStepChanged(steps[i].step.id),
+              (context, i) => GestureDetector(
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => StepDetailScreen(
+                      stepWithInfo: steps[i],
+                    ),
+                  ),
+                ),
+                child: _StepCard(
+                  item:      steps[i],
+                  isLast:    i == steps.length - 1,
+                  prevLevel: i > 0 ? steps[i - 1].level : null,
+                  wasChanged: context.watch<StudentProvider>().wasStepChanged(steps[i].step.id),
+                ),
               ),
               childCount: steps.length,
             ),
@@ -217,6 +227,7 @@ class _StepCard extends StatelessWidget {
                             ),
                           ),
                         ),
+                        SizedBox(width: 8),
                         if (wasChanged)
                           Container(
                             margin: const EdgeInsets.only(right: 8),
@@ -391,6 +402,11 @@ class _DetailRow extends StatelessWidget {
               color:    color,
             ),
           ),
+        ),
+        Icon(
+          Icons.chevron_right,
+          size:  16,
+          color: AppTheme.textSecondaryOf(context),   // ← add this
         ),
       ],
     );
