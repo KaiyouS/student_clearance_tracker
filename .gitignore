@@ -46,3 +46,5 @@ app.*.map.json
 
 # Supabase secrets
 lib/supabase_config.dart
+
+.vscode/
