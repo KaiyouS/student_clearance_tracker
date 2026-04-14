@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:provider/provider.dart';
 import '../../core/models/step_with_info.dart';
 import '../../core/providers/student_provider.dart';
-import '../../core/theme/app_theme.dart';
 import '../../main.dart';
 import 'step_detail_screen.dart';
 
@@ -18,8 +18,7 @@ class StudentClearanceScreen extends StatelessWidget {
     }
 
     return RefreshIndicator(
-      onRefresh: () =>
-          provider.loadData(supabase.auth.currentUser!.id),
+      onRefresh: () => provider.loadData(supabase.auth.currentUser!.id),
       child: provider.steps.isEmpty
           ? const _EmptySteps()
           : _StepsList(steps: provider.steps),
@@ -43,11 +42,10 @@ class _EmptySteps extends StatelessWidget {
             children: [
               Icon(
                 Icons.checklist_outlined,
-                size:  64,
-                color: Theme.of(context)
-                    .colorScheme
-                    .onSurface
-                    .withValues(alpha: 0.2),
+                size: 64,
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.2),
               ),
               const SizedBox(height: 16),
               Text(
@@ -58,10 +56,9 @@ class _EmptySteps extends StatelessWidget {
               Text(
                 'Pull down to refresh.',
                 style: TextStyle(
-                  color: Theme.of(context)
-                      .colorScheme
-                      .onSurface
-                      .withValues(alpha: 0.5),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.5),
                   fontSize: 13,
                 ),
               ),
@@ -88,9 +85,9 @@ class _StepsList extends StatelessWidget {
           sliver: SliverToBoxAdapter(
             child: Text(
               'Clearance Steps',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
             ),
           ),
         ),
@@ -101,16 +98,16 @@ class _StepsList extends StatelessWidget {
               (context, i) => GestureDetector(
                 onTap: () => Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (_) => StepDetailScreen(
-                      stepWithInfo: steps[i],
-                    ),
+                    builder: (_) => StepDetailScreen(stepWithInfo: steps[i]),
                   ),
                 ),
                 child: _StepCard(
-                  item:      steps[i],
-                  isLast:    i == steps.length - 1,
+                  item: steps[i],
+                  isLast: i == steps.length - 1,
                   prevLevel: i > 0 ? steps[i - 1].level : null,
-                  wasChanged: context.watch<StudentProvider>().wasStepChanged(steps[i].step.id),
+                  wasChanged: context.watch<StudentProvider>().wasStepChanged(
+                    steps[i].step.id,
+                  ),
                 ),
               ),
               childCount: steps.length,
@@ -125,9 +122,9 @@ class _StepsList extends StatelessWidget {
 // ── Individual step card ──────────────────────────────────────
 class _StepCard extends StatelessWidget {
   final StepWithInfo item;
-  final bool         isLast;
-  final int?         prevLevel;
-  final bool         wasChanged;
+  final bool isLast;
+  final int? prevLevel;
+  final bool wasChanged;
 
   const _StepCard({
     required this.item,
@@ -138,12 +135,12 @@ class _StepCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final step        = item.step;
-    final isDark      = Theme.of(context).brightness == Brightness.dark;
-    final isNewLevel  = prevLevel != null && item.level != prevLevel;
+    final step = item.step;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isNewLevel = prevLevel != null && item.level != prevLevel;
 
     // Status colors
-    final statusColor = AppTheme.statusColor(step.status);
+    final statusColor = AppColors.statusColorFromString(context, step.status);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -155,19 +152,19 @@ class _StepCard extends StatelessWidget {
             padding: const EdgeInsets.only(bottom: 8),
             child: Row(
               children: [
-                const Icon(
+                Icon(
                   Icons.arrow_downward,
-                  size:  14,
-                  color: AppTheme.textSecondary,
+                  size: 14,
+                  color: AppColors.of(context).neutral,
                 ),
                 const SizedBox(width: 4),
                 Text(
                   'Requires above steps',
                   style: TextStyle(
                     fontSize: 11,
-                    color:    isDark
-                        ? AppTheme.darkTextSecondary
-                        : AppTheme.textSecondary,
+                    color: isDark
+                        ? AppColors.of(context).neutral
+                        : AppColors.of(context).neutral,
                     fontStyle: FontStyle.italic,
                   ),
                 ),
@@ -186,9 +183,11 @@ class _StepCard extends StatelessWidget {
                 _StatusCircle(status: step.status),
                 if (!isLast)
                   Container(
-                    width:  2,
+                    width: 2,
                     height: 60,
-                    color:  (isDark ? AppTheme.darkBorder : AppTheme.border),
+                    color: (isDark
+                        ? AppColors.of(context).border
+                        : AppColors.of(context).border),
                   ),
               ],
             ),
@@ -200,16 +199,18 @@ class _StepCard extends StatelessWidget {
                 margin: const EdgeInsets.only(bottom: 8),
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color:        isDark
-                      ? AppTheme.darkSurface
-                      : AppTheme.surface,
+                  color: isDark
+                      ? Theme.of(context).colorScheme.surface
+                      : Theme.of(context).colorScheme.surface,
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
                     color: step.status == 'flagged'
-                        ? AppTheme.statusFlagged.withValues(alpha: 0.5)
+                        ? AppColors.of(
+                            context,
+                          ).statusFlagged.withValues(alpha: 0.5)
                         : isDark
-                            ? AppTheme.darkBorder
-                            : AppTheme.border,
+                        ? AppColors.of(context).border
+                        : AppColors.of(context).border,
                   ),
                 ),
                 child: Column(
@@ -221,7 +222,7 @@ class _StepCard extends StatelessWidget {
                         Expanded(
                           child: Text(
                             step.officeName ?? '—',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontWeight: FontWeight.w600,
                               fontSize: 14,
                             ),
@@ -231,16 +232,25 @@ class _StepCard extends StatelessWidget {
                         if (wasChanged)
                           Container(
                             margin: const EdgeInsets.only(right: 8),
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                            decoration: BoxDecoration(
-                              color: AppTheme.primary.withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: AppTheme.primary.withValues(alpha: 0.4)),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 3,
                             ),
-                            child: const Text(
+                            decoration: BoxDecoration(
+                              color: AppColors.of(
+                                context,
+                              ).info.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: AppColors.of(
+                                  context,
+                                ).info.withValues(alpha: 0.4),
+                              ),
+                            ),
+                            child: Text(
                               'Updated',
                               style: TextStyle(
-                                color: AppTheme.primary,
+                                color: AppColors.of(context).info,
                                 fontSize: 11,
                                 fontWeight: FontWeight.w600,
                               ),
@@ -264,15 +274,15 @@ class _StepCard extends StatelessWidget {
   }
 
   List<Widget> _buildDetails(BuildContext context, bool isDark) {
-    final step    = item.step;
+    final step = item.step;
     final details = <Widget>[];
 
     if (step.isSigned) {
       details.add(
         _DetailRow(
-          icon:  Icons.check_circle_outline,
-          color: AppTheme.statusSigned,
-          text:  step.updatedAt != null
+          icon: Icons.check_circle_outline,
+          color: AppColors.of(context).statusSigned,
+          text: step.updatedAt != null
               ? 'Signed on ${_formatDate(step.updatedAt!)}'
               : 'Signed',
         ),
@@ -280,9 +290,9 @@ class _StepCard extends StatelessWidget {
     } else if (step.isFlagged) {
       details.add(
         _DetailRow(
-          icon:  Icons.flag_outlined,
-          color: AppTheme.statusFlagged,
-          text:  step.remarks != null
+          icon: Icons.flag_outlined,
+          color: AppColors.of(context).statusFlagged,
+          text: step.remarks != null
               ? 'Flagged: ${step.remarks}'
               : 'This step has been flagged.',
         ),
@@ -291,18 +301,18 @@ class _StepCard extends StatelessWidget {
       // Blocked by prerequisites
       details.add(
         _DetailRow(
-          icon:  Icons.lock_outline,
-          color: AppTheme.warning,
-          text:  'Waiting for: ${item.waitingFor.join(', ')}',
+          icon: Icons.lock_outline,
+          color: AppColors.of(context).warning,
+          text: 'Waiting for: ${item.waitingFor.join(', ')}',
         ),
       );
     } else {
       // Pending and can be signed
       details.add(
         _DetailRow(
-          icon:  Icons.pending_outlined,
-          color: AppTheme.statusPending,
-          text:  'Visit this office to get your clearance signed.',
+          icon: Icons.pending_outlined,
+          color: AppColors.of(context).statusPending,
+          text: 'Visit this office to get your clearance signed.',
         ),
       );
     }
@@ -312,8 +322,18 @@ class _StepCard extends StatelessWidget {
 
   String _formatDate(DateTime dt) {
     const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     return '${months[dt.month - 1]} ${dt.day}, ${dt.year}';
   }
@@ -326,19 +346,19 @@ class _StatusCircle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = AppTheme.statusColor(status);
-    final icon  = switch (status) {
-      'signed'  => Icons.check,
+    final color = AppColors.statusColorFromString(context, status);
+    final icon = switch (status) {
+      'signed' => Icons.check,
       'flagged' => Icons.flag,
-      _         => Icons.circle_outlined,
+      _ => Icons.circle_outlined,
     };
 
     return Container(
-      width:  28,
+      width: 28,
       height: 28,
       decoration: BoxDecoration(
-        color:  color.withValues(alpha: 0.15),
-        shape:  BoxShape.circle,
+        color: color.withValues(alpha: 0.15),
+        shape: BoxShape.circle,
         border: Border.all(color: color, width: 2),
       ),
       child: Icon(icon, size: 14, color: color),
@@ -353,21 +373,21 @@ class _StatusBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = AppTheme.statusColor(status);
+    final color = AppColors.statusColorFromString(context, status);
     final label = status[0].toUpperCase() + status.substring(1);
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
-        color:        color.withValues(alpha: 0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
-        border:       Border.all(color: color.withValues(alpha: 0.4)),
+        border: Border.all(color: color.withValues(alpha: 0.4)),
       ),
       child: Text(
         label,
         style: TextStyle(
-          color:      color,
-          fontSize:   11,
+          color: color,
+          fontSize: 11,
           fontWeight: FontWeight.w600,
         ),
       ),
@@ -378,8 +398,8 @@ class _StatusBadge extends StatelessWidget {
 // ── Detail row ────────────────────────────────────────────────
 class _DetailRow extends StatelessWidget {
   final IconData icon;
-  final Color    color;
-  final String   text;
+  final Color color;
+  final String text;
 
   const _DetailRow({
     required this.icon,
@@ -395,18 +415,14 @@ class _DetailRow extends StatelessWidget {
         Icon(icon, size: 14, color: color),
         const SizedBox(width: 6),
         Expanded(
-          child: Text(
-            text,
-            style: TextStyle(
-              fontSize: 12,
-              color:    color,
-            ),
-          ),
+          child: Text(text, style: TextStyle(fontSize: 12, color: color)),
         ),
         Icon(
           Icons.chevron_right,
-          size:  16,
-          color: AppTheme.textSecondaryOf(context),   // ← add this
+          size: 16,
+          color: Theme.of(
+            context,
+          ).colorScheme.onSurface.withValues(alpha: 0.65), // ← add this
         ),
       ],
     );

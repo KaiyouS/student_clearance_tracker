@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../main.dart';
 import '../repositories/user_profile_repository.dart';
 import '../services/auth_service.dart';
-import '../theme/app_theme.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
   const ChangePasswordScreen({super.key});
@@ -14,15 +14,15 @@ class ChangePasswordScreen extends StatefulWidget {
 }
 
 class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
-  final _formKey               = GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>();
   final _newPasswordController = TextEditingController();
-  final _confirmController     = TextEditingController();
-  final _profileRepo           = UserProfileRepository();
-  final _authService           = AuthService();
+  final _confirmController = TextEditingController();
+  final _profileRepo = UserProfileRepository();
+  final _authService = AuthService();
 
-  bool    _isLoading       = false;
-  bool    _obscureNew      = true;
-  bool    _obscureConfirm  = true;
+  bool _isLoading = false;
+  bool _obscureNew = true;
+  bool _obscureConfirm = true;
   String? _errorMessage;
 
   @override
@@ -35,7 +35,10 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   Future<void> _handleSubmit() async {
     if (!_formKey.currentState!.validate()) return;
 
-    setState(() { _isLoading = true; _errorMessage = null; });
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
 
     try {
       final user = supabase.auth.currentUser;
@@ -65,7 +68,6 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       } else {
         context.go('/login');
       }
-
     } on AuthException catch (e) {
       setState(() => _errorMessage = e.message);
     } catch (e) {
@@ -78,19 +80,19 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.background,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       body: Center(
         child: Container(
           width: 440,
           padding: const EdgeInsets.all(40),
           decoration: BoxDecoration(
-            color: AppTheme.surface,
+            color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
-                color:      Colors.black.withValues(alpha: 0.08),
+                color: Colors.black.withValues(alpha: 0.08),
                 blurRadius: 24,
-                offset:     const Offset(0, 4),
+                offset: const Offset(0, 4),
               ),
             ],
           ),
@@ -102,49 +104,49 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
               children: [
                 // Icon
                 Container(
-                  width:  56,
+                  width: 56,
                   height: 56,
                   decoration: BoxDecoration(
-                    color:        AppTheme.primary.withValues(alpha: 0.1),
+                    color: AppColors.of(context).info.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.lock_reset_outlined,
-                    color: AppTheme.primary,
+                    color: AppColors.of(context).info,
                     size: 28,
                   ),
                 ),
                 const SizedBox(height: 24),
 
                 // Title
-                const Text(
+                Text(
                   'Set a New Password',
                   style: TextStyle(
-                    fontSize:   24,
+                    fontSize: 24,
                     fontWeight: FontWeight.bold,
-                    color:      AppTheme.textPrimary,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
                 const SizedBox(height: 8),
-                const Text(
+                Text(
                   'Your account requires a password change before you '
                   'can continue. Choose a strong password you haven\'t '
                   'used before.',
                   style: TextStyle(
-                    color:    AppTheme.textSecondary,
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
                     fontSize: 14,
-                    height:   1.5,
+                    height: 1.5,
                   ),
                 ),
                 const SizedBox(height: 32),
 
                 // New password
                 TextFormField(
-                  controller:   _newPasswordController,
-                  obscureText:  _obscureNew,
+                  controller: _newPasswordController,
+                  obscureText: _obscureNew,
                   decoration: InputDecoration(
                     labelText: 'New Password',
-                    prefixIcon: const Icon(Icons.lock_outlined),
+                    prefixIcon: Icon(Icons.lock_outlined),
                     suffixIcon: IconButton(
                       icon: Icon(
                         _obscureNew
@@ -169,11 +171,11 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
                 // Confirm password
                 TextFormField(
-                  controller:  _confirmController,
+                  controller: _confirmController,
                   obscureText: _obscureConfirm,
                   decoration: InputDecoration(
-                    labelText:  'Confirm Password',
-                    prefixIcon: const Icon(Icons.lock_outlined),
+                    labelText: 'Confirm Password',
+                    prefixIcon: Icon(Icons.lock_outlined),
                     suffixIcon: IconButton(
                       icon: Icon(
                         _obscureConfirm
@@ -203,8 +205,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     padding: const EdgeInsets.only(bottom: 8),
                     child: Text(
                       _errorMessage!,
-                      style: const TextStyle(
-                        color:    AppTheme.danger,
+                      style: TextStyle(
+                        color: AppColors.of(context).danger,
                         fontSize: 13,
                       ),
                       textAlign: TextAlign.center,
@@ -217,15 +219,15 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 ElevatedButton(
                   onPressed: _isLoading ? null : _handleSubmit,
                   child: _isLoading
-                      ? const SizedBox(
-                          width:  20,
+                      ? SizedBox(
+                          width: 20,
                           height: 20,
-                          child:  CircularProgressIndicator(
-                            color:       AppTheme.surface,
+                          child: CircularProgressIndicator(
+                            color: Theme.of(context).colorScheme.surface,
                             strokeWidth: 2,
                           ),
                         )
-                      : const Text('Set Password & Continue'),
+                      : Text('Set Password & Continue'),
                 ),
 
                 const SizedBox(height: 16),
@@ -237,10 +239,10 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                       await AuthService().signOut();
                       if (context.mounted) context.go('/login');
                     },
-                    child: const Text(
+                    child: Text(
                       'Sign out',
                       style: TextStyle(
-                        color:    AppTheme.textSecondary,
+                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
                         fontSize: 13,
                       ),
                     ),

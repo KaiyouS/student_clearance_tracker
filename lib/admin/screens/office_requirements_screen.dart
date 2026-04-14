@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import '../../core/models/office.dart';
 import '../../core/models/program.dart';
 import '../../core/models/school.dart';
 import '../../core/repositories/office_repository.dart';
 import '../../core/repositories/program_repository.dart';
 import '../../core/repositories/school_repository.dart';
-import '../../core/theme/app_theme.dart';
 import '../../core/widgets/app_card.dart';
 
 class OfficeRequirementsScreen extends StatefulWidget {
@@ -16,21 +16,20 @@ class OfficeRequirementsScreen extends StatefulWidget {
       _OfficeRequirementsScreenState();
 }
 
-class _OfficeRequirementsScreenState
-    extends State<OfficeRequirementsScreen> {
-  final _officeRepo  = OfficeRepository();
+class _OfficeRequirementsScreenState extends State<OfficeRequirementsScreen> {
+  final _officeRepo = OfficeRepository();
   final _programRepo = ProgramRepository();
-  final _schoolRepo  = SchoolRepository();
+  final _schoolRepo = SchoolRepository();
 
-  List<Office>          _offices          = [];
-  List<Program>         _allPrograms      = [];
-  List<School>          _schools          = [];
-  Map<int, List<int?>>  _requirements     = {};
-  Office?               _selected;
+  List<Office> _offices = [];
+  List<Program> _allPrograms = [];
+  List<School> _schools = [];
+  Map<int, List<int?>> _requirements = {};
+  Office? _selected;
 
-  bool    _loadingOffices  = true;
-  bool    _loadingPrograms = true;
-  bool    _isSaving        = false;
+  bool _loadingOffices = true;
+  bool _loadingPrograms = true;
+  bool _isSaving = false;
   String? _error;
 
   // Whether the selected office has "applies to all" set
@@ -54,7 +53,10 @@ class _OfficeRequirementsScreenState
   }
 
   Future<void> _load() async {
-    setState(() { _loadingOffices = true; _error = null; });
+    setState(() {
+      _loadingOffices = true;
+      _error = null;
+    });
     try {
       final results = await Future.wait([
         _officeRepo.getAll(),
@@ -64,11 +66,11 @@ class _OfficeRequirementsScreenState
       ]);
 
       setState(() {
-        _offices      = results[0] as List<Office>;
-        _allPrograms  = results[1] as List<Program>;
-        _schools      = results[2] as List<School>;
+        _offices = results[0] as List<Office>;
+        _allPrograms = results[1] as List<Program>;
+        _schools = results[2] as List<School>;
         _requirements = results[3] as Map<int, List<int?>>;
-        _loadingOffices  = false;
+        _loadingOffices = false;
         _loadingPrograms = false;
 
         if (_selected != null) {
@@ -79,7 +81,10 @@ class _OfficeRequirementsScreenState
         }
       });
     } catch (e) {
-      setState(() { _error = e.toString(); _loadingOffices = false; });
+      setState(() {
+        _error = e.toString();
+        _loadingOffices = false;
+      });
     }
   }
 
@@ -125,7 +130,7 @@ class _OfficeRequirementsScreenState
   void _showError(String msg) {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(msg), backgroundColor: AppTheme.danger),
+      SnackBar(content: Text(msg), backgroundColor: AppColors.of(context).danger),
     );
   }
 
@@ -141,9 +146,9 @@ class _OfficeRequirementsScreenState
 
   Color _requirementColor(Office office) {
     final reqs = _requirements[office.id] ?? [];
-    if (reqs.isEmpty) return AppTheme.textSecondary;
-    if (reqs.contains(null)) return AppTheme.statusSigned;
-    return AppTheme.primary;
+    if (reqs.isEmpty) return AppColors.of(context).neutral;
+    if (reqs.contains(null)) return AppColors.of(context).statusSigned;
+    return AppColors.of(context).info;
   }
 
   // Programs grouped by school for the right panel
@@ -163,26 +168,26 @@ class _OfficeRequirementsScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.background,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       body: Padding(
         padding: const EdgeInsets.all(32),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Office Requirements',
               style: TextStyle(
-                fontSize:   28,
+                fontSize: 28,
                 fontWeight: FontWeight.bold,
-                color:      AppTheme.textPrimary,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ),
             const SizedBox(height: 4),
-            const Text(
+            Text(
               'Define which programs each office applies to when '
               'generating student clearance.',
               style: TextStyle(
-                color:    AppTheme.textSecondary,
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
                 fontSize: 14,
               ),
             ),
@@ -203,9 +208,9 @@ class _OfficeRequirementsScreenState
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(_error!, style: const TextStyle(color: AppTheme.danger)),
+            Text(_error!, style: TextStyle(color: AppColors.of(context).danger)),
             const SizedBox(height: 8),
-            ElevatedButton(onPressed: _load, child: const Text('Retry')),
+            ElevatedButton(onPressed: _load, child: Text('Retry')),
           ],
         ),
       );
@@ -222,41 +227,45 @@ class _OfficeRequirementsScreenState
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Padding(
+                Padding(
                   padding: EdgeInsets.fromLTRB(16, 14, 16, 10),
                   child: Text(
                     'Offices',
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
-                      fontSize:   14,
-                      color:      AppTheme.textPrimary,
+                      fontSize: 14,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                 ),
-                const Divider(height: 1, color: AppTheme.border),
+                Divider(height: 1, color: AppColors.of(context).border),
                 Expanded(
                   child: ListView.separated(
                     itemCount: _offices.length,
-                    separatorBuilder: (_, _) =>
-                        const Divider(height: 1, color: AppTheme.border),
+                    separatorBuilder: (_, _) => Divider(
+                      height: 1,
+                      color: AppColors.of(context).border,
+                    ),
                     itemBuilder: (context, i) {
-                      final office     = _offices[i];
+                      final office = _offices[i];
                       final isSelected = _selected?.id == office.id;
-                      final summary    = _requirementSummary(office);
-                      final color      = _requirementColor(office);
+                      final summary = _requirementSummary(office);
+                      final color = _requirementColor(office);
 
                       return ListTile(
-                        selected:          isSelected,
-                        selectedColor:     AppTheme.primary,
-                        selectedTileColor:
-                            AppTheme.primary.withValues(alpha: 0.08),
+                        selected: isSelected,
+                        selectedColor: AppColors.of(context).info,
+                        selectedTileColor: AppColors.of(context).info.withValues(
+                          alpha: 0.08,
+                        ),
                         title: Text(
                           office.name,
-                          style: const TextStyle(fontSize: 13),
+                          style: TextStyle(fontSize: 13),
                         ),
                         trailing: Container(
                           padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 2,
+                            horizontal: 8,
+                            vertical: 2,
                           ),
                           decoration: BoxDecoration(
                             color: color.withValues(alpha: 0.1),
@@ -265,8 +274,8 @@ class _OfficeRequirementsScreenState
                           child: Text(
                             summary,
                             style: TextStyle(
-                              fontSize:   11,
-                              color:      color,
+                              fontSize: 11,
+                              color: color,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
@@ -286,11 +295,13 @@ class _OfficeRequirementsScreenState
         // Right — requirements for selected office
         Expanded(
           child: _selected == null
-              ? const AppCard(
+              ? AppCard(
                   child: Center(
                     child: Text(
                       'Select an office to manage its requirements.',
-                      style: TextStyle(color: AppTheme.textSecondary),
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
+                      ),
                     ),
                   ),
                 )
@@ -314,10 +325,10 @@ class _OfficeRequirementsScreenState
                   children: [
                     Text(
                       office.name,
-                      style: const TextStyle(
-                        fontSize:   18,
+                      style: TextStyle(
+                        fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color:      AppTheme.textPrimary,
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -325,11 +336,11 @@ class _OfficeRequirementsScreenState
                       _appliesToAll
                           ? 'Required for all graduating students.'
                           : _assignedProgramIds.isEmpty
-                              ? 'Not assigned to any program yet.'
-                              : 'Required for ${_assignedProgramIds.length} '
+                          ? 'Not assigned to any program yet.'
+                          : 'Required for ${_assignedProgramIds.length} '
                                 'program${_assignedProgramIds.length != 1 ? 's' : ''}.',
-                      style: const TextStyle(
-                        color:    AppTheme.textSecondary,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
                         fontSize: 13,
                       ),
                     ),
@@ -338,14 +349,15 @@ class _OfficeRequirementsScreenState
               ),
               if (_isSaving)
                 const SizedBox(
-                  width: 20, height: 20,
+                  width: 20,
+                  height: 20,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 ),
             ],
           ),
 
           const SizedBox(height: 16),
-          const Divider(color: AppTheme.border),
+          Divider(color: AppColors.of(context).border),
           const SizedBox(height: 8),
 
           // "Applies to all" toggle
@@ -353,24 +365,24 @@ class _OfficeRequirementsScreenState
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: _appliesToAll
-                  ? AppTheme.statusSigned.withValues(alpha: 0.06)
-                  : AppTheme.background,
+                  ? AppColors.of(context).statusSigned.withValues(alpha: 0.06)
+                  : Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
                 color: _appliesToAll
-                    ? AppTheme.statusSigned.withValues(alpha: 0.3)
-                    : AppTheme.border,
+                    ? AppColors.of(context).statusSigned.withValues(alpha: 0.3)
+                    : AppColors.of(context).border,
               ),
             ),
             child: Row(
               children: [
-                const Icon(
+                Icon(
                   Icons.people_outlined,
-                  size:  20,
-                  color: AppTheme.textSecondary,
+                  size: 20,
+                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
                 ),
                 const SizedBox(width: 12),
-                const Expanded(
+                Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -378,7 +390,7 @@ class _OfficeRequirementsScreenState
                         'Applies to all students',
                         style: TextStyle(
                           fontWeight: FontWeight.w500,
-                          color:      AppTheme.textPrimary,
+                          color: Theme.of(context).colorScheme.onSurface,
                         ),
                       ),
                       Text(
@@ -386,16 +398,16 @@ class _OfficeRequirementsScreenState
                         'regardless of program.',
                         style: TextStyle(
                           fontSize: 12,
-                          color:    AppTheme.textSecondary,
+                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
                         ),
                       ),
                     ],
                   ),
                 ),
                 Switch(
-                  value:      _appliesToAll,
-                  activeThumbColor: AppTheme.primary,
-                  onChanged:   _isSaving ? null : _toggleAppliesToAll,
+                  value: _appliesToAll,
+                  activeThumbColor: AppColors.of(context).info,
+                  onChanged: _isSaving ? null : _toggleAppliesToAll,
                 ),
               ],
             ),
@@ -404,21 +416,21 @@ class _OfficeRequirementsScreenState
           // Program list — only shown when not "applies to all"
           if (!_appliesToAll) ...[
             const SizedBox(height: 16),
-            const Text(
+            Text(
               'Specific Programs',
               style: TextStyle(
                 fontWeight: FontWeight.w600,
-                fontSize:   13,
-                color:      AppTheme.textPrimary,
+                fontSize: 13,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ),
             const SizedBox(height: 4),
-            const Text(
+            Text(
               'Only students enrolled in the selected programs '
               'will have this office on their clearance.',
               style: TextStyle(
                 fontSize: 12,
-                color:    AppTheme.textSecondary,
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
               ),
             ),
             const SizedBox(height: 12),
@@ -429,7 +441,7 @@ class _OfficeRequirementsScreenState
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: _programsBySchool.entries.map((entry) {
-                    final school   = entry.key;
+                    final school = entry.key;
                     final programs = entry.value;
 
                     return Column(
@@ -437,55 +449,57 @@ class _OfficeRequirementsScreenState
                       children: [
                         // School header
                         Padding(
-                          padding:
-                              const EdgeInsets.only(top: 12, bottom: 4),
+                          padding: const EdgeInsets.only(top: 12, bottom: 4),
                           child: Text(
                             school.name,
-                            style: const TextStyle(
-                              fontSize:   12,
+                            style: TextStyle(
+                              fontSize: 12,
                               fontWeight: FontWeight.w600,
-                              color:      AppTheme.textSecondary,
+                              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
                               letterSpacing: 0.5,
                             ),
                           ),
                         ),
                         Container(
                           decoration: BoxDecoration(
-                            border: Border.all(color: AppTheme.border),
+                            border: Border.all(
+                              color: AppColors.of(context).border,
+                            ),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(8),
                             child: Column(
                               children: programs.asMap().entries.map((e) {
-                                final idx     = e.key;
+                                final idx = e.key;
                                 final program = e.value;
-                                final checked =
-                                    _assignedProgramIds.contains(program.id);
+                                final checked = _assignedProgramIds.contains(
+                                  program.id,
+                                );
 
                                 return Column(
                                   children: [
                                     if (idx > 0)
-                                      const Divider(
+                                      Divider(
                                         height: 1,
-                                        color: AppTheme.border,
+                                        color: AppColors.of(context).border,
                                       ),
                                     CheckboxListTile(
-                                      dense:       true,
-                                      value:       checked,
-                                      activeColor: AppTheme.primary,
+                                      dense: true,
+                                      value: checked,
+                                      activeColor: AppColors.of(context).info,
                                       title: Text(
                                         program.name,
-                                        style: const TextStyle(fontSize: 13),
+                                        style: TextStyle(fontSize: 13),
                                       ),
                                       controlAffinity:
                                           ListTileControlAffinity.leading,
                                       onChanged: _isSaving
                                           ? null
                                           : (v) => _toggleProgram(
-                                                program.id,
-                                                v ?? false,
-                                              ),
+                                              program.id,
+                                              v ?? false,
+                                            ),
                                     ),
                                   ],
                                 );

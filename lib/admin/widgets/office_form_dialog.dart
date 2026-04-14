@@ -87,7 +87,7 @@ class _OfficeFormDialogState extends State<OfficeFormDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Cancel'),
+          child: Text('Cancel'),
         ),
         ElevatedButton(
           onPressed: _submit,

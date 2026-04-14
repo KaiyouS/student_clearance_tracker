@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../core/models/office.dart';
 import '../../core/providers/staff_provider.dart';
 import '../../core/services/auth_service.dart';
-import '../../core/theme/app_theme.dart';
 import '../../main.dart';
 
 class StaffShell extends StatefulWidget {
@@ -37,28 +37,28 @@ class _StaffShellState extends State<StaffShell> {
     }
 
     return Scaffold(
-      backgroundColor: AppTheme.background,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
-        backgroundColor: AppTheme.surface,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         elevation: 0,
         title: Row(
           children: [
             // App name
-            const Text(
+            Text(
               'Clearance Tracker',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: AppTheme.primary,
+                color: AppColors.of(context).info,
               ),
             ),
             const SizedBox(width: 24),
 
             // Office selector
             if (provider.assignedOffices.isEmpty)
-              const Text(
+              Text(
                 'No offices assigned',
-                style: TextStyle(color: AppTheme.danger, fontSize: 13),
+                style: TextStyle(color: AppColors.of(context).danger, fontSize: 13),
               )
             else
               _OfficeSelector(
@@ -75,17 +75,18 @@ class _StaffShellState extends State<StaffShell> {
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
               child: Row(
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.person_outline,
                     size: 16,
-                    color: AppTheme.textSecondary,
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
                   ),
                   const SizedBox(width: 4),
                   Text(
+                    // FIXME: full name not displaying
                     provider.profile!.fullName,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 13,
-                      color: AppTheme.textSecondary,
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
                     ),
                   ),
                 ],
@@ -97,17 +98,21 @@ class _StaffShellState extends State<StaffShell> {
               await AuthService().signOut();
               if (context.mounted) context.go('/login');
             },
-            icon: const Icon(Icons.logout, size: 16, color: AppTheme.danger),
-            label: const Text(
+            icon: Icon(
+              Icons.logout,
+              size: 16,
+              color: AppColors.of(context).danger,
+            ),
+            label: Text(
               'Sign Out',
-              style: TextStyle(color: AppTheme.danger, fontSize: 13),
+              style: TextStyle(color: AppColors.of(context).danger, fontSize: 13),
             ),
           ),
           const SizedBox(width: 8),
         ],
-        bottom: const PreferredSize(
+        bottom: PreferredSize(
           preferredSize: Size.fromHeight(1),
-          child: Divider(height: 1, color: AppTheme.border),
+          child: Divider(height: 1, color: AppColors.of(context).border),
         ),
       ),
       body: widget.child,
@@ -132,22 +137,24 @@ class _OfficeSelector extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
       decoration: BoxDecoration(
-        color: AppTheme.primary.withValues(alpha: 0.08),
+        color: AppColors.of(context).info.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: AppTheme.primary.withValues(alpha: 0.3)),
+        border: Border.all(
+          color: AppColors.of(context).info.withValues(alpha: 0.3),
+        ),
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<Office>(
           value: selectedOffice,
           isDense: true,
-          icon: const Icon(
+          icon: Icon(
             Icons.keyboard_arrow_down,
             size: 16,
-            color: AppTheme.primary,
+            color: AppColors.of(context).info,
           ),
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 13,
-            color: AppTheme.primary,
+            color: AppColors.of(context).info,
             fontWeight: FontWeight.w600,
           ),
           items: offices

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import '../../core/models/clearance_step.dart';
 import '../../core/models/program.dart';
 import '../../core/models/school.dart';
@@ -6,7 +7,6 @@ import '../../core/repositories/academic_period_repository.dart';
 import '../../core/repositories/clearance_repository.dart';
 import '../../core/repositories/program_repository.dart';
 import '../../core/repositories/school_repository.dart';
-import '../../core/theme/app_theme.dart';
 import '../../core/widgets/app_card.dart';
 import '../../core/widgets/confirm_dialog.dart';
 import '../../core/widgets/status_badge.dart';
@@ -140,7 +140,7 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
           'Generate clearance steps for $name for the '
           'current period? Existing steps will not be affected.',
       confirmLabel: 'Generate',
-      confirmColor: AppTheme.primary,
+      confirmColor: AppColors.of(context).info,
     );
     if (!confirmed) return;
 
@@ -169,7 +169,7 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
           'for the current period based on their program. '
           'Existing steps will not be affected.',
       confirmLabel: 'Generate All',
-      confirmColor: AppTheme.primary,
+      confirmColor: AppColors.of(context).info,
     );
     if (!confirmed) return;
 
@@ -199,7 +199,9 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
           ? 'Reset this step back to pending?'
           : 'Override "${step.officeName}" step to $newStatus?',
       confirmLabel: isReset ? 'Reset' : 'Override',
-      confirmColor: isReset ? AppTheme.warning : AppTheme.primary,
+      confirmColor: isReset
+          ? AppColors.of(context).warning
+          : AppColors.of(context).info,
     );
     if (!confirmed) return;
 
@@ -229,7 +231,7 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Flag Step'),
+        title: Text('Flag Step'),
         content: SizedBox(
           width: 400,
           child: TextField(
@@ -246,16 +248,16 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
           TextButton(
             onPressed: () =>
                 Navigator.of(context, rootNavigator: true).pop(false),
-            child: const Text('Cancel'),
+            child: Text('Cancel'),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppTheme.danger,
+              backgroundColor: AppColors.of(context).danger,
               foregroundColor: Colors.white,
             ),
             onPressed: () =>
                 Navigator.of(context, rootNavigator: true).pop(true),
-            child: const Text('Flag'),
+            child: Text('Flag'),
           ),
         ],
       ),
@@ -286,14 +288,20 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
   void _showSuccess(String msg) {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(msg), backgroundColor: AppTheme.accent),
+      SnackBar(
+        content: Text(msg),
+        backgroundColor: AppColors.of(context).success,
+      ),
     );
   }
 
   void _showError(String msg) {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(msg), backgroundColor: AppTheme.danger),
+      SnackBar(
+        content: Text(msg),
+        backgroundColor: AppColors.of(context).danger,
+      ),
     );
   }
 
@@ -302,7 +310,7 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.background,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       body: Padding(
         padding: const EdgeInsets.all(32),
         child: Column(
@@ -315,12 +323,12 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'Clearance',
                         style: TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.bold,
-                          color: AppTheme.textPrimary,
+                          color: Theme.of(context).colorScheme.onSurface,
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -328,8 +336,10 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
                         _currentPeriodLabel != null
                             ? 'Current period: $_currentPeriodLabel'
                             : 'No active period set.',
-                        style: const TextStyle(
-                          color: AppTheme.textSecondary,
+                        style: TextStyle(
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onSurface.withValues(alpha: 0.65),
                           fontSize: 14,
                         ),
                       ),
@@ -350,10 +360,10 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
                   onPressed: (_isGenerating || _currentPeriodId == null)
                       ? null
                       : _generateForAll,
-                  icon: const Icon(Icons.auto_awesome, size: 16),
-                  label: const Text('Generate All'),
+                  icon: Icon(Icons.auto_awesome, size: 16),
+                  label: Text('Generate All'),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.accent,
+                    backgroundColor: AppColors.of(context).success,
                   ),
                 ),
               ],
@@ -377,9 +387,12 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(_error!, style: const TextStyle(color: AppTheme.danger)),
+            Text(
+              _error!,
+              style: TextStyle(color: AppColors.of(context).danger),
+            ),
             const SizedBox(height: 8),
-            ElevatedButton(onPressed: _load, child: const Text('Retry')),
+            ElevatedButton(onPressed: _load, child: Text('Retry')),
           ],
         ),
       );
@@ -397,11 +410,11 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
               children: [
                 // Stats row
                 _buildStatsRow(),
-                const Divider(height: 1, color: AppTheme.border),
+                Divider(height: 1, color: AppColors.of(context).border),
 
                 // Filters
                 _buildFilters(),
-                const Divider(height: 1, color: AppTheme.border),
+                Divider(height: 1, color: AppColors.of(context).border),
 
                 // Student list
                 Expanded(child: _buildStudentList()),
@@ -415,11 +428,15 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
         // Right panel — student detail
         Expanded(
           child: _selectedStudent == null
-              ? const AppCard(
+              ? AppCard(
                   child: Center(
                     child: Text(
                       'Select a student to view their clearance.',
-                      style: TextStyle(color: AppTheme.textSecondary),
+                      style: TextStyle(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withValues(alpha: 0.65),
+                      ),
                     ),
                   ),
                 )
@@ -447,21 +464,27 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
       padding: const EdgeInsets.all(12),
       child: Row(
         children: [
-          _MiniStat(label: 'Total', value: total, color: AppTheme.primary),
+          _MiniStat(
+            label: 'Total',
+            value: total,
+            color: AppColors.of(context).info,
+          ),
           _MiniStat(
             label: 'Complete',
             value: complete,
-            color: AppTheme.statusSigned,
+            color: AppColors.of(context).statusSigned,
           ),
           _MiniStat(
             label: 'Flagged',
             value: flagged,
-            color: AppTheme.statusFlagged,
+            color: AppColors.of(context).statusFlagged,
           ),
           _MiniStat(
             label: 'No Steps',
             value: noClearance,
-            color: AppTheme.textSecondary,
+            color: Theme.of(
+              context,
+            ).colorScheme.onSurface.withValues(alpha: 0.65),
           ),
         ],
       ),
@@ -503,16 +526,20 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
                       style: TextStyle(
                         fontSize: 12,
                         color: isSelected
-                            ? AppTheme.surface
-                            : AppTheme.textSecondary,
+                            ? Theme.of(context).colorScheme.surface
+                            : Theme.of(
+                                context,
+                              ).colorScheme.onSurface.withValues(alpha: 0.65),
                       ),
                     ),
                     selected: isSelected,
-                    selectedColor: AppTheme.primary,
-                    backgroundColor: AppTheme.background,
-                    checkmarkColor: AppTheme.surface,
+                    selectedColor: AppColors.of(context).info,
+                    backgroundColor: Theme.of(context).colorScheme.surface,
+                    checkmarkColor: Theme.of(context).colorScheme.surface,
                     side: BorderSide(
-                      color: isSelected ? AppTheme.primary : AppTheme.border,
+                      color: isSelected
+                          ? AppColors.of(context).info
+                          : AppColors.of(context).border,
                     ),
                     onSelected: (_) {
                       setState(() => _statusFilter = status);
@@ -532,10 +559,14 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
 
   Widget _buildStudentList() {
     if (_filtered.isEmpty) {
-      return const Center(
+      return Center(
         child: Text(
           'No students match filters.',
-          style: TextStyle(color: AppTheme.textSecondary),
+          style: TextStyle(
+            color: Theme.of(
+              context,
+            ).colorScheme.onSurface.withValues(alpha: 0.65),
+          ),
         ),
       );
     }
@@ -543,7 +574,7 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
     return ListView.separated(
       itemCount: _filtered.length,
       separatorBuilder: (_, _) =>
-          const Divider(height: 1, color: AppTheme.border),
+          Divider(height: 1, color: AppColors.of(context).border),
       itemBuilder: (context, i) {
         final student = _filtered[i];
         final isSelected =
@@ -561,7 +592,9 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
             _loadSteps(student['student_id']);
           },
           child: Container(
-            color: isSelected ? AppTheme.primary.withValues(alpha: 0.06) : null,
+            color: isSelected
+                ? AppColors.of(context).info.withValues(alpha: 0.06)
+                : null,
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: Row(
               children: [
@@ -578,26 +611,28 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
                                 fontWeight: FontWeight.w500,
                                 fontSize: 13,
                                 color: isSelected
-                                    ? AppTheme.primary
-                                    : AppTheme.textPrimary,
+                                    ? AppColors.of(context).info
+                                    : Theme.of(context).colorScheme.onSurface,
                               ),
                             ),
                           ),
                           if (flagged > 0)
-                            const Icon(
+                            Icon(
                               Icons.flag,
                               size: 14,
-                              color: AppTheme.statusFlagged,
+                              color: AppColors.of(context).statusFlagged,
                             ),
                         ],
                       ),
                       const SizedBox(height: 4),
                       if (noSteps)
-                        const Text(
+                        Text(
                           'No clearance generated',
                           style: TextStyle(
                             fontSize: 11,
-                            color: AppTheme.textSecondary,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withValues(alpha: 0.65),
                           ),
                         )
                       else ...[
@@ -606,11 +641,11 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
                           borderRadius: BorderRadius.circular(4),
                           child: LinearProgressIndicator(
                             value: total > 0 ? signed / total : 0,
-                            backgroundColor: AppTheme.border,
+                            backgroundColor: AppColors.of(context).border,
                             valueColor: AlwaysStoppedAnimation<Color>(
                               isComplete
-                                  ? AppTheme.statusSigned
-                                  : AppTheme.primary,
+                                  ? AppColors.of(context).statusSigned
+                                  : AppColors.of(context).info,
                             ),
                             minHeight: 4,
                           ),
@@ -618,9 +653,11 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
                         const SizedBox(height: 2),
                         Text(
                           '$signed / $total offices signed',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 11,
-                            color: AppTheme.textSecondary,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withValues(alpha: 0.65),
                           ),
                         ),
                       ],
@@ -657,10 +694,10 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
                   children: [
                     Text(
                       student['full_name'] ?? '—',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
-                        color: AppTheme.textPrimary,
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -668,8 +705,10 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
                       noSteps
                           ? 'No clearance steps generated yet.'
                           : '$signed of $total offices signed',
-                      style: const TextStyle(
-                        color: AppTheme.textSecondary,
+                      style: TextStyle(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withValues(alpha: 0.65),
                         fontSize: 13,
                       ),
                     ),
@@ -690,17 +729,17 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
                           student['student_id'],
                           student['full_name'] ?? 'Student',
                         ),
-                  icon: const Icon(Icons.auto_awesome, size: 14),
-                  label: const Text('Generate'),
+                  icon: Icon(Icons.auto_awesome, size: 14),
+                  label: Text('Generate'),
                   style: TextButton.styleFrom(
-                    foregroundColor: AppTheme.primary,
+                    foregroundColor: AppColors.of(context).info,
                   ),
                 ),
             ],
           ),
 
           const SizedBox(height: 16),
-          const Divider(color: AppTheme.border),
+          Divider(color: AppColors.of(context).border),
           const SizedBox(height: 8),
 
           // Steps list
@@ -712,15 +751,19 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.checklist_outlined,
                       size: 48,
-                      color: AppTheme.border,
+                      color: AppColors.of(context).border,
                     ),
                     const SizedBox(height: 12),
-                    const Text(
+                    Text(
                       'No clearance steps yet.',
-                      style: TextStyle(color: AppTheme.textSecondary),
+                      style: TextStyle(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withValues(alpha: 0.65),
+                      ),
                     ),
                     const SizedBox(height: 8),
                     ElevatedButton(
@@ -730,7 +773,7 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
                               student['student_id'],
                               student['full_name'] ?? 'Student',
                             ),
-                      child: const Text('Generate Clearance'),
+                      child: Text('Generate Clearance'),
                     ),
                   ],
                 ),
@@ -741,7 +784,7 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
               child: ListView.separated(
                 itemCount: _selectedSteps.length,
                 separatorBuilder: (_, _) =>
-                    const Divider(height: 1, color: AppTheme.border),
+                    Divider(height: 1, color: AppColors.of(context).border),
                 itemBuilder: (context, i) => _buildStepRow(_selectedSteps[i]),
               ),
             ),
@@ -768,9 +811,9 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
               children: [
                 Text(
                   step.officeName ?? 'Unknown Office',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontWeight: FontWeight.w500,
-                    color: AppTheme.textPrimary,
+                    color: Theme.of(context).colorScheme.onSurface,
                     fontSize: 13,
                   ),
                 ),
@@ -778,9 +821,9 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
                   const SizedBox(height: 2),
                   Text(
                     step.remarks!,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 12,
-                      color: AppTheme.statusFlagged,
+                      color: AppColors.of(context).statusFlagged,
                     ),
                   ),
                 ],
@@ -788,9 +831,11 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
                   const SizedBox(height: 2),
                   Text(
                     'Updated ${_formatDateTime(step.updatedAt!)}',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 11,
-                      color: AppTheme.textSecondary,
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withValues(alpha: 0.65),
                     ),
                   ),
                 ],
@@ -804,10 +849,12 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
 
           // Override actions
           PopupMenuButton<String>(
-            icon: const Icon(
+            icon: Icon(
               Icons.more_vert,
               size: 18,
-              color: AppTheme.textSecondary,
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.65),
             ),
             tooltip: 'Override',
             onSelected: (action) {
@@ -819,14 +866,14 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
             },
             itemBuilder: (_) => [
               if (!step.isSigned)
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: 'signed',
                   child: Row(
                     children: [
                       Icon(
                         Icons.check_circle_outline,
                         size: 16,
-                        color: AppTheme.statusSigned,
+                        color: AppColors.of(context).statusSigned,
                       ),
                       SizedBox(width: 8),
                       Text('Mark as Signed'),
@@ -834,14 +881,14 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
                   ),
                 ),
               if (!step.isFlagged)
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: 'flag',
                   child: Row(
                     children: [
                       Icon(
                         Icons.flag_outlined,
                         size: 16,
-                        color: AppTheme.statusFlagged,
+                        color: AppColors.of(context).statusFlagged,
                       ),
                       SizedBox(width: 8),
                       Text('Flag'),
@@ -849,14 +896,16 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
                   ),
                 ),
               if (!step.isPending)
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: 'pending',
                   child: Row(
                     children: [
                       Icon(
                         Icons.refresh,
                         size: 16,
-                        color: AppTheme.textSecondary,
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withValues(alpha: 0.65),
                       ),
                       SizedBox(width: 8),
                       Text('Reset to Pending'),
@@ -909,7 +958,12 @@ class _MiniStat extends StatelessWidget {
           ),
           Text(
             label,
-            style: const TextStyle(fontSize: 11, color: AppTheme.textSecondary),
+            style: TextStyle(
+              fontSize: 11,
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.65),
+            ),
           ),
         ],
       ),
@@ -924,7 +978,7 @@ class _StepStatusIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = AppTheme.statusColor(status);
+    final color = AppColors.statusColorFromString(context, status);
     final icon = switch (status) {
       'signed' => Icons.check_circle,
       'flagged' => Icons.flag,

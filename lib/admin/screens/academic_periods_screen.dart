@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import '../../core/models/academic_period.dart';
 import '../../core/repositories/academic_period_repository.dart';
-import '../../core/theme/app_theme.dart';
 import '../../core/widgets/app_card.dart';
 import '../../core/widgets/confirm_dialog.dart';
 import '../widgets/academic_period_form_dialog.dart';
@@ -10,17 +10,16 @@ class AcademicPeriodsScreen extends StatefulWidget {
   const AcademicPeriodsScreen({super.key});
 
   @override
-  State<AcademicPeriodsScreen> createState() =>
-      _AcademicPeriodsScreenState();
+  State<AcademicPeriodsScreen> createState() => _AcademicPeriodsScreenState();
 }
 
 class _AcademicPeriodsScreenState extends State<AcademicPeriodsScreen> {
   final _repo = AcademicPeriodRepository();
 
-  List<AcademicPeriod> _periods   = [];
-  bool                 _isLoading = true;
-  bool                 _isSaving  = false;
-  String?              _error;
+  List<AcademicPeriod> _periods = [];
+  bool _isLoading = true;
+  bool _isSaving = false;
+  String? _error;
 
   @override
   void initState() {
@@ -31,12 +30,21 @@ class _AcademicPeriodsScreenState extends State<AcademicPeriodsScreen> {
   // ── Data ──────────────────────────────────────────────────
 
   Future<void> _load() async {
-    setState(() { _isLoading = true; _error = null; });
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
     try {
       final periods = await _repo.getAll();
-      setState(() { _periods = periods; _isLoading = false; });
+      setState(() {
+        _periods = periods;
+        _isLoading = false;
+      });
     } catch (e) {
-      setState(() { _error = e.toString(); _isLoading = false; });
+      setState(() {
+        _error = e.toString();
+        _isLoading = false;
+      });
     }
   }
 
@@ -48,13 +56,15 @@ class _AcademicPeriodsScreenState extends State<AcademicPeriodsScreen> {
 
     setState(() => _isSaving = true);
     try {
-      await _repo.create(AcademicPeriod(
-        id:        0,
-        label:     result['label'],
-        startDate: result['start_date'],
-        endDate:   result['end_date'],
-        isCurrent: false,
-      ));
+      await _repo.create(
+        AcademicPeriod(
+          id: 0,
+          label: result['label'],
+          startDate: result['start_date'],
+          endDate: result['end_date'],
+          isCurrent: false,
+        ),
+      );
       _showSuccess('Academic period created.');
       _load();
     } catch (e) {
@@ -65,10 +75,7 @@ class _AcademicPeriodsScreenState extends State<AcademicPeriodsScreen> {
   }
 
   Future<void> _edit(AcademicPeriod period) async {
-    final result = await AcademicPeriodFormDialog.show(
-      context,
-      period: period,
-    );
+    final result = await AcademicPeriodFormDialog.show(context, period: period);
     if (result == null) return;
 
     setState(() => _isSaving = true);
@@ -76,10 +83,10 @@ class _AcademicPeriodsScreenState extends State<AcademicPeriodsScreen> {
       await _repo.update(
         period.id,
         AcademicPeriod(
-          id:        period.id,
-          label:     result['label'],
+          id: period.id,
+          label: result['label'],
           startDate: result['start_date'],
-          endDate:   result['end_date'],
+          endDate: result['end_date'],
           isCurrent: period.isCurrent,
         ),
       );
@@ -104,9 +111,10 @@ class _AcademicPeriodsScreenState extends State<AcademicPeriodsScreen> {
 
     final confirmed = await ConfirmDialog.show(
       context,
-      title:   'Delete Period',
-      message: 'Are you sure you want to delete "${period.label}"? '
-               'All clearance steps for this period will also be deleted.',
+      title: 'Delete Period',
+      message:
+          'Are you sure you want to delete "${period.label}"? '
+          'All clearance steps for this period will also be deleted.',
     );
     if (!confirmed) return;
 
@@ -125,11 +133,12 @@ class _AcademicPeriodsScreenState extends State<AcademicPeriodsScreen> {
   Future<void> _setCurrent(AcademicPeriod period) async {
     final confirmed = await ConfirmDialog.show(
       context,
-      title:        'Set as Current Period',
-      message:      'Set "${period.label}" as the current academic period? '
-                    'The previous current period will be unset.',
+      title: 'Set as Current Period',
+      message:
+          'Set "${period.label}" as the current academic period? '
+          'The previous current period will be unset.',
       confirmLabel: 'Set as Current',
-      confirmColor: AppTheme.primary,
+      confirmColor: AppColors.of(context).info,
     );
     if (!confirmed) return;
 
@@ -148,14 +157,20 @@ class _AcademicPeriodsScreenState extends State<AcademicPeriodsScreen> {
   void _showSuccess(String msg) {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(msg), backgroundColor: AppTheme.accent),
+      SnackBar(
+        content: Text(msg),
+        backgroundColor: AppColors.of(context).success,
+      ),
     );
   }
 
   void _showError(String msg) {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(msg), backgroundColor: AppTheme.danger),
+      SnackBar(
+        content: Text(msg),
+        backgroundColor: AppColors.of(context).danger,
+      ),
     );
   }
 
@@ -164,7 +179,7 @@ class _AcademicPeriodsScreenState extends State<AcademicPeriodsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.background,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       body: Padding(
         padding: const EdgeInsets.all(32),
         child: Column(
@@ -173,23 +188,25 @@ class _AcademicPeriodsScreenState extends State<AcademicPeriodsScreen> {
             // Header
             Row(
               children: [
-                const Expanded(
+                Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         'Academic Periods',
                         style: TextStyle(
-                          fontSize:   28,
+                          fontSize: 28,
                           fontWeight: FontWeight.bold,
-                          color:      AppTheme.textPrimary,
+                          color: Theme.of(context).colorScheme.onSurface,
                         ),
                       ),
                       SizedBox(height: 4),
                       Text(
                         'Manage academic periods and set the active one.',
                         style: TextStyle(
-                          color:    AppTheme.textSecondary,
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onSurface.withValues(alpha: 0.65),
                           fontSize: 14,
                         ),
                       ),
@@ -200,14 +217,15 @@ class _AcademicPeriodsScreenState extends State<AcademicPeriodsScreen> {
                   const Padding(
                     padding: EdgeInsets.only(right: 16),
                     child: SizedBox(
-                      width: 20, height: 20,
+                      width: 20,
+                      height: 20,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     ),
                   ),
                 ElevatedButton.icon(
                   onPressed: _isSaving ? null : _create,
-                  icon:  const Icon(Icons.add),
-                  label: const Text('Add Period'),
+                  icon: Icon(Icons.add),
+                  label: Text('Add Period'),
                 ),
               ],
             ),
@@ -228,18 +246,25 @@ class _AcademicPeriodsScreenState extends State<AcademicPeriodsScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(_error!, style: const TextStyle(color: AppTheme.danger)),
+            Text(
+              _error!,
+              style: TextStyle(color: AppColors.of(context).danger),
+            ),
             const SizedBox(height: 8),
-            ElevatedButton(onPressed: _load, child: const Text('Retry')),
+            ElevatedButton(onPressed: _load, child: Text('Retry')),
           ],
         ),
       );
     }
     if (_periods.isEmpty) {
-      return const Center(
+      return Center(
         child: Text(
           'No academic periods yet.',
-          style: TextStyle(color: AppTheme.textSecondary),
+          style: TextStyle(
+            color: Theme.of(
+              context,
+            ).colorScheme.onSurface.withValues(alpha: 0.65),
+          ),
         ),
       );
     }
@@ -251,16 +276,17 @@ class _AcademicPeriodsScreenState extends State<AcademicPeriodsScreen> {
         child: SingleChildScrollView(
           child: Table(
             columnWidths: const {
-              0: FlexColumnWidth(3),    // label
-              1: FlexColumnWidth(2),    // date range
+              0: FlexColumnWidth(3), // label
+              1: FlexColumnWidth(2), // date range
               2: FixedColumnWidth(140), // status
               3: FixedColumnWidth(180), // actions
             },
             children: [
               // Header
               TableRow(
-                decoration:
-                    const BoxDecoration(color: AppTheme.background),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surface,
+                ),
                 children: [
                   _headerCell('Label'),
                   _headerCell('Date Range'),
@@ -269,108 +295,106 @@ class _AcademicPeriodsScreenState extends State<AcademicPeriodsScreen> {
                 ],
               ),
               // Rows
-              ..._periods.map((period) => TableRow(
-                // Highlight current period row
-                decoration: BoxDecoration(
-                  color: period.isCurrent
-                      ? AppTheme.primary.withValues(alpha: 0.04)
-                      : null,
-                  border: Border(
-                    top: BorderSide(color: AppTheme.border),
-                  ),
-                ),
-                children: [
-                  // Label
-                  _dataCell(
-                    Row(
-                      children: [
-                        if (period.isCurrent) ...[
-                          const Icon(
-                            Icons.radio_button_checked,
-                            size:  14,
-                            color: AppTheme.primary,
-                          ),
-                          const SizedBox(width: 6),
-                        ],
-                        Flexible(
-                          child: Text(
-                            period.label,
-                            style: TextStyle(
-                              fontWeight: period.isCurrent
-                                  ? FontWeight.w600
-                                  : FontWeight.normal,
-                              color: period.isCurrent
-                                  ? AppTheme.primary
-                                  : AppTheme.textPrimary,
-                            ),
-                          ),
-                        ),
-                      ],
+              ..._periods.map(
+                (period) => TableRow(
+                  // Highlight current period row
+                  decoration: BoxDecoration(
+                    color: period.isCurrent
+                        ? AppColors.of(context).info.withValues(alpha: 0.04)
+                        : null,
+                    border: Border(
+                      top: BorderSide(color: AppColors.of(context).border),
                     ),
                   ),
-                  // Date range
-                  _dataCell(
-                    Text(
-                      period.dateRange,
-                      style: const TextStyle(
-                        color:    AppTheme.textSecondary,
-                        fontSize: 13,
+                  children: [
+                    // Label
+                    _dataCell(
+                      Row(
+                        children: [
+                          if (period.isCurrent) ...[
+                            Icon(
+                              Icons.radio_button_checked,
+                              size: 14,
+                              color: AppColors.of(context).info,
+                            ),
+                            const SizedBox(width: 6),
+                          ],
+                          Flexible(
+                            child: Text(
+                              period.label,
+                              style: TextStyle(
+                                fontWeight: period.isCurrent
+                                    ? FontWeight.w600
+                                    : FontWeight.normal,
+                                color: period.isCurrent
+                                    ? AppColors.of(context).info
+                                    : Theme.of(context).colorScheme.onSurface,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ),
-                  // Status badge
-                  _dataCell(
-                    period.isCurrent
-                        ? _CurrentBadge()
-                        : const SizedBox.shrink(),
-                  ),
-                  // Actions
-                  _dataCell(
-                    Row(
-                      children: [
-                        // Set as current — only show for non-current
-                        if (!period.isCurrent)
-                          Tooltip(
-                            message: 'Set as current',
-                            child: IconButton(
-                              icon: const Icon(
-                                Icons.radio_button_unchecked,
-                                size: 18,
-                              ),
-                              color:   AppTheme.primary,
-                              onPressed: _isSaving
-                                  ? null
-                                  : () => _setCurrent(period),
-                            ),
-                          ),
-                        IconButton(
-                          icon:    const Icon(
-                            Icons.edit_outlined, size: 18,
-                          ),
-                          color:   AppTheme.primary,
-                          tooltip: 'Edit',
-                          onPressed:
-                              _isSaving ? null : () => _edit(period),
+                    // Date range
+                    _dataCell(
+                      Text(
+                        period.dateRange,
+                        style: TextStyle(
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onSurface.withValues(alpha: 0.65),
+                          fontSize: 13,
                         ),
-                        IconButton(
-                          icon:    const Icon(
-                            Icons.delete_outline, size: 18,
-                          ),
-                          color: period.isCurrent
-                              ? AppTheme.border  // greyed out
-                              : AppTheme.danger,
-                          tooltip: period.isCurrent
-                              ? 'Cannot delete current period'
-                              : 'Delete',
-                          onPressed: _isSaving
-                              ? null
-                              : () => _delete(period),
-                        ),
-                      ],
+                      ),
                     ),
-                  ),
-                ],
-              )),
+                    // Status badge
+                    _dataCell(
+                      period.isCurrent
+                          ? _CurrentBadge()
+                          : const SizedBox.shrink(),
+                    ),
+                    // Actions
+                    _dataCell(
+                      Row(
+                        children: [
+                          // Set as current — only show for non-current
+                          if (!period.isCurrent)
+                            Tooltip(
+                              message: 'Set as current',
+                              child: IconButton(
+                                icon: Icon(
+                                  Icons.radio_button_unchecked,
+                                  size: 18,
+                                ),
+                                color: AppColors.of(context).info,
+                                onPressed: _isSaving
+                                    ? null
+                                    : () => _setCurrent(period),
+                              ),
+                            ),
+                          IconButton(
+                            icon: Icon(Icons.edit_outlined, size: 18),
+                            color: AppColors.of(context).info,
+                            tooltip: 'Edit',
+                            onPressed: _isSaving ? null : () => _edit(period),
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.delete_outline, size: 18),
+                            color: period.isCurrent
+                                ? AppColors.of(context)
+                                      .border // greyed out
+                                : AppColors.of(context).danger,
+                            tooltip: period.isCurrent
+                                ? 'Cannot delete current period'
+                                : 'Delete',
+                            onPressed: _isSaving ? null : () => _delete(period),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
         ),
@@ -382,10 +406,10 @@ class _AcademicPeriodsScreenState extends State<AcademicPeriodsScreen> {
     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
     child: Text(
       label,
-      style: const TextStyle(
+      style: TextStyle(
         fontWeight: FontWeight.w600,
-        fontSize:   13,
-        color:      AppTheme.textSecondary,
+        fontSize: 13,
+        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
       ),
     ),
   );
@@ -403,26 +427,26 @@ class _CurrentBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color:        AppTheme.primary.withValues(alpha: 0.1),
+        color: AppColors.of(context).info.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: AppTheme.primary.withValues(alpha: 0.4),
+          color: AppColors.of(context).info.withValues(alpha: 0.4),
         ),
       ),
-      child: const Row(
+      child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(
             Icons.radio_button_checked,
-            size:  12,
-            color: AppTheme.primary,
+            size: 12,
+            color: AppColors.of(context).info,
           ),
           SizedBox(width: 4),
           Text(
             'Current',
             style: TextStyle(
-              color:      AppTheme.primary,
-              fontSize:   12,
+              color: AppColors.of(context).info,
+              fontSize: 12,
               fontWeight: FontWeight.w600,
             ),
           ),

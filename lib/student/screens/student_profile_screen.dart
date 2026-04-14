@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../core/providers/student_provider.dart';
 import '../../core/services/auth_service.dart';
-import '../../core/theme/app_theme.dart';
 import '../../core/widgets/account_status_badge.dart';
 import '../../core/widgets/theme_toggle.dart';
 import '../../main.dart';
@@ -14,17 +14,16 @@ class StudentProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<StudentProvider>();
-    final profile  = provider.profile;
-    final student  = provider.student;
-    final isDark   = Theme.of(context).brightness == Brightness.dark;
+    final profile = provider.profile;
+    final student = provider.student;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     if (provider.isLoading || profile == null) {
       return const Center(child: CircularProgressIndicator());
     }
 
     return RefreshIndicator(
-      onRefresh: () =>
-          provider.loadData(supabase.auth.currentUser!.id),
+      onRefresh: () => provider.loadData(supabase.auth.currentUser!.id),
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.fromLTRB(20, 48, 20, 24),
@@ -37,19 +36,19 @@ class StudentProfileScreen extends StatelessWidget {
                 children: [
                   // Avatar circle with initials
                   Container(
-                    width:  80,
+                    width: 80,
                     height: 80,
                     decoration: BoxDecoration(
-                      color:  AppTheme.primary.withValues(alpha: 0.15),
-                      shape:  BoxShape.circle,
+                      color: AppColors.of(context).info.withValues(alpha: 0.15),
+                      shape: BoxShape.circle,
                     ),
                     child: Center(
                       child: Text(
                         _initials(profile.fullName),
-                        style: const TextStyle(
-                          fontSize:   28,
+                        style: TextStyle(
+                          fontSize: 28,
                           fontWeight: FontWeight.bold,
-                          color:      AppTheme.primary,
+                          color: AppColors.of(context).info,
                         ),
                       ),
                     ),
@@ -57,10 +56,9 @@ class StudentProfileScreen extends StatelessWidget {
                   const SizedBox(height: 12),
                   Text(
                     profile.fullName,
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleLarge
-                        ?.copyWith(fontWeight: FontWeight.bold),
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 4),
@@ -69,8 +67,8 @@ class StudentProfileScreen extends StatelessWidget {
                       student.studentNo,
                       style: TextStyle(
                         color: isDark
-                            ? AppTheme.darkTextSecondary
-                            : AppTheme.textSecondary,
+                            ? AppColors.of(context).neutral
+                            : AppColors.of(context).neutral,
                         fontSize: 14,
                       ),
                     ),
@@ -87,29 +85,20 @@ class StudentProfileScreen extends StatelessWidget {
               style: Theme.of(context).textTheme.titleSmall?.copyWith(
                 fontWeight: FontWeight.w600,
                 color: isDark
-                    ? AppTheme.darkTextSecondary
-                    : AppTheme.textSecondary,
+                    ? AppColors.of(context).neutral
+                    : AppColors.of(context).neutral,
               ),
             ),
             const SizedBox(height: 8),
             _InfoCard(
               children: [
-                _InfoRow(
-                  label: 'Full Name',
-                  value: profile.fullName,
-                ),
+                _InfoRow(label: 'Full Name', value: profile.fullName),
                 _InfoRow(
                   label: 'Student No.',
                   value: student?.studentNo ?? '—',
                 ),
-                _InfoRow(
-                  label: 'Program',
-                  value: student?.programName ?? '—',
-                ),
-                _InfoRow(
-                  label: 'School',
-                  value: student?.schoolName ?? '—',
-                ),
+                _InfoRow(label: 'Program', value: student?.programName ?? '—'),
+                _InfoRow(label: 'School', value: student?.schoolName ?? '—'),
                 _InfoRow(
                   label: 'Year Level',
                   value: student?.yearLevel != null
@@ -127,8 +116,8 @@ class StudentProfileScreen extends StatelessWidget {
               style: Theme.of(context).textTheme.titleSmall?.copyWith(
                 fontWeight: FontWeight.w600,
                 color: isDark
-                    ? AppTheme.darkTextSecondary
-                    : AppTheme.textSecondary,
+                    ? AppColors.of(context).neutral
+                    : AppColors.of(context).neutral,
               ),
             ),
             const SizedBox(height: 8),
@@ -138,13 +127,11 @@ class StudentProfileScreen extends StatelessWidget {
                   label: 'Email',
                   value: supabase.auth.currentUser?.email ?? '—',
                 ),
-                _InfoRow(
-                  label: 'Status',
-                  value: profile.accountStatus,
-                ),
+                _InfoRow(label: 'Status', value: profile.accountStatus),
                 Padding(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 16, vertical: 12,
+                    horizontal: 16,
+                    vertical: 12,
                   ),
                   child: Row(
                     children: [
@@ -154,9 +141,9 @@ class StudentProfileScreen extends StatelessWidget {
                           'Theme',
                           style: TextStyle(
                             fontSize: 13,
-                            color:    isDark
-                                ? AppTheme.darkTextSecondary
-                                : AppTheme.textSecondary,
+                            color: isDark
+                                ? AppColors.of(context).neutral
+                                : AppColors.of(context).neutral,
                           ),
                         ),
                       ),
@@ -173,7 +160,7 @@ class StudentProfileScreen extends StatelessWidget {
               width: double.infinity,
               child: OutlinedButton.icon(
                 onPressed: () => context.push('/update-password'),
-                icon:  const Icon(Icons.lock_reset_outlined),
+                icon: Icon(Icons.lock_reset_outlined),
                 label: const Text('Change Password'),
               ),
             ),
@@ -187,16 +174,13 @@ class StudentProfileScreen extends StatelessWidget {
                   await AuthService().signOut();
                   if (context.mounted) context.go('/login');
                 },
-                icon:  const Icon(
-                  Icons.logout,
-                  color: AppTheme.danger,
-                ),
-                label: const Text(
+                icon: Icon(Icons.logout, color: AppColors.of(context).danger),
+                label: Text(
                   'Sign Out',
-                  style: TextStyle(color: AppTheme.danger),
+                  style: TextStyle(color: AppColors.of(context).danger),
                 ),
                 style: OutlinedButton.styleFrom(
-                  side: const BorderSide(color: AppTheme.danger),
+                  side: BorderSide(color: AppColors.of(context).danger),
                 ),
               ),
             ),
@@ -223,11 +207,9 @@ class _InfoCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color:        Theme.of(context).cardColor,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: Theme.of(context).dividerColor,
-        ),
+        border: Border.all(color: Theme.of(context).dividerColor),
       ),
       child: Column(children: children),
     );
@@ -238,7 +220,7 @@ class _InfoCard extends StatelessWidget {
 class _InfoRow extends StatelessWidget {
   final String label;
   final String value;
-  final bool   isLast;
+  final bool isLast;
 
   const _InfoRow({
     required this.label,
@@ -253,9 +235,7 @@ class _InfoRow extends StatelessWidget {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 16, vertical: 12,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           child: Row(
             children: [
               SizedBox(
@@ -264,29 +244,22 @@ class _InfoRow extends StatelessWidget {
                   label,
                   style: TextStyle(
                     fontSize: 13,
-                    color:    isDark
-                        ? AppTheme.darkTextSecondary
-                        : AppTheme.textSecondary,
+                    color: isDark
+                        ? AppColors.of(context).neutral
+                        : AppColors.of(context).neutral,
                   ),
                 ),
               ),
               Expanded(
                 child: Text(
                   value,
-                  style: const TextStyle(
-                    fontSize:   13,
-                    fontWeight: FontWeight.w500,
-                  ),
+                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
                 ),
               ),
             ],
           ),
         ),
-        if (!isLast)
-          Divider(
-            height: 1,
-            color:  Theme.of(context).dividerColor,
-          ),
+        if (!isLast) Divider(height: 1, color: Theme.of(context).dividerColor),
       ],
     );
   }

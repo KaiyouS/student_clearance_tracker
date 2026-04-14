@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import '../../core/models/school.dart';
 import '../../core/models/program.dart';
 import '../../core/models/student.dart';
 import '../../core/repositories/school_repository.dart';
 import '../../core/repositories/program_repository.dart';
-import '../../core/theme/app_theme.dart';
 
 class StudentFormDialog extends StatefulWidget {
   final Student? student;
@@ -224,7 +224,7 @@ class _StudentFormDialogState extends State<StudentFormDialog> {
                     : DropdownButtonFormField<School>(
                         initialValue: _selectedSchool,
                         decoration: const InputDecoration(labelText: 'School'),
-                        hint: const Text('Select a school'),
+                        hint: Text('Select a school'),
                         items: _schools
                             .map(
                               (c) => DropdownMenuItem(
@@ -253,7 +253,9 @@ class _StudentFormDialogState extends State<StudentFormDialog> {
                     // Visual hint when no school selected yet
                     disabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(color: AppTheme.border),
+                      borderSide: BorderSide(
+                        color: AppColors.of(context).border,
+                      ),
                     ),
                   ),
                   hint: Text(
@@ -262,7 +264,9 @@ class _StudentFormDialogState extends State<StudentFormDialog> {
                         : _loadingPrograms
                         ? 'Loading...'
                         : 'Select a program',
-                    style: const TextStyle(color: AppTheme.textSecondary),
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
+                    ),
                   ),
                   items: _programs
                       .map(
@@ -280,7 +284,7 @@ class _StudentFormDialogState extends State<StudentFormDialog> {
                 DropdownButtonFormField<int>(
                   initialValue: _selectedYearLevel,
                   decoration: const InputDecoration(labelText: 'Year Level'),
-                  hint: const Text('Select year level'),
+                  hint: Text('Select year level'),
                   items: [1, 2, 3, 4, 5]
                       .map(
                         (y) =>
@@ -297,7 +301,7 @@ class _StudentFormDialogState extends State<StudentFormDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Cancel'),
+          child: Text('Cancel'),
         ),
         ElevatedButton(
           onPressed: _submit,

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../theme/app_theme.dart';
+import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 
 class StatusBadge extends StatelessWidget {
   final String status;
@@ -8,7 +8,7 @@ class StatusBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = AppTheme.statusColor(status);
+    final color = AppColors.statusColorFromString(context, status);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(

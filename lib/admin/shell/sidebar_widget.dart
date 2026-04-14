@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:go_router/go_router.dart';
-import '../../core/theme/app_theme.dart';
 import '../../core/services/auth_service.dart';
 import '../../core/widgets/theme_toggle.dart';
 
@@ -13,25 +13,25 @@ class SidebarWidget extends StatelessWidget {
 
     return Container(
       width: 240,
-      color: AppTheme.surface,
+      color: Theme.of(context).colorScheme.surface,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // App title / logo area
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-            child: const Text(
+            child: Text(
               'Clearance\nTracker',
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: AppTheme.primary,
+                color: AppColors.of(context).info,
                 height: 1.2,
               ),
             ),
           ),
 
-          const Divider(height: 1, color: AppTheme.border),
+          Divider(height: 1, color: AppColors.of(context).border),
           const SizedBox(height: 8),
 
           // Nav items
@@ -66,31 +66,31 @@ class SidebarWidget extends StatelessWidget {
             isActive: location == '/admin/clearance',
           ),
           _NavItem(
-            icon:     Icons.account_tree_outlined,
-            label:    'Prerequisites',
-            path:     '/admin/prerequisites',
+            icon: Icons.account_tree_outlined,
+            label: 'Prerequisites',
+            path: '/admin/prerequisites',
             isActive: location == '/admin/prerequisites',
           ),
           _NavItem(
-            icon:     Icons.rule_outlined,
-            label:    'Requirements',
-            path:     '/admin/requirements',
+            icon: Icons.rule_outlined,
+            label: 'Requirements',
+            path: '/admin/requirements',
             isActive: location == '/admin/requirements',
           ),
           _NavItem(
-            icon:     Icons.account_balance_outlined,
-            label:    'Schools',
-            path:     '/admin/schools',
+            icon: Icons.account_balance_outlined,
+            label: 'Schools',
+            path: '/admin/schools',
             isActive: location == '/admin/schools',
           ),
           _NavItem(
-            icon:     Icons.calendar_month_outlined,
-            label:    'Academic Periods',
-            path:     '/admin/periods',
+            icon: Icons.calendar_month_outlined,
+            label: 'Academic Periods',
+            path: '/admin/periods',
             isActive: location == '/admin/periods',
           ),
           const Spacer(),
-          const Divider(height: 1, color: AppTheme.border),
+          Divider(height: 1, color: AppColors.of(context).border),
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             child: ThemeToggle(),
@@ -107,9 +107,9 @@ class SidebarWidget extends StatelessWidget {
 // ── Individual nav item ──────────────────────────────────────
 class _NavItem extends StatelessWidget {
   final IconData icon;
-  final String   label;
-  final String   path;
-  final bool     isActive;
+  final String label;
+  final String path;
+  final bool isActive;
 
   const _NavItem({
     required this.icon,
@@ -124,7 +124,7 @@ class _NavItem extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
       child: Material(
         color: isActive
-            ? AppTheme.primary.withValues(alpha: 0.1)
+            ? AppColors.of(context).info.withValues(alpha: 0.1)
             : Colors.transparent,
         borderRadius: BorderRadius.circular(8),
         child: InkWell(
@@ -137,18 +137,23 @@ class _NavItem extends StatelessWidget {
                 Icon(
                   icon,
                   size: 20,
-                  color: isActive ? AppTheme.primary : AppTheme.textSecondary,
+                  color: isActive
+                      ? AppColors.of(context).info
+                      : Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withValues(alpha: 0.65),
                 ),
                 const SizedBox(width: 12),
                 Text(
                   label,
                   style: TextStyle(
                     fontSize: 14,
-                    fontWeight:
-                        isActive ? FontWeight.w600 : FontWeight.normal,
+                    fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
                     color: isActive
-                        ? AppTheme.primary
-                        : AppTheme.textSecondary,
+                        ? AppColors.of(context).info
+                        : Theme.of(
+                            context,
+                          ).colorScheme.onSurface.withValues(alpha: 0.65),
                   ),
                 ),
               ],
@@ -179,17 +184,21 @@ class _SignOutButton extends StatelessWidget {
             await _authService.signOut();
             if (context.mounted) context.go('/login');
           },
-          child: const Padding(
+          child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             child: Row(
               children: [
-                Icon(Icons.logout, size: 20, color: AppTheme.danger),
+                Icon(
+                  Icons.logout,
+                  size: 20,
+                  color: AppColors.of(context).danger,
+                ),
                 SizedBox(width: 12),
                 Text(
                   'Sign Out',
                   style: TextStyle(
                     fontSize: 14,
-                    color: AppTheme.danger,
+                    color: AppColors.of(context).danger,
                   ),
                 ),
               ],

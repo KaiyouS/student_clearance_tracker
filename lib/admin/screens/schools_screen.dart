@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import '../../core/models/program.dart';
 import '../../core/models/school.dart';
 import '../../core/repositories/program_repository.dart';
 import '../../core/repositories/school_repository.dart';
-import '../../core/theme/app_theme.dart';
 import '../../core/widgets/app_card.dart';
 import '../../core/widgets/confirm_dialog.dart';
 
@@ -217,14 +217,14 @@ class _SchoolsScreenState extends State<SchoolsScreen> {
   void _showSuccess(String msg) {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(msg), backgroundColor: AppTheme.accent),
+      SnackBar(content: Text(msg), backgroundColor: AppColors.of(context).success),
     );
   }
 
   void _showError(String msg) {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(msg), backgroundColor: AppTheme.danger),
+      SnackBar(content: Text(msg), backgroundColor: AppColors.of(context).danger),
     );
   }
 
@@ -233,7 +233,7 @@ class _SchoolsScreenState extends State<SchoolsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.background,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       body: Padding(
         padding: const EdgeInsets.all(32),
         child: Column(
@@ -242,7 +242,7 @@ class _SchoolsScreenState extends State<SchoolsScreen> {
             // Header
             Row(
               children: [
-                const Expanded(
+                Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -251,14 +251,14 @@ class _SchoolsScreenState extends State<SchoolsScreen> {
                         style: TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.bold,
-                          color: AppTheme.textPrimary,
+                          color: Theme.of(context).colorScheme.onSurface,
                         ),
                       ),
                       SizedBox(height: 4),
                       Text(
                         'Manage schools and the programs they offer.',
                         style: TextStyle(
-                          color: AppTheme.textSecondary,
+                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
                           fontSize: 14,
                         ),
                       ),
@@ -293,9 +293,9 @@ class _SchoolsScreenState extends State<SchoolsScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(_error!, style: const TextStyle(color: AppTheme.danger)),
+            Text(_error!, style: TextStyle(color: AppColors.of(context).danger)),
             const SizedBox(height: 8),
-            ElevatedButton(onPressed: _loadSchools, child: const Text('Retry')),
+            ElevatedButton(onPressed: _loadSchools, child: Text('Retry')),
           ],
         ),
       );
@@ -316,84 +316,87 @@ class _SchoolsScreenState extends State<SchoolsScreen> {
                   padding: const EdgeInsets.fromLTRB(16, 12, 8, 12),
                   child: Row(
                     children: [
-                      const Expanded(
+                      Expanded(
                         child: Text(
                           'Schools',
                           style: TextStyle(
                             fontWeight: FontWeight.w600,
                             fontSize: 14,
-                            color: AppTheme.textPrimary,
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
                         ),
                       ),
                       IconButton(
-                        icon: const Icon(Icons.add, size: 20),
-                        color: AppTheme.primary,
+                        icon: Icon(Icons.add, size: 20),
+                        color: AppColors.of(context).info,
                         tooltip: 'Add School',
                         onPressed: _isSaving ? null : _createSchool,
                       ),
                     ],
                   ),
                 ),
-                const Divider(height: 1, color: AppTheme.border),
+                Divider(height: 1, color: AppColors.of(context).border),
                 // School list
                 Expanded(
                   child: _schools.isEmpty
-                      ? const Center(
+                      ? Center(
                           child: Padding(
                             padding: EdgeInsets.all(16),
                             child: Text(
                               'No schools yet.',
-                              style: TextStyle(color: AppTheme.textSecondary),
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
+                              ),
                             ),
                           ),
                         )
                       : ListView.separated(
                           itemCount: _schools.length,
-                          separatorBuilder: (_, _) =>
-                              const Divider(height: 1, color: AppTheme.border),
+                          separatorBuilder: (_, _) => Divider(
+                            height: 1,
+                            color: AppColors.of(context).border,
+                          ),
                           itemBuilder: (context, i) {
                             final school = _schools[i];
                             final isSelected = _selected?.id == school.id;
 
                             return ListTile(
                               selected: isSelected,
-                              selectedColor: AppTheme.primary,
-                              selectedTileColor: AppTheme.primary.withValues(
-                                alpha: 0.08,
-                              ),
+                              selectedColor: AppColors.of(context).info,
+                              selectedTileColor: AppColors.of(context).info
+                                  .withValues(alpha: 0.08),
                               title: Text(
                                 school.name,
-                                style: const TextStyle(fontSize: 13),
+                                style: TextStyle(fontSize: 13),
                               ),
                               subtitle: school.description != null
                                   ? Text(
                                       school.description!,
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
-                                      style: const TextStyle(fontSize: 11),
+                                      style: TextStyle(fontSize: 11),
                                     )
                                   : null,
                               trailing: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   IconButton(
-                                    icon: const Icon(
+                                    icon: Icon(
                                       Icons.edit_outlined,
                                       size: 16,
                                     ),
-                                    color: AppTheme.primary,
+                                    color: AppColors.of(context).info,
                                     tooltip: 'Edit',
                                     onPressed: _isSaving
                                         ? null
                                         : () => _editSchool(school),
                                   ),
                                   IconButton(
-                                    icon: const Icon(
+                                    icon: Icon(
                                       Icons.delete_outline,
                                       size: 16,
                                     ),
-                                    color: AppTheme.danger,
+                                    color: AppColors.of(context).danger,
                                     tooltip: 'Delete',
                                     onPressed: _isSaving
                                         ? null
@@ -419,11 +422,13 @@ class _SchoolsScreenState extends State<SchoolsScreen> {
         // Right panel — programs for selected school
         Expanded(
           child: _selected == null
-              ? const AppCard(
+              ? AppCard(
                   child: Center(
                     child: Text(
                       'Select a school to manage its programs.',
-                      style: TextStyle(color: AppTheme.textSecondary),
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
+                      ),
                     ),
                   ),
                 )
@@ -447,10 +452,10 @@ class _SchoolsScreenState extends State<SchoolsScreen> {
                   children: [
                     Text(
                       school.name,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: AppTheme.textPrimary,
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -458,8 +463,8 @@ class _SchoolsScreenState extends State<SchoolsScreen> {
                       _loadingPrograms
                           ? 'Loading...'
                           : '${_programs.length} program${_programs.length != 1 ? 's' : ''}',
-                      style: const TextStyle(
-                        color: AppTheme.textSecondary,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
                         fontSize: 13,
                       ),
                     ),
@@ -468,14 +473,14 @@ class _SchoolsScreenState extends State<SchoolsScreen> {
               ),
               ElevatedButton.icon(
                 onPressed: _isSaving ? null : _createProgram,
-                icon: const Icon(Icons.add, size: 16),
-                label: const Text('Add Program'),
+                icon: Icon(Icons.add, size: 16),
+                label: Text('Add Program'),
               ),
             ],
           ),
 
           const SizedBox(height: 16),
-          const Divider(color: AppTheme.border),
+          Divider(color: AppColors.of(context).border),
           const SizedBox(height: 8),
 
           // Programs list
@@ -487,12 +492,14 @@ class _SchoolsScreenState extends State<SchoolsScreen> {
               ),
             )
           else if (_programs.isEmpty)
-            const Center(
+            Center(
               child: Padding(
                 padding: EdgeInsets.symmetric(vertical: 32),
                 child: Text(
                   'No programs yet. Add one above.',
-                  style: TextStyle(color: AppTheme.textSecondary),
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
+                  ),
                 ),
               ),
             )
@@ -501,7 +508,7 @@ class _SchoolsScreenState extends State<SchoolsScreen> {
               child: ListView.separated(
                 itemCount: _programs.length,
                 separatorBuilder: (_, _) =>
-                    const Divider(height: 1, color: AppTheme.border),
+                    Divider(height: 1, color: AppColors.of(context).border),
                 itemBuilder: (context, i) {
                   final program = _programs[i];
                   return ListTile(
@@ -509,37 +516,37 @@ class _SchoolsScreenState extends State<SchoolsScreen> {
                       width: 32,
                       height: 32,
                       decoration: BoxDecoration(
-                        color: AppTheme.primary.withValues(alpha: 0.1),
+                        color: AppColors.of(context).info.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(6),
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.school_outlined,
                         size: 16,
-                        color: AppTheme.primary,
+                        color: AppColors.of(context).info,
                       ),
                     ),
                     title: Text(
                       program.name,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
-                        color: AppTheme.textPrimary,
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         IconButton(
-                          icon: const Icon(Icons.edit_outlined, size: 18),
-                          color: AppTheme.primary,
+                          icon: Icon(Icons.edit_outlined, size: 18),
+                          color: AppColors.of(context).info,
                           tooltip: 'Edit',
                           onPressed: _isSaving
                               ? null
                               : () => _editProgram(program),
                         ),
                         IconButton(
-                          icon: const Icon(Icons.delete_outline, size: 18),
-                          color: AppTheme.danger,
+                          icon: Icon(Icons.delete_outline, size: 18),
+                          color: AppColors.of(context).danger,
                           tooltip: 'Delete',
                           onPressed: _isSaving
                               ? null
@@ -644,7 +651,7 @@ class _SchoolFormDialogState extends State<_SchoolFormDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Cancel'),
+          child: Text('Cancel'),
         ),
         ElevatedButton(
           onPressed: _submit,
@@ -723,7 +730,7 @@ class _ProgramFormDialogState extends State<_ProgramFormDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Cancel'),
+          child: Text('Cancel'),
         ),
         ElevatedButton(
           onPressed: _submit,

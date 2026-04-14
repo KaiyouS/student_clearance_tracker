@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import '../../core/models/step_with_info.dart';
 import '../../core/providers/student_provider.dart';
-import '../../core/theme/app_theme.dart';
 import '../../main.dart';
 
 class StudentHomeScreen extends StatelessWidget {
@@ -22,18 +22,20 @@ class StudentHomeScreen extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.error_outline, size: 48, color: AppTheme.danger),
+            Icon(
+              Icons.error_outline,
+              size: 48,
+              color: AppColors.of(context).danger,
+            ),
             const SizedBox(height: 12),
             Text(
               provider.error!,
               textAlign: TextAlign.center,
-              style: const TextStyle(color: AppTheme.danger),
+              style: TextStyle(color: AppColors.of(context).danger),
             ),
             const SizedBox(height: 12),
             ElevatedButton(
-              onPressed: () => provider.loadData(
-                supabase.auth.currentUser!.id,
-              ),
+              onPressed: () => provider.loadData(supabase.auth.currentUser!.id),
               child: const Text('Retry'),
             ),
           ],
@@ -42,8 +44,7 @@ class StudentHomeScreen extends StatelessWidget {
     }
 
     return RefreshIndicator(
-      onRefresh: () =>
-          provider.loadData(supabase.auth.currentUser!.id),
+      onRefresh: () => provider.loadData(supabase.auth.currentUser!.id),
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.fromLTRB(20, 48, 20, 24),
@@ -53,18 +54,17 @@ class StudentHomeScreen extends StatelessWidget {
             // Greeting
             Text(
               'Hi, ${provider.profile?.firstName ?? 'Student'}! 👋',
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 4),
             Text(
               provider.currentPeriod?.label ?? 'No active period',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(context)
-                    .colorScheme
-                    .onSurface
-                    .withValues(alpha: 0.6),
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.6),
               ),
             ),
             const SizedBox(height: 24),
@@ -86,8 +86,8 @@ class StudentHomeScreen extends StatelessWidget {
                     child: _StatCard(
                       label: 'Pending',
                       value: provider.pendingSteps,
-                      color: AppTheme.statusPending,
-                      icon:  Icons.hourglass_empty_outlined,
+                      color: AppColors.of(context).statusPending,
+                      icon: Icons.hourglass_empty_outlined,
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -95,8 +95,8 @@ class StudentHomeScreen extends StatelessWidget {
                     child: _StatCard(
                       label: 'Flagged',
                       value: provider.flaggedSteps,
-                      color: AppTheme.statusFlagged,
-                      icon:  Icons.flag_outlined,
+                      color: AppColors.of(context).statusFlagged,
+                      icon: Icons.flag_outlined,
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -104,8 +104,8 @@ class StudentHomeScreen extends StatelessWidget {
                     child: _StatCard(
                       label: 'Signed',
                       value: provider.signedSteps,
-                      color: AppTheme.statusSigned,
-                      icon:  Icons.check_circle_outline,
+                      color: AppColors.of(context).statusSigned,
+                      icon: Icons.check_circle_outline,
                     ),
                   ),
                 ],
@@ -117,7 +117,7 @@ class StudentHomeScreen extends StatelessWidget {
                 width: double.infinity,
                 child: OutlinedButton.icon(
                   onPressed: () => context.go('/student/clearance'),
-                  icon:  const Icon(Icons.checklist_outlined),
+                  icon: Icon(Icons.checklist_outlined),
                   label: const Text('View Clearance Steps'),
                 ),
               ),
@@ -139,14 +139,16 @@ class _ClearanceStatusCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isComplete  = provider.isComplete;
-    final hasSteps    = provider.hasSteps;
-    final total       = provider.totalSteps;
-    final signed      = provider.signedSteps;
-    final color       = isComplete ? AppTheme.statusSigned : AppTheme.primary;
+    final isComplete = provider.isComplete;
+    final hasSteps = provider.hasSteps;
+    final total = provider.totalSteps;
+    final signed = provider.signedSteps;
+    final color = isComplete
+        ? AppColors.of(context).statusSigned
+        : AppColors.of(context).info;
 
     return Container(
-      width:   double.infinity,
+      width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -164,23 +166,21 @@ class _ClearanceStatusCard extends StatelessWidget {
           Row(
             children: [
               Icon(
-                isComplete
-                    ? Icons.verified_outlined
-                    : Icons.pending_outlined,
+                isComplete ? Icons.verified_outlined : Icons.pending_outlined,
                 color: color,
-                size:  24,
+                size: 24,
               ),
               const SizedBox(width: 8),
               Text(
                 isComplete
                     ? 'Clearance Complete!'
                     : hasSteps
-                        ? 'Clearance In Progress'
-                        : 'Awaiting Clearance',
+                    ? 'Clearance In Progress'
+                    : 'Awaiting Clearance',
                 style: TextStyle(
-                  fontSize:   18,
+                  fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color:      color,
+                  color: color,
                 ),
               ),
             ],
@@ -191,19 +191,16 @@ class _ClearanceStatusCard extends StatelessWidget {
             ClipRRect(
               borderRadius: BorderRadius.circular(6),
               child: LinearProgressIndicator(
-                value:           total > 0 ? signed / total : 0,
+                value: total > 0 ? signed / total : 0,
                 backgroundColor: color.withValues(alpha: 0.15),
-                valueColor:      AlwaysStoppedAnimation<Color>(color),
-                minHeight:       8,
+                valueColor: AlwaysStoppedAnimation<Color>(color),
+                minHeight: 8,
               ),
             ),
             const SizedBox(height: 8),
             Text(
               '$signed of $total offices signed',
-              style: TextStyle(
-                color:    color,
-                fontSize: 13,
-              ),
+              style: TextStyle(color: color, fontSize: 13),
             ),
           ],
         ],
@@ -214,9 +211,9 @@ class _ClearanceStatusCard extends StatelessWidget {
 
 // ── Stat card ─────────────────────────────────────────────────
 class _StatCard extends StatelessWidget {
-  final String   label;
-  final int      value;
-  final Color    color;
+  final String label;
+  final int value;
+  final Color color;
   final IconData icon;
 
   const _StatCard({
@@ -229,13 +226,11 @@ class _StatCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding:    const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color:        Theme.of(context).cardColor,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: Theme.of(context).dividerColor,
-        ),
+        border: Border.all(color: Theme.of(context).dividerColor),
       ),
       child: Column(
         children: [
@@ -244,9 +239,9 @@ class _StatCard extends StatelessWidget {
           Text(
             value.toString(),
             style: TextStyle(
-              fontSize:   24,
+              fontSize: 24,
               fontWeight: FontWeight.bold,
-              color:      color,
+              color: color,
             ),
           ),
           const SizedBox(height: 2),
@@ -254,10 +249,9 @@ class _StatCard extends StatelessWidget {
             label,
             style: TextStyle(
               fontSize: 11,
-              color:    Theme.of(context)
-                  .colorScheme
-                  .onSurface
-                  .withValues(alpha: 0.6),
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.6),
             ),
           ),
         ],
@@ -271,31 +265,28 @@ class _NoClearanceCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width:   double.infinity,
+      width: double.infinity,
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color:        Theme.of(context).cardColor,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: Theme.of(context).dividerColor,
-        ),
+        border: Border.all(color: Theme.of(context).dividerColor),
       ),
       child: Column(
         children: [
           Icon(
             Icons.hourglass_empty_outlined,
-            size:  48,
-            color: Theme.of(context)
-                .colorScheme
-                .onSurface
-                .withValues(alpha: 0.3),
+            size: 48,
+            color: Theme.of(
+              context,
+            ).colorScheme.onSurface.withValues(alpha: 0.3),
           ),
           const SizedBox(height: 12),
           Text(
             'No Clearance Generated Yet',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 6),
           Text(
@@ -304,10 +295,9 @@ class _NoClearanceCard extends StatelessWidget {
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 13,
-              color:    Theme.of(context)
-                  .colorScheme
-                  .onSurface
-                  .withValues(alpha: 0.5),
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.5),
             ),
           ),
         ],
@@ -327,21 +317,23 @@ class _NextStepCard extends StatelessWidget {
     // All remaining steps are blocked — nothing actionable
     if (step == null) {
       return Container(
-        width:   double.infinity,
+        width: double.infinity,
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color:        isDark ? AppTheme.darkSurface : AppTheme.surface,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: isDark ? AppTheme.darkBorder : AppTheme.border,
+            color: isDark
+                ? AppColors.of(context).border
+                : AppColors.of(context).border,
           ),
         ),
         child: Row(
           children: [
-            const Icon(
+            Icon(
               Icons.lock_clock_outlined,
-              color: AppTheme.warning,
-              size:  20,
+              color: AppColors.of(context).warning,
+              size: 20,
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -350,9 +342,9 @@ class _NextStepCard extends StatelessWidget {
                 'waiting for prerequisites.',
                 style: TextStyle(
                   fontSize: 13,
-                  color:    isDark
-                      ? AppTheme.darkTextSecondary
-                      : AppTheme.textSecondary,
+                  color: isDark
+                      ? AppColors.of(context).neutral
+                      : AppColors.of(context).neutral,
                 ),
               ),
             ),
@@ -364,34 +356,34 @@ class _NextStepCard extends StatelessWidget {
     return GestureDetector(
       onTap: () => context.go('/student/clearance'),
       child: Container(
-        width:   double.infinity,
+        width: double.infinity,
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              AppTheme.primary.withValues(alpha: 0.12),
-              AppTheme.primary.withValues(alpha: 0.04),
+              AppColors.of(context).info.withValues(alpha: 0.12),
+              AppColors.of(context).info.withValues(alpha: 0.04),
             ],
           ),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: AppTheme.primary.withValues(alpha: 0.3),
+            color: AppColors.of(context).info.withValues(alpha: 0.3),
           ),
         ),
         child: Row(
           children: [
             // Pulsing icon to draw attention
             Container(
-              width:  40,
+              width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color:  AppTheme.primary.withValues(alpha: 0.15),
-                shape:  BoxShape.circle,
+                color: AppColors.of(context).info.withValues(alpha: 0.15),
+                shape: BoxShape.circle,
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.arrow_circle_right_outlined,
-                color: AppTheme.primary,
-                size:  22,
+                color: AppColors.of(context).info,
+                size: 22,
               ),
             ),
             const SizedBox(width: 12),
@@ -399,30 +391,30 @@ class _NextStepCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Next Step',
                     style: TextStyle(
-                      fontSize:   11,
+                      fontSize: 11,
                       fontWeight: FontWeight.w600,
-                      color:      AppTheme.primary,
+                      color: AppColors.of(context).info,
                       letterSpacing: 0.5,
                     ),
                   ),
                   const SizedBox(height: 2),
                   Text(
                     step!.step.officeName ?? '—',
-                    style: const TextStyle(
-                      fontSize:   15,
+                    style: TextStyle(
+                      fontSize: 15,
                       fontWeight: FontWeight.bold,
-                      color:      AppTheme.primary,
+                      color: AppColors.of(context).info,
                     ),
                   ),
                   const SizedBox(height: 2),
-                  const Text(
+                  Text(
                     'Tap to view clearance steps →',
                     style: TextStyle(
                       fontSize: 12,
-                      color:    AppTheme.primary,
+                      color: AppColors.of(context).info,
                     ),
                   ),
                 ],

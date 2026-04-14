@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import '../../core/models/office.dart';
 import '../../core/repositories/office_repository.dart';
-import '../../core/theme/app_theme.dart';
 import '../../core/widgets/app_card.dart';
 import '../../core/widgets/confirm_dialog.dart';
 import '../widgets/office_form_dialog.dart';
@@ -131,7 +131,7 @@ class _OfficesScreenState extends State<OfficesScreen> {
   void _showError(String message) {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message), backgroundColor: AppTheme.danger),
+      SnackBar(content: Text(message), backgroundColor: AppColors.of(context).danger),
     );
   }
 
@@ -140,7 +140,7 @@ class _OfficesScreenState extends State<OfficesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.background,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       body: Padding(
         padding: const EdgeInsets.all(32),
         child: Column(
@@ -149,7 +149,7 @@ class _OfficesScreenState extends State<OfficesScreen> {
             // Header row
             Row(
               children: [
-                const Expanded(
+                Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -158,14 +158,14 @@ class _OfficesScreenState extends State<OfficesScreen> {
                         style: TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.bold,
-                          color: AppTheme.textPrimary,
+                          color: Theme.of(context).colorScheme.onSurface,
                         ),
                       ),
                       SizedBox(height: 4),
                       Text(
                         'Manage offices and their clearance descriptions.',
                         style: TextStyle(
-                          color: AppTheme.textSecondary,
+                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
                           fontSize: 14,
                         ),
                       ),
@@ -174,8 +174,8 @@ class _OfficesScreenState extends State<OfficesScreen> {
                 ),
                 ElevatedButton.icon(
                   onPressed: _create,
-                  icon: const Icon(Icons.add),
-                  label: const Text('Add Office'),
+                  icon: Icon(Icons.add),
+                  label: Text('Add Office'),
                 ),
               ],
             ),
@@ -213,10 +213,10 @@ class _OfficesScreenState extends State<OfficesScreen> {
           children: [
             Text(
               'Failed to load offices.',
-              style: const TextStyle(color: AppTheme.danger),
+              style: TextStyle(color: AppColors.of(context).danger),
             ),
             const SizedBox(height: 8),
-            ElevatedButton(onPressed: _load, child: const Text('Retry')),
+            ElevatedButton(onPressed: _load, child: Text('Retry')),
           ],
         ),
       );
@@ -225,7 +225,7 @@ class _OfficesScreenState extends State<OfficesScreen> {
       return Center(
         child: Text(
           _search.isEmpty ? 'No offices yet.' : 'No offices match "$_search".',
-          style: const TextStyle(color: AppTheme.textSecondary),
+          style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65)),
         ),
       );
     }
@@ -244,7 +244,9 @@ class _OfficesScreenState extends State<OfficesScreen> {
             children: [
               // Header row
               TableRow(
-                decoration: const BoxDecoration(color: AppTheme.background),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surface,
+                ),
                 children: [
                   _headerCell('Office Name'),
                   _headerCell('Description'),
@@ -255,22 +257,26 @@ class _OfficesScreenState extends State<OfficesScreen> {
               ..._filtered.map(
                 (office) => TableRow(
                   decoration: BoxDecoration(
-                    border: Border(top: BorderSide(color: AppTheme.border)),
+                    border: Border(
+                      top: BorderSide(color: AppColors.of(context).border),
+                    ),
                   ),
                   children: [
                     _dataCell(
                       Text(
                         office.name,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontWeight: FontWeight.w500,
-                          color: AppTheme.textPrimary,
+                          color: Theme.of(context).colorScheme.onSurface,
                         ),
                       ),
                     ),
                     _dataCell(
                       Text(
                         office.description ?? '—',
-                        style: const TextStyle(color: AppTheme.textSecondary),
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
+                        ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -279,14 +285,14 @@ class _OfficesScreenState extends State<OfficesScreen> {
                       Row(
                         children: [
                           IconButton(
-                            icon: const Icon(Icons.edit_outlined, size: 18),
-                            color: AppTheme.primary,
+                            icon: Icon(Icons.edit_outlined, size: 18),
+                            color: AppColors.of(context).info,
                             tooltip: 'Edit',
                             onPressed: () => _edit(office),
                           ),
                           IconButton(
-                            icon: const Icon(Icons.delete_outline, size: 18),
-                            color: AppTheme.danger,
+                            icon: Icon(Icons.delete_outline, size: 18),
+                            color: AppColors.of(context).danger,
                             tooltip: 'Delete',
                             onPressed: () => _delete(office),
                           ),
@@ -307,10 +313,10 @@ class _OfficesScreenState extends State<OfficesScreen> {
     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
     child: Text(
       label,
-      style: const TextStyle(
+      style: TextStyle(
         fontWeight: FontWeight.w600,
         fontSize: 13,
-        color: AppTheme.textSecondary,
+        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
       ),
     ),
   );

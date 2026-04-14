@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import '../../core/models/office.dart';
 import '../../core/repositories/office_repository.dart';
-import '../../core/theme/app_theme.dart';
 import '../../core/widgets/app_card.dart';
 import '../../core/widgets/confirm_dialog.dart';
 
@@ -169,7 +169,10 @@ class _PrerequisitesScreenState extends State<PrerequisitesScreen> {
   void _showError(String message) {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message), backgroundColor: AppTheme.danger),
+      SnackBar(
+        content: Text(message),
+        backgroundColor: AppColors.of(context).danger,
+      ),
     );
   }
 
@@ -178,26 +181,31 @@ class _PrerequisitesScreenState extends State<PrerequisitesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.background,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       body: Padding(
         padding: const EdgeInsets.all(32),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Header
-            const Text(
+            Text(
               'Office Prerequisites',
               style: TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
-                color: AppTheme.textPrimary,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ),
             const SizedBox(height: 4),
-            const Text(
+            Text(
               'Define which offices must be signed before another office '
               'can sign a student\'s clearance.',
-              style: TextStyle(color: AppTheme.textSecondary, fontSize: 14),
+              style: TextStyle(
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.65),
+                fontSize: 14,
+              ),
             ),
             const SizedBox(height: 24),
 
@@ -218,9 +226,12 @@ class _PrerequisitesScreenState extends State<PrerequisitesScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(_error!, style: const TextStyle(color: AppTheme.danger)),
+            Text(
+              _error!,
+              style: TextStyle(color: AppColors.of(context).danger),
+            ),
             const SizedBox(height: 8),
-            ElevatedButton(onPressed: _load, child: const Text('Retry')),
+            ElevatedButton(onPressed: _load, child: Text('Retry')),
           ],
         ),
       );
@@ -238,8 +249,8 @@ class _PrerequisitesScreenState extends State<PrerequisitesScreen> {
               borderRadius: BorderRadius.circular(12),
               child: ListView.separated(
                 itemCount: _allOffices.length,
-                separatorBuilder: (_, __) =>
-                    const Divider(height: 1, color: AppTheme.border),
+                separatorBuilder: (_, _) =>
+                    Divider(height: 1, color: AppColors.of(context).border),
                 itemBuilder: (context, i) {
                   final office = _allOffices[i];
                   final isSelected = _selected?.id == office.id;
@@ -247,12 +258,11 @@ class _PrerequisitesScreenState extends State<PrerequisitesScreen> {
 
                   return ListTile(
                     selected: isSelected,
-                    selectedColor: AppTheme.primary,
-                    selectedTileColor: AppTheme.primary.withValues(alpha: 0.08),
-                    title: Text(
-                      office.name,
-                      style: const TextStyle(fontSize: 14),
-                    ),
+                    selectedColor: AppColors.of(context).info,
+                    selectedTileColor: AppColors.of(
+                      context,
+                    ).info.withValues(alpha: 0.08),
+                    title: Text(office.name, style: TextStyle(fontSize: 14)),
                     trailing: prereqCount > 0
                         ? Container(
                             padding: const EdgeInsets.symmetric(
@@ -260,14 +270,16 @@ class _PrerequisitesScreenState extends State<PrerequisitesScreen> {
                               vertical: 2,
                             ),
                             decoration: BoxDecoration(
-                              color: AppTheme.primary.withValues(alpha: 0.1),
+                              color: AppColors.of(
+                                context,
+                              ).info.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Text(
                               '$prereqCount',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 12,
-                                color: AppTheme.primary,
+                                color: AppColors.of(context).info,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
@@ -286,11 +298,15 @@ class _PrerequisitesScreenState extends State<PrerequisitesScreen> {
         // Right panel — prerequisites for selected office
         Expanded(
           child: _selected == null
-              ? const AppCard(
+              ? AppCard(
                   child: Center(
                     child: Text(
                       'Select an office to manage its prerequisites.',
-                      style: TextStyle(color: AppTheme.textSecondary),
+                      style: TextStyle(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withValues(alpha: 0.65),
+                      ),
                     ),
                   ),
                 )
@@ -316,10 +332,10 @@ class _PrerequisitesScreenState extends State<PrerequisitesScreen> {
                   children: [
                     Text(
                       office.name,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: AppTheme.textPrimary,
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -328,8 +344,10 @@ class _PrerequisitesScreenState extends State<PrerequisitesScreen> {
                           ? 'No prerequisites — can be signed at any time.'
                           : 'Must be preceded by ${prereqs.length} '
                                 'office${prereqs.length > 1 ? 's' : ''}.',
-                      style: const TextStyle(
-                        color: AppTheme.textSecondary,
+                      style: TextStyle(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withValues(alpha: 0.65),
                         fontSize: 13,
                       ),
                     ),
@@ -345,24 +363,28 @@ class _PrerequisitesScreenState extends State<PrerequisitesScreen> {
               else
                 ElevatedButton.icon(
                   onPressed: () => _showAddDialog(office),
-                  icon: const Icon(Icons.add, size: 16),
-                  label: const Text('Add Prerequisite'),
+                  icon: Icon(Icons.add, size: 16),
+                  label: Text('Add Prerequisite'),
                 ),
             ],
           ),
 
           const SizedBox(height: 20),
-          const Divider(color: AppTheme.border),
+          Divider(color: AppColors.of(context).border),
           const SizedBox(height: 12),
 
           // Prerequisite list
           if (prereqs.isEmpty)
-            const Padding(
+            Padding(
               padding: EdgeInsets.symmetric(vertical: 24),
               child: Center(
                 child: Text(
                   'No prerequisites set.',
-                  style: TextStyle(color: AppTheme.textSecondary),
+                  style: TextStyle(
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withValues(alpha: 0.65),
+                  ),
                 ),
               ),
             )
@@ -376,16 +398,18 @@ class _PrerequisitesScreenState extends State<PrerequisitesScreen> {
                     vertical: 12,
                   ),
                   decoration: BoxDecoration(
-                    color: AppTheme.background,
+                    color: Theme.of(context).colorScheme.surface,
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: AppTheme.border),
+                    border: Border.all(color: AppColors.of(context).border),
                   ),
                   child: Row(
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.arrow_forward,
                         size: 16,
-                        color: AppTheme.textSecondary,
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withValues(alpha: 0.65),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
@@ -394,17 +418,18 @@ class _PrerequisitesScreenState extends State<PrerequisitesScreen> {
                           children: [
                             Text(
                               req.name,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontWeight: FontWeight.w500,
-                                color: AppTheme.textPrimary,
+                                color: Theme.of(context).colorScheme.onSurface,
                               ),
                             ),
                             if (req.description != null)
                               Text(
                                 req.description!,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 12,
-                                  color: AppTheme.textSecondary,
+                                  color: Theme.of(context).colorScheme.onSurface
+                                      .withValues(alpha: 0.65),
                                 ),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
@@ -413,8 +438,8 @@ class _PrerequisitesScreenState extends State<PrerequisitesScreen> {
                         ),
                       ),
                       IconButton(
-                        icon: const Icon(Icons.remove_circle_outline, size: 18),
-                        color: AppTheme.danger,
+                        icon: Icon(Icons.remove_circle_outline, size: 18),
+                        color: AppColors.of(context).danger,
                         tooltip: 'Remove',
                         onPressed: () => _removePrerequisite(office, req),
                       ),
@@ -430,27 +455,27 @@ class _PrerequisitesScreenState extends State<PrerequisitesScreen> {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: AppTheme.primary.withValues(alpha: 0.05),
+                color: AppColors.of(context).info.withValues(alpha: 0.05),
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
-                  color: AppTheme.primary.withValues(alpha: 0.2),
+                  color: AppColors.of(context).info.withValues(alpha: 0.2),
                 ),
               ),
               child: Row(
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.info_outline,
                     size: 16,
-                    color: AppTheme.primary,
+                    color: AppColors.of(context).info,
                   ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       'The listed offices must sign the student\'s clearance '
                       'before "${office.name}" can sign.',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
-                        color: AppTheme.primary,
+                        color: AppColors.of(context).info,
                       ),
                     ),
                   ),
@@ -498,7 +523,7 @@ class _AddPrerequisiteDialogState extends State<_AddPrerequisiteDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Add Prerequisite'),
+      title: Text('Add Prerequisite'),
       content: SizedBox(
         width: 400,
         height: 360,
@@ -517,8 +542,8 @@ class _AddPrerequisiteDialogState extends State<_AddPrerequisiteDialog> {
                 borderRadius: BorderRadius.circular(8),
                 child: ListView.separated(
                   itemCount: _filtered.length,
-                  separatorBuilder: (_, __) =>
-                      const Divider(height: 1, color: AppTheme.border),
+                  separatorBuilder: (_, _) =>
+                      Divider(height: 1, color: AppColors.of(context).border),
                   itemBuilder: (context, i) {
                     final office = _filtered[i];
                     final disabled = _isDisabled(office);
@@ -530,16 +555,16 @@ class _AddPrerequisiteDialogState extends State<_AddPrerequisiteDialog> {
                         style: TextStyle(
                           fontSize: 14,
                           color: disabled
-                              ? AppTheme.textSecondary
-                              : AppTheme.textPrimary,
+                              ? AppColors.of(context).neutral
+                              : Theme.of(context).colorScheme.onSurface,
                         ),
                       ),
                       subtitle: reason != null
                           ? Text(
                               reason,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 12,
-                                color: AppTheme.danger,
+                                color: AppColors.of(context).danger,
                               ),
                             )
                           : office.description != null
@@ -547,22 +572,24 @@ class _AddPrerequisiteDialogState extends State<_AddPrerequisiteDialog> {
                               office.description!,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(fontSize: 12),
+                              style: TextStyle(fontSize: 12),
                             )
                           : null,
                       selected: _chosen?.id == office.id,
-                      selectedColor: AppTheme.primary,
-                      selectedTileColor: AppTheme.primary.withValues(
-                        alpha: 0.08,
-                      ),
+                      selectedColor: AppColors.of(context).info,
+                      selectedTileColor: AppColors.of(
+                        context,
+                      ).info.withValues(alpha: 0.08),
                       // Disabled tiles show a lock icon instead
                       trailing: disabled
-                          ? const Tooltip(
+                          ? Tooltip(
                               message: 'Cannot be added',
                               child: Icon(
                                 Icons.block,
                                 size: 16,
-                                color: AppTheme.textSecondary,
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurface.withValues(alpha: 0.65),
                               ),
                             )
                           : null,
@@ -581,13 +608,13 @@ class _AddPrerequisiteDialogState extends State<_AddPrerequisiteDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Cancel'),
+          child: Text('Cancel'),
         ),
         ElevatedButton(
           onPressed: _chosen == null
               ? null
               : () => Navigator.of(context, rootNavigator: true).pop(_chosen),
-          child: const Text('Add'),
+          child: Text('Add'),
         ),
       ],
     );

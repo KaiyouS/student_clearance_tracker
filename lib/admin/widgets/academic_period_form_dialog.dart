@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import '../../core/models/academic_period.dart';
-import '../../core/theme/app_theme.dart';
 
 class AcademicPeriodFormDialog extends StatefulWidget {
   final AcademicPeriod? period;
@@ -123,9 +123,11 @@ class _AcademicPeriodFormDialogState extends State<AcademicPeriodFormDialog> {
                     ),
                   ),
                   const SizedBox(width: 12),
-                  const Text(
+                  Text(
                     '–',
-                    style: TextStyle(color: AppTheme.textSecondary),
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
+                    ),
                   ),
                   const SizedBox(width: 12),
                   // End date
@@ -145,7 +147,7 @@ class _AcademicPeriodFormDialogState extends State<AcademicPeriodFormDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Cancel'),
+          child: Text('Cancel'),
         ),
         ElevatedButton(
           onPressed: _submit,
@@ -176,14 +178,14 @@ class _DatePickerField extends StatelessWidget {
       child: InputDecorator(
         decoration: InputDecoration(
           labelText: label,
-          suffixIcon: const Icon(Icons.calendar_today_outlined, size: 16),
+          suffixIcon: Icon(Icons.calendar_today_outlined, size: 16),
         ),
         child: Text(
           value,
           style: TextStyle(
             color: value == 'Select date'
-                ? AppTheme.textSecondary
-                : AppTheme.textPrimary,
+                ? AppColors.of(context).neutral
+                : Theme.of(context).colorScheme.onSurface,
             fontSize: 14,
           ),
         ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -6,7 +7,6 @@ import '../repositories/user_profile_repository.dart';
 import '../providers/staff_provider.dart';
 import '../providers/student_provider.dart';
 import '../services/auth_service.dart';
-import '../theme/app_theme.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -16,16 +16,19 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final _profileRepo        = UserProfileRepository();
-  final _emailController    = TextEditingController();
+  final _profileRepo = UserProfileRepository();
+  final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _authService        = AuthService();
+  final _authService = AuthService();
 
-  bool    _isLoading    = false;
+  bool _isLoading = false;
   String? _errorMessage;
 
   Future<void> _handleLogin() async {
-    setState(() { _isLoading = true; _errorMessage = null; });
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
 
     try {
       final response = await _authService.signIn(
@@ -36,7 +39,7 @@ class _LoginScreenState extends State<LoginScreen> {
       final user = response.user;
       if (user == null) throw Exception('Login failed.');
 
-      final roles   = await _authService.getUserRoles(user.id);
+      final roles = await _authService.getUserRoles(user.id);
       final profile = await _profileRepo.getById(user.id);
 
       if (!mounted) return;
@@ -55,15 +58,19 @@ class _LoginScreenState extends State<LoginScreen> {
       }
 
       if (profile.isLocked) {
-        setState(() => _errorMessage = 
-          'Your account has been locked. Please contact the administrator.');
+        setState(
+          () => _errorMessage =
+              'Your account has been locked. Please contact the administrator.',
+        );
         await _authService.signOut();
         return;
       }
 
       if (profile.isInactive) {
-        setState(() => _errorMessage = 
-          'Your account is inactive. Please contact the administrator.');
+        setState(
+          () => _errorMessage =
+              'Your account is inactive. Please contact the administrator.',
+        );
         await _authService.signOut();
         return;
       }
@@ -73,7 +80,7 @@ class _LoginScreenState extends State<LoginScreen> {
         context.go('/change-password');
         return;
       }
-      
+
       if (roles.contains('student')) {
         if (context.mounted) {
           await context.read<StudentProvider>().loadData(user.id);
@@ -108,13 +115,13 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.backgroundOf(context),
+      backgroundColor: Theme.of(context).colorScheme.surface,
       body: Center(
         child: Container(
           width: 400,
           padding: const EdgeInsets.all(32),
           decoration: BoxDecoration(
-            color: AppTheme.surfaceOf(context),
+            color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
@@ -133,14 +140,16 @@ class _LoginScreenState extends State<LoginScreen> {
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
-                  color: AppTheme.textPrimaryOf(context),
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 8),
               Text(
                 'Sign in to your account',
-                style: TextStyle(color: AppTheme.textSecondaryOf(context)),
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
+                ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 32),
@@ -168,8 +177,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   padding: const EdgeInsets.only(bottom: 8),
                   child: Text(
                     _errorMessage!,
-                    style: const TextStyle(
-                      color: AppTheme.danger,
+                    style: TextStyle(
+                      color: AppColors.of(context).danger,
                       fontSize: 13,
                     ),
                     textAlign: TextAlign.center,
@@ -183,16 +192,16 @@ class _LoginScreenState extends State<LoginScreen> {
                         width: 20,
                         height: 20,
                         child: CircularProgressIndicator(
-                          color: AppTheme.surfaceOf(context),
+                          color: Theme.of(context).colorScheme.surface,
                           strokeWidth: 2,
                         ),
                       )
                     : Text(
-                      'Sign In',
-                      style: TextStyle(
-                        color: AppTheme.textPrimaryOf(context),
-                      )
-                    ),
+                        'Sign In',
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                      ),
               ),
             ],
           ),

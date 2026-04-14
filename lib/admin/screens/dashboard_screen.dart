@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import '../../core/repositories/dashboard_repository.dart';
-import '../../core/theme/app_theme.dart';
 
 class AdminDashboardScreen extends StatefulWidget {
   const AdminDashboardScreen({super.key});
@@ -23,7 +23,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.background,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       body: FutureBuilder<DashboardStats>(
         future: _statsFuture,
         builder: (context, snapshot) {
@@ -38,7 +38,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               child: Text(
                 'Failed to load dashboard.\n${snapshot.error}',
                 textAlign: TextAlign.center,
-                style: const TextStyle(color: AppTheme.danger),
+                style: TextStyle(color: AppColors.of(context).danger),
               ),
             );
           }
@@ -51,19 +51,19 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Header
-                const Text(
+                Text(
                   'Dashboard',
                   style: TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
-                    color: AppTheme.textPrimary,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   'Current period: ${stats.currentPeriodLabel}',
-                  style: const TextStyle(
-                    color: AppTheme.textSecondary,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
                     fontSize: 14,
                   ),
                 ),
@@ -77,38 +77,38 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                     _StatCard(
                       label: 'Total Students',
                       value: stats.totalStudents,
-                      icon:  Icons.school_outlined,
-                      color: AppTheme.primary,
+                      icon: Icons.school_outlined,
+                      color: AppColors.of(context).info,
                     ),
                     _StatCard(
                       label: 'Total Offices',
                       value: stats.totalOffices,
-                      icon:  Icons.business_outlined,
-                      color: AppTheme.primary,
+                      icon: Icons.business_outlined,
+                      color: AppColors.of(context).info,
                     ),
                     _StatCard(
                       label: 'Total Staff',
                       value: stats.totalStaff,
-                      icon:  Icons.people_outlined,
-                      color: AppTheme.primary,
+                      icon: Icons.people_outlined,
+                      color: AppColors.of(context).info,
                     ),
                     _StatCard(
                       label: 'Cleared Students',
                       value: stats.completedStudents,
-                      icon:  Icons.check_circle_outline,
-                      color: AppTheme.statusSigned,
+                      icon: Icons.check_circle_outline,
+                      color: AppColors.of(context).statusSigned,
                     ),
                     _StatCard(
                       label: 'Pending Steps',
                       value: stats.pendingSteps,
-                      icon:  Icons.hourglass_empty_outlined,
-                      color: AppTheme.statusPending,
+                      icon: Icons.hourglass_empty_outlined,
+                      color: AppColors.of(context).statusPending,
                     ),
                     _StatCard(
                       label: 'Flagged Steps',
                       value: stats.flaggedSteps,
-                      icon:  Icons.flag_outlined,
-                      color: AppTheme.statusFlagged,
+                      icon: Icons.flag_outlined,
+                      color: AppColors.of(context).statusFlagged,
                     ),
                   ],
                 ),
@@ -123,10 +123,10 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
 
 // ── Stat card widget ─────────────────────────────────────────
 class _StatCard extends StatelessWidget {
-  final String   label;
-  final int      value;
+  final String label;
+  final int value;
   final IconData icon;
-  final Color    color;
+  final Color color;
 
   const _StatCard({
     required this.label,
@@ -141,9 +141,9 @@ class _StatCard extends StatelessWidget {
       width: 200,
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: AppTheme.surface,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppTheme.border),
+        border: Border.all(color: AppColors.of(context).border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -159,18 +159,18 @@ class _StatCard extends StatelessWidget {
           const SizedBox(height: 16),
           Text(
             value.toString(),
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 32,
               fontWeight: FontWeight.bold,
-              color: AppTheme.textPrimary,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
           const SizedBox(height: 4),
           Text(
             label,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 13,
-              color: AppTheme.textSecondary,
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
             ),
           ),
         ],

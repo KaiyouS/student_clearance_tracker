@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import '../../core/models/office.dart';
 import '../../core/models/office_staff.dart';
 import '../../core/repositories/office_repository.dart';
-import '../../core/theme/app_theme.dart';
 
 class StaffFormDialog extends StatefulWidget {
   final OfficeStaff? staff; // null = create
@@ -178,18 +178,21 @@ class _StaffFormDialogState extends State<StaffFormDialog> {
                 const SizedBox(height: 24),
 
                 // Office assignments
-                const Text(
+                Text(
                   'Assigned Offices',
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 13,
-                    color: AppTheme.textPrimary,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
                 const SizedBox(height: 4),
-                const Text(
+                Text(
                   'Select one or more offices this staff member can sign for.',
-                  style: TextStyle(fontSize: 12, color: AppTheme.textSecondary),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
+                  ),
                 ),
                 const SizedBox(height: 8),
 
@@ -199,7 +202,9 @@ class _StaffFormDialogState extends State<StaffFormDialog> {
                   Container(
                     constraints: const BoxConstraints(maxHeight: 200),
                     decoration: BoxDecoration(
-                      border: Border.all(color: AppTheme.border),
+                      border: Border.all(
+                        color: AppColors.of(context).border,
+                      ),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: ClipRRect(
@@ -207,8 +212,10 @@ class _StaffFormDialogState extends State<StaffFormDialog> {
                       child: ListView.separated(
                         shrinkWrap: true,
                         itemCount: _allOffices.length,
-                        separatorBuilder: (_, __) =>
-                            const Divider(height: 1, color: AppTheme.border),
+                        separatorBuilder: (_, __) => Divider(
+                          height: 1,
+                          color: AppColors.of(context).border,
+                        ),
                         itemBuilder: (context, i) {
                           final office = _allOffices[i];
                           final selected = _selectedOffices.contains(office.id);
@@ -217,9 +224,9 @@ class _StaffFormDialogState extends State<StaffFormDialog> {
                             value: selected,
                             title: Text(
                               office.name,
-                              style: const TextStyle(fontSize: 13),
+                              style: TextStyle(fontSize: 13),
                             ),
-                            activeColor: AppTheme.primary,
+                            activeColor: AppColors.of(context).info,
                             controlAffinity: ListTileControlAffinity.leading,
                             onChanged: (_) => _toggleOffice(office.id),
                           );
@@ -235,7 +242,7 @@ class _StaffFormDialogState extends State<StaffFormDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Cancel'),
+          child: Text('Cancel'),
         ),
         ElevatedButton(
           onPressed: _submit,

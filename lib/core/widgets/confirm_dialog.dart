@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../theme/app_theme.dart';
 
 class ConfirmDialog extends StatelessWidget {
   final String title;
@@ -12,7 +11,7 @@ class ConfirmDialog extends StatelessWidget {
     required this.title,
     required this.message,
     this.confirmLabel = 'Confirm',
-    this.confirmColor = AppTheme.danger,
+    this.confirmColor = const Color(0xFFEA4335),
   });
 
   /// Show the dialog and return true if confirmed, false otherwise
@@ -21,7 +20,7 @@ class ConfirmDialog extends StatelessWidget {
     required String title,
     required String message,
     String confirmLabel = 'Delete',
-    Color confirmColor = AppTheme.danger,
+    Color confirmColor = const Color(0xFFEA4335),
   }) async {
     final result = await showDialog<bool>(
       context: context,
@@ -44,7 +43,7 @@ class ConfirmDialog extends StatelessWidget {
         TextButton(
           onPressed: () =>
               Navigator.of(context, rootNavigator: true).pop(false),
-          child: const Text('Cancel'),
+          child: Text('Cancel'),
         ),
         ElevatedButton(
           style: ElevatedButton.styleFrom(

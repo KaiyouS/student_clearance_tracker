@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../core/providers/student_provider.dart';
-import '../../core/theme/app_theme.dart';
 import '../../main.dart';
 
 class StudentShell extends StatefulWidget {
@@ -25,7 +25,6 @@ class _StudentShellState extends State<StudentShell> {
       if (user != null && !provider.initialized) {
         provider.loadData(user.id);
       }
-
     });
   }
 
@@ -59,7 +58,6 @@ class _StudentShellState extends State<StudentShell> {
       bottomNavigationBar: NavigationBar(
         selectedIndex: currentIndex,
         onDestinationSelected: (i) {
-          
           final leavingClearance = currentIndex == 1 && i != 1;
 
           if (leavingClearance) {
@@ -89,12 +87,12 @@ class _StudentShellState extends State<StudentShell> {
             icon: Badge(
               isLabelVisible: provider.unseenUpdates > 0,
               label: Text(provider.unseenUpdates.toString()),
-              child: const Icon(Icons.checklist_outlined),
+              child: Icon(Icons.checklist_outlined),
             ),
             selectedIcon: Badge(
               isLabelVisible: provider.unseenUpdates > 0,
               label: Text(provider.unseenUpdates.toString()),
-              child: const Icon(Icons.checklist),
+              child: Icon(Icons.checklist),
             ),
             label: 'Clearance',
           ),
@@ -159,7 +157,9 @@ class _NotificationBannerState extends State<_NotificationBanner>
   @override
   Widget build(BuildContext context) {
     final isSigned = widget.notification.status == 'signed';
-    final color = isSigned ? AppTheme.statusSigned : AppTheme.statusFlagged;
+    final color = isSigned
+        ? AppColors.of(context).statusSigned
+        : AppColors.of(context).statusFlagged;
 
     return Positioned(
       top: MediaQuery.of(context).padding.top + 8,
@@ -184,7 +184,7 @@ class _NotificationBannerState extends State<_NotificationBanner>
                 Expanded(
                   child: Text(
                     widget.notification.message,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.w500,
                       fontSize: 13,
@@ -192,7 +192,7 @@ class _NotificationBannerState extends State<_NotificationBanner>
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.close, size: 16),
+                  icon: Icon(Icons.close, size: 16),
                   color: Colors.white,
                   onPressed: widget.onDismiss,
                   padding: EdgeInsets.zero,
