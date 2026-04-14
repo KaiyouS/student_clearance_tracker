@@ -5,7 +5,6 @@ import 'package:student_clearance_tracker/core/repositories/staff_repository.dar
 import 'package:student_clearance_tracker/core/widgets/app_card.dart';
 import 'package:student_clearance_tracker/core/widgets/confirm_dialog.dart';
 import 'package:student_clearance_tracker/core/repositories/user_profile_repository.dart';
-import 'package:student_clearance_tracker/core/widgets/account_status_badge.dart';
 import 'package:student_clearance_tracker/admin/widgets/account_status_menu.dart';
 import 'package:student_clearance_tracker/admin/widgets/staff_form_dialog.dart';
 

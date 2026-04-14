@@ -12,7 +12,6 @@ class ThemeProvider extends ChangeNotifier {
     ThemeMode.light  => 'Light',
     ThemeMode.dark   => 'Dark',
     ThemeMode.system => 'System',
-    _                => 'System',
   };
 
   // Load persisted preference on startup
@@ -36,7 +35,6 @@ class ThemeProvider extends ChangeNotifier {
       ThemeMode.light  => 'light',
       ThemeMode.dark   => 'dark',
       ThemeMode.system => 'system',
-      _                => 'system',
     });
   }
 }

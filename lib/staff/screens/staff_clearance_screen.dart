@@ -25,10 +25,24 @@ class _StaffClearanceScreenState extends State<StaffClearanceScreen>
 
   List<ClearanceStep> _allSteps = [];
   int? _periodId;
+  int? _selectedOfficeId;
   bool _isLoading = true;
   bool _isSaving = false;
   String? _error;
   String _search = '';
+  StaffProvider? _staffProvider;
+
+  static const List<String> _tabStatuses = ['pending', 'flagged', 'signed'];
+  final Map<String, List<ClearanceStep>> _filteredByStatus = {
+    'pending': const <ClearanceStep>[],
+    'flagged': const <ClearanceStep>[],
+    'signed': const <ClearanceStep>[],
+  };
+  final Map<String, int> _statusCounts = {
+    'pending': 0,
+    'flagged': 0,
+    'signed': 0,
+  };
 
   // Track which steps have prerequisite checks cached
   final Map<int, bool> _prereqCache = {};
@@ -43,17 +57,61 @@ class _StaffClearanceScreenState extends State<StaffClearanceScreen>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // Reload when office selection changes
-    final provider = context.read<StaffProvider>();
-    if (provider.selectedOffice != null && !_isLoading) {
-      _loadSteps();
+
+    final nextProvider = context.read<StaffProvider>();
+    if (_staffProvider != nextProvider) {
+      _staffProvider?.removeListener(_handleOfficeSelectionChanged);
+      _staffProvider = nextProvider;
+      _staffProvider?.addListener(_handleOfficeSelectionChanged);
+      _handleOfficeSelectionChanged();
     }
   }
 
   @override
   void dispose() {
+    _staffProvider?.removeListener(_handleOfficeSelectionChanged);
     _tabController.dispose();
     super.dispose();
+  }
+
+  void _handleOfficeSelectionChanged() {
+    final officeId = _staffProvider?.selectedOffice?.id;
+    if (_selectedOfficeId == officeId) return;
+
+    _selectedOfficeId = officeId;
+    if (_periodId != null) {
+      _loadSteps();
+    }
+  }
+
+  void _recomputeFilteredBuckets() {
+    final q = _search.trim().toLowerCase();
+    bool matchesSearch(ClearanceStep step) {
+      if (q.isEmpty) return true;
+      final name = (step.studentName ?? '').toLowerCase();
+      final no = (step.studentNo ?? '').toLowerCase();
+      return name.contains(q) || no.contains(q);
+    }
+
+    for (final status in _tabStatuses) {
+      _filteredByStatus[status] = _allSteps
+          .where((s) => s.status == status)
+          .where(matchesSearch)
+          .toList(growable: false);
+    }
+  }
+
+  void _recomputeStatusCounts() {
+    for (final status in _tabStatuses) {
+      _statusCounts[status] = _allSteps.where((s) => s.status == status).length;
+    }
+  }
+
+  void _onSearchChanged(String value) {
+    setState(() {
+      _search = value;
+      _recomputeFilteredBuckets();
+    });
   }
 
   // ── Data ──────────────────────────────────────────────────
@@ -72,10 +130,13 @@ class _StaffClearanceScreenState extends State<StaffClearanceScreen>
   }
 
   Future<void> _loadSteps() async {
-    final officeId = context.read<StaffProvider>().selectedOffice?.id;
+    final officeId = _selectedOfficeId;
     if (officeId == null || _periodId == null) {
       setState(() {
-        _allSteps = [];
+        _allSteps = const <ClearanceStep>[];
+        _prereqCache.clear();
+        _recomputeStatusCounts();
+        _recomputeFilteredBuckets();
         _isLoading = false;
       });
       return;
@@ -107,6 +168,8 @@ class _StaffClearanceScreenState extends State<StaffClearanceScreen>
         _prereqCache
           ..clear()
           ..addEntries(prereqResults);
+        _recomputeStatusCounts();
+        _recomputeFilteredBuckets();
         _isLoading = false;
       });
     } catch (e) {
@@ -120,17 +183,8 @@ class _StaffClearanceScreenState extends State<StaffClearanceScreen>
   // ── Filtered steps per tab ────────────────────────────────
 
   List<ClearanceStep> _stepsForTab(int tabIndex) {
-    final status = ['pending', 'flagged', 'signed'][tabIndex];
-    return _allSteps.where((s) {
-      final matchStatus = s.status == status;
-      final name = (s.studentName ?? '').toLowerCase();
-      final no = (s.studentNo ?? '').toLowerCase();
-      final matchSearch =
-          _search.isEmpty ||
-          name.contains(_search.toLowerCase()) ||
-          no.contains(_search.toLowerCase());
-      return matchStatus && matchSearch;
-    }).toList();
+    final status = _tabStatuses[tabIndex];
+    return _filteredByStatus[status] ?? const <ClearanceStep>[];
   }
 
   // ── Sign action ───────────────────────────────────────────
@@ -156,46 +210,46 @@ class _StaffClearanceScreenState extends State<StaffClearanceScreen>
 
   Future<void> _flag(ClearanceStep step) async {
     final remarkController = TextEditingController();
-
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: Text('Flag ${step.studentName ?? 'Student'}'),
-        content: SizedBox(
-          width: 400,
-          child: TextField(
-            controller: remarkController,
-            decoration: const InputDecoration(
-              labelText: 'Reason for flagging',
-              hintText: 'Describe the issue...',
-            ),
-            maxLines: 3,
-            autofocus: true,
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () =>
-                Navigator.of(context, rootNavigator: true).pop(false),
-            child: Text('Cancel'),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.of(context).danger,
-              foregroundColor: Colors.white,
-            ),
-            onPressed: () =>
-                Navigator.of(context, rootNavigator: true).pop(true),
-            child: Text('Flag'),
-          ),
-        ],
-      ),
-    );
-
-    if (confirmed != true) return;
-
-    setState(() => _isSaving = true);
     try {
+      final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: Text('Flag ${step.studentName ?? 'Student'}'),
+          content: SizedBox(
+            width: 400,
+            child: TextField(
+              controller: remarkController,
+              decoration: const InputDecoration(
+                labelText: 'Reason for flagging',
+                hintText: 'Describe the issue...',
+              ),
+              maxLines: 3,
+              autofocus: true,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () =>
+                  Navigator.of(context, rootNavigator: true).pop(false),
+              child: Text('Cancel'),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.of(context).danger,
+                foregroundColor: Colors.white,
+              ),
+              onPressed: () =>
+                  Navigator.of(context, rootNavigator: true).pop(true),
+              child: Text('Flag'),
+            ),
+          ],
+        ),
+      );
+
+      if (confirmed != true) return;
+
+      setState(() => _isSaving = true);
+
       await _clearanceRepo.updateStatus(
         stepId: step.id,
         status: 'flagged',
@@ -209,6 +263,7 @@ class _StaffClearanceScreenState extends State<StaffClearanceScreen>
     } catch (e) {
       _showError('Failed to flag: $e');
     } finally {
+      remarkController.dispose();
       setState(() => _isSaving = false);
     }
   }
@@ -237,18 +292,9 @@ class _StaffClearanceScreenState extends State<StaffClearanceScreen>
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.watch<StaffProvider>();
-    final officeName = provider.selectedOffice?.name ?? 'No Office Selected';
-
-    // Reload when office changes
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!_isLoading && provider.selectedOffice != null) {
-        final officeChanged =
-            _allSteps.isNotEmpty &&
-            _allSteps.first.officeId != provider.selectedOffice!.id;
-        if (officeChanged) _loadSteps();
-      }
-    });
+    final officeName = context.select<StaffProvider, String>(
+      (p) => p.selectedOffice?.name ?? 'No Office Selected',
+    );
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
@@ -300,7 +346,7 @@ class _StaffClearanceScreenState extends State<StaffClearanceScreen>
             SizedBox(
               width: 320,
               child: TextField(
-                onChanged: (v) => setState(() => _search = v),
+                onChanged: _onSearchChanged,
                 decoration: const InputDecoration(
                   hintText: 'Search by name or student no...',
                   prefixIcon: Icon(Icons.search),
@@ -329,17 +375,17 @@ class _StaffClearanceScreenState extends State<StaffClearanceScreen>
                     tabs: [
                       _buildTab(
                         'Pending',
-                        _countFor('pending'),
+                        _statusCounts['pending'] ?? 0,
                         AppColors.of(context).statusPending,
                       ),
                       _buildTab(
                         'Flagged',
-                        _countFor('flagged'),
+                        _statusCounts['flagged'] ?? 0,
                         AppColors.of(context).statusFlagged,
                       ),
                       _buildTab(
                         'Signed',
-                        _countFor('signed'),
+                        _statusCounts['signed'] ?? 0,
                         AppColors.of(context).statusSigned,
                       ),
                     ],
@@ -396,9 +442,6 @@ class _StaffClearanceScreenState extends State<StaffClearanceScreen>
       ),
     );
   }
-
-  int _countFor(String status) =>
-      _allSteps.where((s) => s.status == status).length;
 
   Widget _buildError() {
     return Center(

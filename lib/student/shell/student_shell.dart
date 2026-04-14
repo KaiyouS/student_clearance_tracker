@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:go_router/go_router.dart';
@@ -30,9 +32,19 @@ class _StudentShellState extends State<StudentShell> {
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.watch<StudentProvider>();
+    final isLoading = context.select<StudentProvider, bool>((p) => p.isLoading);
+    final latestNotification = context.select<StudentProvider, InAppNotification?>(
+      (p) => p.latestNotification,
+    );
+    final notificationCount = context.select<StudentProvider, int>(
+      (p) => p.notifications.length,
+    );
+    final unseenUpdates = context.select<StudentProvider, int>(
+      (p) => p.unseenUpdates,
+    );
+
+    final provider = context.read<StudentProvider>();
     final location = GoRouterState.of(context).matchedLocation;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     int currentIndex = 0;
     if (location == '/student/clearance') currentIndex = 1;
@@ -41,17 +53,20 @@ class _StudentShellState extends State<StudentShell> {
     return Scaffold(
       body: Stack(
         children: [
-          provider.isLoading
+          isLoading
               ? const Center(child: CircularProgressIndicator())
               : widget.child,
 
           // In-app notification banner (web + mobile foreground)
-          if (provider.notifications.isNotEmpty)
+          if (latestNotification != null)
             _NotificationBanner(
-              notification: provider.notifications.last,
-              onDismiss: () => provider.dismissNotification(
-                provider.notifications.length - 1,
-              ),
+              key: ValueKey(latestNotification.time.microsecondsSinceEpoch),
+              notification: latestNotification,
+              onDismiss: () {
+                if (notificationCount > 0) {
+                  provider.dismissNotification(notificationCount - 1);
+                }
+              },
             ),
         ],
       ),
@@ -85,13 +100,13 @@ class _StudentShellState extends State<StudentShell> {
           ),
           NavigationDestination(
             icon: Badge(
-              isLabelVisible: provider.unseenUpdates > 0,
-              label: Text(provider.unseenUpdates.toString()),
+              isLabelVisible: unseenUpdates > 0,
+              label: Text(unseenUpdates.toString()),
               child: Icon(Icons.checklist_outlined),
             ),
             selectedIcon: Badge(
-              isLabelVisible: provider.unseenUpdates > 0,
-              label: Text(provider.unseenUpdates.toString()),
+              isLabelVisible: unseenUpdates > 0,
+              label: Text(unseenUpdates.toString()),
               child: Icon(Icons.checklist),
             ),
             label: 'Clearance',
@@ -113,6 +128,7 @@ class _NotificationBanner extends StatefulWidget {
   final VoidCallback onDismiss;
 
   const _NotificationBanner({
+    super.key,
     required this.notification,
     required this.onDismiss,
   });
@@ -125,6 +141,20 @@ class _NotificationBannerState extends State<_NotificationBanner>
     with SingleTickerProviderStateMixin {
   late final AnimationController _ctrl;
   late final Animation<Offset> _slide;
+  Timer? _dismissTimer;
+  bool _isDismissing = false;
+
+  void _dismiss() {
+    if (_isDismissing) return;
+    _isDismissing = true;
+    _dismissTimer?.cancel();
+
+    _ctrl.reverse().then((_) {
+      if (mounted) {
+        widget.onDismiss();
+      }
+    });
+  }
 
   @override
   void initState() {
@@ -141,15 +171,12 @@ class _NotificationBannerState extends State<_NotificationBanner>
     _ctrl.forward();
 
     // Auto-dismiss after 4 seconds
-    Future.delayed(const Duration(seconds: 4), () {
-      if (mounted) {
-        _ctrl.reverse().then((_) => widget.onDismiss());
-      }
-    });
+    _dismissTimer = Timer(const Duration(seconds: 4), _dismiss);
   }
 
   @override
   void dispose() {
+    _dismissTimer?.cancel();
     _ctrl.dispose();
     super.dispose();
   }
@@ -194,7 +221,7 @@ class _NotificationBannerState extends State<_NotificationBanner>
                 IconButton(
                   icon: Icon(Icons.close, size: 16),
                   color: Colors.white,
-                  onPressed: widget.onDismiss,
+                  onPressed: _dismiss,
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(),
                 ),

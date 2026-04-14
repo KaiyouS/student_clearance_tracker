@@ -30,9 +30,20 @@ class _StaffShellState extends State<StaffShell> {
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.watch<StaffProvider>();
+    final isLoading = context.select<StaffProvider, bool>((p) => p.isLoading);
+    final assignedOffices = context.select<StaffProvider, List<Office>>(
+      (p) => p.assignedOffices,
+    );
+    final selectedOffice = context.select<StaffProvider, Office?>(
+      (p) => p.selectedOffice,
+    );
+    final staffName = context.select<StaffProvider, String?>(
+      (p) => p.profile?.fullName,
+    );
 
-    if (provider.isLoading) {
+    final provider = context.read<StaffProvider>();
+
+    if (isLoading) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
@@ -55,22 +66,22 @@ class _StaffShellState extends State<StaffShell> {
             const SizedBox(width: 24),
 
             // Office selector
-            if (provider.assignedOffices.isEmpty)
+            if (assignedOffices.isEmpty)
               Text(
                 'No offices assigned',
                 style: TextStyle(color: AppColors.of(context).danger, fontSize: 13),
               )
             else
               _OfficeSelector(
-                offices: provider.assignedOffices,
-                selectedOffice: provider.selectedOffice,
+                offices: assignedOffices,
+                selectedOffice: selectedOffice,
                 onChanged: provider.selectOffice,
               ),
           ],
         ),
         actions: [
           // Staff name
-          if (provider.profile != null)
+          if (staffName != null)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
               child: Row(
@@ -82,8 +93,7 @@ class _StaffShellState extends State<StaffShell> {
                   ),
                   const SizedBox(width: 4),
                   Text(
-                    // FIXME: full name not displaying
-                    provider.profile!.fullName,
+                    staffName,
                     style: TextStyle(
                       fontSize: 13,
                       color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),

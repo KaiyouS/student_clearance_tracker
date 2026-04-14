@@ -74,9 +74,9 @@ class _OfficeRequirementsScreenState extends State<OfficeRequirementsScreen> {
         _loadingPrograms = false;
 
         if (_selected != null) {
-          _selected = (_offices as List<Office>).firstWhere(
+          _selected = _offices.firstWhere(
             (o) => o.id == _selected!.id,
-            orElse: () => (_offices as List<Office>).first,
+            orElse: () => _offices.first,
           );
         }
       });

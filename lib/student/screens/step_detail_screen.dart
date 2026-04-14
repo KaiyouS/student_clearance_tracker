@@ -3,6 +3,7 @@ import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:student_clearance_tracker/core/models/clearance_step.dart';
 import 'package:student_clearance_tracker/core/models/step_with_info.dart';
 import 'package:student_clearance_tracker/core/repositories/clearance_repository.dart';
+import 'package:student_clearance_tracker/core/widgets/status_badge.dart';
 
 class StepDetailScreen extends StatefulWidget {
   final StepWithInfo stepWithInfo;
@@ -169,7 +170,7 @@ class _OfficeHeaderCard extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 4),
-                    _StatusBadge(status: step.status),
+                    StatusBadge(status: step.status),
                   ],
                 ),
               ),
@@ -241,7 +242,7 @@ class _StatusDetailCard extends StatelessWidget {
       return [
         _DetailRow(
           label: 'Status',
-          child: _StatusBadge(status: step.status),
+          child: StatusBadge(status: step.status),
         ),
         if (step.updatedAt != null)
           _DetailRow(
@@ -255,7 +256,7 @@ class _StatusDetailCard extends StatelessWidget {
       return [
         _DetailRow(
           label: 'Status',
-          child: _StatusBadge(status: step.status),
+          child: StatusBadge(status: step.status),
         ),
         if (step.updatedAt != null)
           _DetailRow(
@@ -302,7 +303,7 @@ class _StatusDetailCard extends StatelessWidget {
     return [
       _DetailRow(
         label: 'Status',
-        child: _StatusBadge(status: step.status),
+        child: StatusBadge(status: step.status),
       ),
       const SizedBox(height: 8),
       Container(
@@ -626,32 +627,6 @@ class _ActivityLog extends StatelessWidget {
 }
 
 // ── Reusable widgets ──────────────────────────────────────────
-class _StatusBadge extends StatelessWidget {
-  final String status;
-  const _StatusBadge({required this.status});
-
-  @override
-  Widget build(BuildContext context) {
-    final color = AppColors.statusColorFromString(context, status);
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withValues(alpha: 0.4)),
-      ),
-      child: Text(
-        status[0].toUpperCase() + status.substring(1),
-        style: TextStyle(
-          color: color,
-          fontSize: 12,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-    );
-  }
-}
-
 class _DetailRow extends StatelessWidget {
   final String label;
   final String? value;

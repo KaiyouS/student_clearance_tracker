@@ -212,7 +212,7 @@ class _StaffFormDialogState extends State<StaffFormDialog> {
                       child: ListView.separated(
                         shrinkWrap: true,
                         itemCount: _allOffices.length,
-                        separatorBuilder: (_, __) => Divider(
+                        separatorBuilder: (_, _) => Divider(
                           height: 1,
                           color: AppColors.of(context).border,
                         ),

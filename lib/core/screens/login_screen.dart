@@ -77,17 +77,18 @@ class _LoginScreenState extends State<LoginScreen> {
 
       // Force password change on first login
       if (profile.needsPasswordChange) {
+        if (!mounted) return;
         context.go('/change-password');
         return;
       }
 
       if (roles.contains('student')) {
-        if (context.mounted) {
-          await context.read<StudentProvider>().loadData(user.id);
-        }
+        if (!mounted) return;
+        await context.read<StudentProvider>().loadData(user.id);
       }
 
       // Route based on role
+      if (!mounted) return;
       if (roles.contains('super_admin') || roles.contains('office_staff')) {
         context.go('/admin/dashboard');
       } else if (roles.contains('student')) {
@@ -101,7 +102,9 @@ class _LoginScreenState extends State<LoginScreen> {
     } catch (e) {
       setState(() => _errorMessage = 'Something went wrong. Please try again.');
     } finally {
-      setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 

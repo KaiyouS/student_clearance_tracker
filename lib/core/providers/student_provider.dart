@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:student_clearance_tracker/main.dart';
@@ -40,6 +41,9 @@ class StudentProvider extends ChangeNotifier {
   List<ClearanceStep> _steps = [];
   List<StepWithInfo> _stepsWithInfo = [];
   Map<int, List<int>> _prereqMap = {};
+  int _signedSteps = 0;
+  int _pendingSteps = 0;
+  int _flaggedSteps = 0;
 
   // In-app notifications (for web banner + mobile)
   final List<InAppNotification> _notifications = [];
@@ -54,21 +58,32 @@ class StudentProvider extends ChangeNotifier {
   UserProfile? get profile => _profile;
   Student? get student => _student;
   AcademicPeriod? get currentPeriod => _currentPeriod;
-  List<StepWithInfo> get steps => _stepsWithInfo;
+  List<StepWithInfo> get steps => UnmodifiableListView(_stepsWithInfo);
   List<InAppNotification> get notifications =>
       List.unmodifiable(_notifications);
+  InAppNotification? get latestNotification =>
+      _notifications.isEmpty ? null : _notifications.last;
+  bool get hasNotifications => _notifications.isNotEmpty;
   bool get isLoading => _isLoading;
   String? get error => _error;
 
   int get totalSteps => _steps.length;
-  int get signedSteps => _steps.where((s) => s.isSigned).length;
-  int get pendingSteps => _steps.where((s) => s.isPending).length;
-  int get flaggedSteps => _steps.where((s) => s.isFlagged).length;
+  int get signedSteps => _signedSteps;
+  int get pendingSteps => _pendingSteps;
+  int get flaggedSteps => _flaggedSteps;
   bool get isComplete => totalSteps > 0 && signedSteps == totalSteps;
   bool get hasSteps => totalSteps > 0;
 
   bool _initialized = false;
   bool get initialized => _initialized;
+
+  void _applyStepSnapshot(List<ClearanceStep> steps) {
+    _steps = steps;
+    _signedSteps = steps.where((s) => s.isSigned).length;
+    _pendingSteps = steps.where((s) => s.isPending).length;
+    _flaggedSteps = steps.where((s) => s.isFlagged).length;
+    _stepsWithInfo = _computeStepsWithInfo(steps, _prereqMap);
+  }
 
   // ── Load ──────────────────────────────────────────────────
   Future<void> loadData(String userId) async {
@@ -92,11 +107,13 @@ class StudentProvider extends ChangeNotifier {
       _prereqMap = results[3] as Map<int, List<int>>;
 
       if (_currentPeriod != null) {
-        _steps = await _clearanceRepo.getByStudent(userId, _currentPeriod!.id);
+        final steps = await _clearanceRepo.getByStudent(userId, _currentPeriod!.id);
+        _applyStepSnapshot(steps);
+      } else {
+        _applyStepSnapshot(const <ClearanceStep>[]);
       }
 
       await _computeUnseenUpdates(userId);
-      _stepsWithInfo = _computeStepsWithInfo(_steps, _prereqMap);
       _subscribeToChanges(userId);
 
       setState(() => _isLoading = false);
@@ -116,40 +133,57 @@ class StudentProvider extends ChangeNotifier {
   Future<void> markClearanceVisited() async {
     await _profileRepo.markClearanceVisited();
     _lastVisitedAt = DateTime.now().toUtc();
+    _replaceChangedSteps(const <int>[]);
     _unseenUpdates = 0;
     notifyListeners();
   }
 
   void clearChangedSteps() {
-    _changedStepIds.clear();
+    _replaceChangedSteps(const <int>[]);
     notifyListeners();
   }
 
   DateTime? _lastVisitedAt;
   final Set<int> _changedStepIds = <int>{};
+  int _changedStepIdsVersion = 0;
+  int get changedStepsVersion => _changedStepIdsVersion;
+
   bool wasStepChanged(int stepId) => _changedStepIds.contains(stepId);
+
+  void _replaceChangedSteps(Iterable<int> ids) {
+    final nextIds = ids.toSet();
+    if (
+      nextIds.length == _changedStepIds.length &&
+      _changedStepIds.containsAll(nextIds)
+    ) {
+      return;
+    }
+
+    _changedStepIds
+      ..clear()
+      ..addAll(nextIds);
+    _changedStepIdsVersion++;
+  }
   
   Future<void> _computeUnseenUpdates(String userId) async {
     try {
       _lastVisitedAt = await _profileRepo.getClearanceLastVisited(userId);
 
       if (_lastVisitedAt == null) {
-        _changedStepIds.clear();
+        _replaceChangedSteps(const <int>[]);
         _unseenUpdates = 0;
         return;
       }
 
-      _changedStepIds
-        ..clear()
-        ..addAll(
-          _steps
-              .where((s) => s.updatedAt != null && s.updatedAt!.isAfter(_lastVisitedAt!))
-              .map((s) => s.id),
-        );
+      _replaceChangedSteps(
+        _steps
+            .where((s) => s.updatedAt != null && s.updatedAt!.isAfter(_lastVisitedAt!))
+            .map((s) => s.id),
+      );
 
       _unseenUpdates = _changedStepIds.length;
     } catch (_) {
-      _changedStepIds.clear();
+      _replaceChangedSteps(const <int>[]);
       _unseenUpdates = 0;
     }
   }
@@ -201,8 +235,7 @@ class StudentProvider extends ChangeNotifier {
     // Refresh full step list so the clearance cards update immediately
     if (_currentPeriod != null) {
       final steps = await _clearanceRepo.getByStudent(userId, _currentPeriod!.id);
-      _steps = steps;
-      _stepsWithInfo = _computeStepsWithInfo(steps, _prereqMap);
+      _applyStepSnapshot(steps);
 
       // Recompute unseen count from last visited timestamp
       await _computeUnseenUpdates(userId);

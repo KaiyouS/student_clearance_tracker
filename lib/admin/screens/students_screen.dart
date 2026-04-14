@@ -3,9 +3,7 @@ import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:student_clearance_tracker/core/models/student.dart';
 import 'package:student_clearance_tracker/core/repositories/student_repository.dart';
 import 'package:student_clearance_tracker/core/widgets/app_card.dart';
-import 'package:student_clearance_tracker/core/widgets/confirm_dialog.dart';
 import 'package:student_clearance_tracker/core/repositories/user_profile_repository.dart';
-import 'package:student_clearance_tracker/core/widgets/account_status_badge.dart';
 import 'package:student_clearance_tracker/admin/widgets/account_status_menu.dart';
 import 'package:student_clearance_tracker/admin/widgets/student_form_dialog.dart';
 

@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:student_clearance_tracker/core/models/clearance_step.dart';
-import 'package:student_clearance_tracker/core/models/program.dart';
-import 'package:student_clearance_tracker/core/models/school.dart';
 import 'package:student_clearance_tracker/core/repositories/academic_period_repository.dart';
 import 'package:student_clearance_tracker/core/repositories/clearance_repository.dart';
-import 'package:student_clearance_tracker/core/repositories/program_repository.dart';
-import 'package:student_clearance_tracker/core/repositories/school_repository.dart';
 import 'package:student_clearance_tracker/core/widgets/app_card.dart';
 import 'package:student_clearance_tracker/core/widgets/confirm_dialog.dart';
 import 'package:student_clearance_tracker/core/widgets/status_badge.dart';
@@ -22,15 +18,12 @@ class AdminClearanceScreen extends StatefulWidget {
 class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
   final _clearanceRepo = ClearanceRepository();
   final _periodRepo = AcademicPeriodRepository();
-  final _schoolRepo = SchoolRepository();
-  final _programRepo = ProgramRepository();
 
   // Data
   List<Map<String, dynamic>> _overview = [];
   List<Map<String, dynamic>> _filtered = [];
   List<ClearanceStep> _selectedSteps = [];
-  List<School> _schools = [];
-  List<Program> _programs = [];
+  _OverviewStats _overviewStats = const _OverviewStats.empty();
   int? _currentPeriodId;
   String? _currentPeriodLabel;
 
@@ -40,8 +33,6 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
   // Filters
   String _search = '';
   String _statusFilter = 'all';
-  int? _schoolFilter;
-  int? _programFilter;
 
   // Loading states
   bool _isLoading = true;
@@ -67,18 +58,16 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
       final results = await Future.wait([
         _clearanceRepo.getAdminOverview(),
         _periodRepo.getCurrent(),
-        _schoolRepo.getAll(),
-        _programRepo.getAll(),
       ]);
 
       final period = results[1] as dynamic;
+      final overview = results[0] as List<Map<String, dynamic>>;
 
       setState(() {
-        _overview = results[0] as List<Map<String, dynamic>>;
+        _overview = overview;
+        _overviewStats = _computeOverviewStats(overview);
         _currentPeriodId = period?.id;
         _currentPeriodLabel = period?.label;
-        _schools = results[2] as List<School>;
-        _programs = results[3] as List<Program>;
         _isLoading = false;
       });
 
@@ -114,20 +103,50 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
   }
 
   void _applyFilters() {
+    final normalizedSearch = _search.trim().toLowerCase();
+
     setState(() {
-      _filtered = _overview.where((s) {
-        // Search
-        final name = (s['full_name'] ?? '').toLowerCase();
-        final matchSearch =
-            _search.isEmpty || name.contains(_search.toLowerCase());
+      _filtered = _overview
+          .where((s) {
+            // Search
+            final name = (s['full_name'] ?? '').toLowerCase();
+            final matchSearch =
+                normalizedSearch.isEmpty || name.contains(normalizedSearch);
 
-        // Status
-        final status = s['clearance_status'] ?? 'incomplete';
-        final matchStatus = _statusFilter == 'all' || status == _statusFilter;
+            // Status
+            final status = s['clearance_status'] ?? 'incomplete';
+            final matchStatus =
+                _statusFilter == 'all' || status == _statusFilter;
 
-        return matchSearch && matchStatus;
-      }).toList();
+            return matchSearch && matchStatus;
+          })
+          .toList(growable: false);
     });
+  }
+
+  _OverviewStats _computeOverviewStats(List<Map<String, dynamic>> data) {
+    var complete = 0;
+    var flagged = 0;
+    var noClearance = 0;
+
+    for (final student in data) {
+      if (student['clearance_status'] == 'complete') {
+        complete++;
+      }
+      if ((student['flagged_steps'] ?? 0) > 0) {
+        flagged++;
+      }
+      if ((student['total_steps'] ?? 0) == 0) {
+        noClearance++;
+      }
+    }
+
+    return _OverviewStats(
+      total: data.length,
+      complete: complete,
+      flagged: flagged,
+      noClearance: noClearance,
+    );
   }
 
   // ── Generate clearance ────────────────────────────────────
@@ -228,45 +247,46 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
 
   Future<void> _flagWithRemark(ClearanceStep step) async {
     final remarkController = TextEditingController();
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: Text('Flag Step'),
-        content: SizedBox(
-          width: 400,
-          child: TextField(
-            controller: remarkController,
-            decoration: const InputDecoration(
-              labelText: 'Reason for flagging',
-              hintText: 'Enter a remark...',
-            ),
-            maxLines: 3,
-            autofocus: true,
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () =>
-                Navigator.of(context, rootNavigator: true).pop(false),
-            child: Text('Cancel'),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.of(context).danger,
-              foregroundColor: Colors.white,
-            ),
-            onPressed: () =>
-                Navigator.of(context, rootNavigator: true).pop(true),
-            child: Text('Flag'),
-          ),
-        ],
-      ),
-    );
-
-    if (confirmed != true) return;
-
-    setState(() => _isSaving = true);
     try {
+      final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: Text('Flag Step'),
+          content: SizedBox(
+            width: 400,
+            child: TextField(
+              controller: remarkController,
+              decoration: const InputDecoration(
+                labelText: 'Reason for flagging',
+                hintText: 'Enter a remark...',
+              ),
+              maxLines: 3,
+              autofocus: true,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () =>
+                  Navigator.of(context, rootNavigator: true).pop(false),
+              child: Text('Cancel'),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.of(context).danger,
+                foregroundColor: Colors.white,
+              ),
+              onPressed: () =>
+                  Navigator.of(context, rootNavigator: true).pop(true),
+              child: Text('Flag'),
+            ),
+          ],
+        ),
+      );
+
+      if (confirmed != true) return;
+
+      setState(() => _isSaving = true);
+
       await _clearanceRepo.updateStatus(
         stepId: step.id,
         status: 'flagged',
@@ -281,6 +301,7 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
     } catch (e) {
       _showError('Failed to flag step: $e');
     } finally {
+      remarkController.dispose();
       setState(() => _isSaving = false);
     }
   }
@@ -449,39 +470,28 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
   // ── Stats row ─────────────────────────────────────────────
 
   Widget _buildStatsRow() {
-    final total = _overview.length;
-    final complete = _overview
-        .where((s) => s['clearance_status'] == 'complete')
-        .length;
-    final flagged = _overview
-        .where((s) => (s['flagged_steps'] ?? 0) > 0)
-        .length;
-    final noClearance = _overview
-        .where((s) => (s['total_steps'] ?? 0) == 0)
-        .length;
-
     return Padding(
       padding: const EdgeInsets.all(12),
       child: Row(
         children: [
           _MiniStat(
             label: 'Total',
-            value: total,
+            value: _overviewStats.total,
             color: AppColors.of(context).info,
           ),
           _MiniStat(
             label: 'Complete',
-            value: complete,
+            value: _overviewStats.complete,
             color: AppColors.of(context).statusSigned,
           ),
           _MiniStat(
             label: 'Flagged',
-            value: flagged,
+            value: _overviewStats.flagged,
             color: AppColors.of(context).statusFlagged,
           ),
           _MiniStat(
             label: 'No Steps',
-            value: noClearance,
+            value: _overviewStats.noClearance,
             color: Theme.of(
               context,
             ).colorScheme.onSurface.withValues(alpha: 0.65),
@@ -929,6 +939,26 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
         '${dt.hour.toString().padLeft(2, '0')}:'
         '${dt.minute.toString().padLeft(2, '0')}';
   }
+}
+
+class _OverviewStats {
+  final int total;
+  final int complete;
+  final int flagged;
+  final int noClearance;
+
+  const _OverviewStats({
+    required this.total,
+    required this.complete,
+    required this.flagged,
+    required this.noClearance,
+  });
+
+  const _OverviewStats.empty()
+    : total = 0,
+      complete = 0,
+      flagged = 0,
+      noClearance = 0;
 }
 
 // ── Mini stat widget ──────────────────────────────────────────

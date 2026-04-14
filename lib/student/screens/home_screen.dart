@@ -11,13 +11,39 @@ class StudentHomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.watch<StudentProvider>();
+    final isLoading = context.select<StudentProvider, bool>((p) => p.isLoading);
+    final error = context.select<StudentProvider, String?>((p) => p.error);
+    final firstName = context.select<StudentProvider, String?>(
+      (p) => p.profile?.firstName,
+    );
+    final periodLabel = context.select<StudentProvider, String?>(
+      (p) => p.currentPeriod?.label,
+    );
+    final hasSteps = context.select<StudentProvider, bool>((p) => p.hasSteps);
+    final isComplete = context.select<StudentProvider, bool>(
+      (p) => p.isComplete,
+    );
+    final totalSteps = context.select<StudentProvider, int>(
+      (p) => p.totalSteps,
+    );
+    final signedSteps = context.select<StudentProvider, int>(
+      (p) => p.signedSteps,
+    );
+    final pendingSteps = context.select<StudentProvider, int>(
+      (p) => p.pendingSteps,
+    );
+    final flaggedSteps = context.select<StudentProvider, int>(
+      (p) => p.flaggedSteps,
+    );
+    final nextActionableStep = context.select<StudentProvider, StepWithInfo?>(
+      (p) => p.nextActionableStep,
+    );
 
-    if (provider.isLoading) {
+    if (isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
 
-    if (provider.error != null) {
+    if (error != null) {
       return Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -29,13 +55,15 @@ class StudentHomeScreen extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Text(
-              provider.error!,
+              error,
               textAlign: TextAlign.center,
               style: TextStyle(color: AppColors.of(context).danger),
             ),
             const SizedBox(height: 12),
             ElevatedButton(
-              onPressed: () => provider.loadData(supabase.auth.currentUser!.id),
+              onPressed: () => context.read<StudentProvider>().loadData(
+                supabase.auth.currentUser!.id,
+              ),
               child: const Text('Retry'),
             ),
           ],
@@ -44,7 +72,9 @@ class StudentHomeScreen extends StatelessWidget {
     }
 
     return RefreshIndicator(
-      onRefresh: () => provider.loadData(supabase.auth.currentUser!.id),
+      onRefresh: () => context.read<StudentProvider>().loadData(
+        supabase.auth.currentUser!.id,
+      ),
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.fromLTRB(20, 48, 20, 24),
@@ -53,14 +83,14 @@ class StudentHomeScreen extends StatelessWidget {
           children: [
             // Greeting
             Text(
-              'Hi, ${provider.profile?.firstName ?? 'Student'}! 👋',
+              'Hi, ${firstName ?? 'Student'}! 👋',
               style: Theme.of(
                 context,
               ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 4),
             Text(
-              provider.currentPeriod?.label ?? 'No active period',
+              periodLabel ?? 'No active period',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 color: Theme.of(
                   context,
@@ -70,22 +100,27 @@ class StudentHomeScreen extends StatelessWidget {
             const SizedBox(height: 24),
 
             // Overall clearance status card
-            _ClearanceStatusCard(provider: provider),
+            _ClearanceStatusCard(
+              isComplete: isComplete,
+              hasSteps: hasSteps,
+              totalSteps: totalSteps,
+              signedSteps: signedSteps,
+            ),
             const SizedBox(height: 16),
 
-            if (provider.hasSteps && !provider.isComplete) ...[
-              _NextStepCard(step: provider.nextActionableStep),
+            if (hasSteps && !isComplete) ...[
+              _NextStepCard(step: nextActionableStep),
               const SizedBox(height: 16),
             ],
 
             // Stats row
-            if (provider.hasSteps) ...[
+            if (hasSteps) ...[
               Row(
                 children: [
                   Expanded(
                     child: _StatCard(
                       label: 'Pending',
-                      value: provider.pendingSteps,
+                      value: pendingSteps,
                       color: AppColors.of(context).statusPending,
                       icon: Icons.hourglass_empty_outlined,
                     ),
@@ -94,7 +129,7 @@ class StudentHomeScreen extends StatelessWidget {
                   Expanded(
                     child: _StatCard(
                       label: 'Flagged',
-                      value: provider.flaggedSteps,
+                      value: flaggedSteps,
                       color: AppColors.of(context).statusFlagged,
                       icon: Icons.flag_outlined,
                     ),
@@ -103,7 +138,7 @@ class StudentHomeScreen extends StatelessWidget {
                   Expanded(
                     child: _StatCard(
                       label: 'Signed',
-                      value: provider.signedSteps,
+                      value: signedSteps,
                       color: AppColors.of(context).statusSigned,
                       icon: Icons.check_circle_outline,
                     ),
@@ -134,15 +169,20 @@ class StudentHomeScreen extends StatelessWidget {
 
 // ── Overall clearance status card ────────────────────────────
 class _ClearanceStatusCard extends StatelessWidget {
-  final StudentProvider provider;
-  const _ClearanceStatusCard({required this.provider});
+  final bool isComplete;
+  final bool hasSteps;
+  final int totalSteps;
+  final int signedSteps;
+
+  const _ClearanceStatusCard({
+    required this.isComplete,
+    required this.hasSteps,
+    required this.totalSteps,
+    required this.signedSteps,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final isComplete = provider.isComplete;
-    final hasSteps = provider.hasSteps;
-    final total = provider.totalSteps;
-    final signed = provider.signedSteps;
     final color = isComplete
         ? AppColors.of(context).statusSigned
         : AppColors.of(context).info;
@@ -191,7 +231,7 @@ class _ClearanceStatusCard extends StatelessWidget {
             ClipRRect(
               borderRadius: BorderRadius.circular(6),
               child: LinearProgressIndicator(
-                value: total > 0 ? signed / total : 0,
+                value: totalSteps > 0 ? signedSteps / totalSteps : 0,
                 backgroundColor: color.withValues(alpha: 0.15),
                 valueColor: AlwaysStoppedAnimation<Color>(color),
                 minHeight: 8,
@@ -199,7 +239,7 @@ class _ClearanceStatusCard extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              '$signed of $total offices signed',
+              '$signedSteps of $totalSteps offices signed',
               style: TextStyle(color: color, fontSize: 13),
             ),
           ],
@@ -262,6 +302,8 @@ class _StatCard extends StatelessWidget {
 
 // ── No clearance generated yet ────────────────────────────────
 class _NoClearanceCard extends StatelessWidget {
+  const _NoClearanceCard();
+
   @override
   Widget build(BuildContext context) {
     return Container(

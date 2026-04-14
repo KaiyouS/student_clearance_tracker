@@ -3,6 +3,7 @@ import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:provider/provider.dart';
 import 'package:student_clearance_tracker/core/models/step_with_info.dart';
 import 'package:student_clearance_tracker/core/providers/student_provider.dart';
+import 'package:student_clearance_tracker/core/widgets/status_badge.dart';
 import 'package:student_clearance_tracker/main.dart';
 import 'package:student_clearance_tracker/student/screens/step_detail_screen.dart';
 
@@ -11,17 +12,23 @@ class StudentClearanceScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.watch<StudentProvider>();
+    final isLoading = context.select<StudentProvider, bool>((p) => p.isLoading);
+    final steps = context.select<StudentProvider, List<StepWithInfo>>(
+      (p) => p.steps,
+    );
+    final _ = context.select<StudentProvider, int>(
+      (p) => p.changedStepsVersion,
+    );
 
-    if (provider.isLoading) {
+    if (isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
 
     return RefreshIndicator(
-      onRefresh: () => provider.loadData(supabase.auth.currentUser!.id),
-      child: provider.steps.isEmpty
-          ? const _EmptySteps()
-          : _StepsList(steps: provider.steps),
+      onRefresh: () => context.read<StudentProvider>().loadData(
+        supabase.auth.currentUser!.id,
+      ),
+      child: steps.isEmpty ? const _EmptySteps() : _StepsList(steps: steps),
     );
   }
 }
@@ -77,6 +84,8 @@ class _StepsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final provider = context.read<StudentProvider>();
+
     return CustomScrollView(
       physics: const AlwaysScrollableScrollPhysics(),
       slivers: [
@@ -105,9 +114,7 @@ class _StepsList extends StatelessWidget {
                   item: steps[i],
                   isLast: i == steps.length - 1,
                   prevLevel: i > 0 ? steps[i - 1].level : null,
-                  wasChanged: context.watch<StudentProvider>().wasStepChanged(
-                    steps[i].step.id,
-                  ),
+                  wasChanged: provider.wasStepChanged(steps[i].step.id),
                 ),
               ),
               childCount: steps.length,
@@ -138,9 +145,6 @@ class _StepCard extends StatelessWidget {
     final step = item.step;
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final isNewLevel = prevLevel != null && item.level != prevLevel;
-
-    // Status colors
-    final statusColor = AppColors.statusColorFromString(context, step.status);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -256,7 +260,7 @@ class _StepCard extends StatelessWidget {
                               ),
                             ),
                           ),
-                        _StatusBadge(status: step.status),
+                        StatusBadge(status: step.status),
                       ],
                     ),
 
@@ -362,35 +366,6 @@ class _StatusCircle extends StatelessWidget {
         border: Border.all(color: color, width: 2),
       ),
       child: Icon(icon, size: 14, color: color),
-    );
-  }
-}
-
-// ── Status badge ──────────────────────────────────────────────
-class _StatusBadge extends StatelessWidget {
-  final String status;
-  const _StatusBadge({required this.status});
-
-  @override
-  Widget build(BuildContext context) {
-    final color = AppColors.statusColorFromString(context, status);
-    final label = status[0].toUpperCase() + status.substring(1);
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withValues(alpha: 0.4)),
-      ),
-      child: Text(
-        label,
-        style: TextStyle(
-          color: color,
-          fontSize: 11,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
     );
   }
 }

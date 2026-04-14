@@ -62,22 +62,6 @@ class _PrerequisitesScreenState extends State<PrerequisitesScreen> {
     return _prerequisites[office.id] ?? [];
   }
 
-  // Offices that CAN be added as prerequisites for the selected office:
-  // - Not the office itself
-  // - Not already a prerequisite
-  // - Would not create a circular dependency
-  List<Office> _availableToAdd(Office office) {
-    final current = _prerequisitesFor(office).map((o) => o.id).toSet();
-    return _allOffices
-        .where(
-          (o) =>
-              o.id != office.id &&
-              !current.contains(o.id) &&
-              !_wouldCreateCycle(office.id, o.id),
-        )
-        .toList();
-  }
-
   // Simple cycle check: would adding requiresOfficeId as a prerequisite
   // of officeId create a cycle?
   // i.e. does officeId already appear (directly or indirectly)

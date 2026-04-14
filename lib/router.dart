@@ -1,6 +1,7 @@
 import 'package:go_router/go_router.dart';
 import 'package:student_clearance_tracker/admin/screens/admin_clearance_screen.dart';
 import 'package:student_clearance_tracker/admin/screens/office_requirements_screen.dart';
+import 'package:student_clearance_tracker/core/models/user_profile.dart';
 import 'package:student_clearance_tracker/core/repositories/user_profile_repository.dart';
 import 'package:student_clearance_tracker/core/screens/change_password_screen.dart';
 import 'package:student_clearance_tracker/core/screens/login_screen.dart';
@@ -25,6 +26,50 @@ import 'package:student_clearance_tracker/staff/screens/staff_clearance_screen.d
 import 'package:student_clearance_tracker/main.dart';
 
 final _authService = AuthService();
+const _accessCacheTtl = Duration(seconds: 30);
+
+class _AccessSnapshot {
+  final String userId;
+  final UserProfile? profile;
+  final List<String> roles;
+  final DateTime fetchedAt;
+
+  const _AccessSnapshot({
+    required this.userId,
+    required this.profile,
+    required this.roles,
+    required this.fetchedAt,
+  });
+
+  bool get isFresh => DateTime.now().difference(fetchedAt) < _accessCacheTtl;
+}
+
+_AccessSnapshot? _accessSnapshot;
+
+void _clearAccessSnapshot() {
+  _accessSnapshot = null;
+}
+
+Future<_AccessSnapshot> _getAccessSnapshot(String userId) async {
+  final cached = _accessSnapshot;
+  if (cached != null && cached.userId == userId && cached.isFresh) {
+    return cached;
+  }
+
+  final profile = await UserProfileRepository().getById(userId);
+  final roles = profile == null
+      ? <String>[]
+      : await _authService.getUserRoles(userId);
+
+  final snapshot = _AccessSnapshot(
+    userId: userId,
+    profile: profile,
+    roles: roles,
+    fetchedAt: DateTime.now(),
+  );
+  _accessSnapshot = snapshot;
+  return snapshot;
+}
 
 final router = GoRouter(
   initialLocation: '/login',
@@ -38,15 +83,18 @@ final router = GoRouter(
 
     // Not logged in → always go to login
     if (session == null) {
+      _clearAccessSnapshot();
       return isLoggingIn ? null : '/login';
     }
 
-    // ── Logged in — check profile on every navigation ──
-    final profile = await UserProfileRepository()
-        .getById(session.user.id);
+    // ── Logged in — load cached access context ──
+    final access = await _getAccessSnapshot(session.user.id);
+    final profile = access.profile;
+    final roles = access.roles;
 
     // Profile missing → something is wrong → back to login
     if (profile == null) {
+      _clearAccessSnapshot();
       await supabase.auth.signOut();
       return '/login';
     }
@@ -54,6 +102,7 @@ final router = GoRouter(
     // Account locked or inactive → back to login
     // (login screen will show the error on next attempt)
     if (profile.isLocked || profile.isInactive) {
+      _clearAccessSnapshot();
       await supabase.auth.signOut();
       return '/login';
     }
@@ -62,41 +111,36 @@ final router = GoRouter(
     if (profile.needsPasswordChange) {
       return isChangingPw ? null : '/change-password';
     }
-    
-    // TODO: check the behavior of this code on the admin site (manually visiting the url)
-    if (isChangingPw || isUpdatingPw) return null;
-    
+
     // Password is fine but still trying to visit /change-password
     // → redirect to correct shell
     if (isChangingPw) {
-      final roles = await _authService.getUserRoles(session.user.id);
       return _shellRoute(roles);
     }
+
+    // Updating password is allowed for students in profile flow.
+    if (isUpdatingPw) return null;
     
     final isAdminRoute = location.startsWith('/admin');
     final isStaffRoute = location.startsWith('/staff');
     final isStudentRoute = location.startsWith('/student');
 
-    if (isAdminRoute) {
-      final roles = await _authService.getUserRoles(session.user.id);
-      if (!roles.contains('super_admin')) return '/staff/clearance';
+    if (isAdminRoute && !roles.contains('super_admin')) {
+      return _shellRoute(roles);
     }
 
     if (isStaffRoute) {
-      final roles = await _authService.getUserRoles(session.user.id);
       if (!roles.contains('office_staff') && !roles.contains('super_admin')) {
-        return '/login';
+        return _shellRoute(roles);
       }
     }
-    
-    if (isStudentRoute) {
-      final roles = await _authService.getUserRoles(session.user.id);
-      if (!roles.contains('student')) return '/login';
+
+    if (isStudentRoute && !roles.contains('student')) {
+      return _shellRoute(roles);
     }
 
     // Already logged in, trying to visit /login → redirect to shell
     if (isLoggingIn) {
-      final roles = await _authService.getUserRoles(session.user.id);
       return _shellRoute(roles);
     }
 

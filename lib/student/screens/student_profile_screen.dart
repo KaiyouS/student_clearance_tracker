@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:student_clearance_tracker/core/models/student.dart';
+import 'package:student_clearance_tracker/core/models/user_profile.dart';
 import 'package:student_clearance_tracker/core/providers/student_provider.dart';
 import 'package:student_clearance_tracker/core/services/auth_service.dart';
 import 'package:student_clearance_tracker/core/widgets/account_status_badge.dart';
@@ -13,17 +15,21 @@ class StudentProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.watch<StudentProvider>();
-    final profile = provider.profile;
-    final student = provider.student;
+    final isLoading = context.select<StudentProvider, bool>((p) => p.isLoading);
+    final profile = context.select<StudentProvider, UserProfile?>(
+      (p) => p.profile,
+    );
+    final student = context.select<StudentProvider, Student?>((p) => p.student);
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    if (provider.isLoading || profile == null) {
+    if (isLoading || profile == null) {
       return const Center(child: CircularProgressIndicator());
     }
 
     return RefreshIndicator(
-      onRefresh: () => provider.loadData(supabase.auth.currentUser!.id),
+      onRefresh: () => context.read<StudentProvider>().loadData(
+        supabase.auth.currentUser!.id,
+      ),
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.fromLTRB(20, 48, 20, 24),

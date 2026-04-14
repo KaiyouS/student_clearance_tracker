@@ -7,7 +7,9 @@ class ThemeToggle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.watch<ThemeProvider>();
+    final themeMode = context.select<ThemeProvider, ThemeMode>(
+      (p) => p.themeMode,
+    );
     // TODO: do something about the button segment's label wrapping
     return SegmentedButton<ThemeMode>(
       segments: const [
@@ -27,9 +29,9 @@ class ThemeToggle extends StatelessWidget {
           // label: Text('System', style: TextStyle(fontSize: 12)),
         ),
       ],
-      selected:          {provider.themeMode},
+      selected:          {themeMode},
       onSelectionChanged: (values) =>
-          provider.setTheme(values.first),
+          context.read<ThemeProvider>().setTheme(values.first),
       style: ButtonStyle(
         visualDensity: VisualDensity.compact,
       ),
