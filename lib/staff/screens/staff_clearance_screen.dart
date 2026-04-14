@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:provider/provider.dart';
-import '../../core/models/clearance_step.dart';
-import '../../core/providers/staff_provider.dart';
-import '../../core/repositories/academic_period_repository.dart';
-import '../../core/repositories/clearance_repository.dart';
-import '../../core/widgets/app_card.dart';
-import '../../core/widgets/status_badge.dart';
-import '../../main.dart';
+import 'package:student_clearance_tracker/core/models/clearance_step.dart';
+import 'package:student_clearance_tracker/core/providers/staff_provider.dart';
+import 'package:student_clearance_tracker/core/repositories/academic_period_repository.dart';
+import 'package:student_clearance_tracker/core/repositories/clearance_repository.dart';
+import 'package:student_clearance_tracker/core/widgets/app_card.dart';
+import 'package:student_clearance_tracker/core/widgets/status_badge.dart';
+import 'package:student_clearance_tracker/main.dart';
 
 class StaffClearanceScreen extends StatefulWidget {
   const StaffClearanceScreen({super.key});

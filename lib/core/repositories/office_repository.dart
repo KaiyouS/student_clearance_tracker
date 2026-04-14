@@ -1,5 +1,5 @@
-import '../../main.dart';
-import '../models/office.dart';
+import 'package:student_clearance_tracker/main.dart';
+import 'package:student_clearance_tracker/core/models/office.dart';
 
 class OfficeRepository {
   Future<List<Office>> getAll() async {

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:student_clearance_tracker/core/theme/app_colors.dart';
-import '../../core/models/office.dart';
-import '../../core/repositories/office_repository.dart';
-import '../../core/widgets/app_card.dart';
-import '../../core/widgets/confirm_dialog.dart';
-import '../widgets/office_form_dialog.dart';
+import 'package:student_clearance_tracker/core/models/office.dart';
+import 'package:student_clearance_tracker/core/repositories/office_repository.dart';
+import 'package:student_clearance_tracker/core/widgets/app_card.dart';
+import 'package:student_clearance_tracker/core/widgets/confirm_dialog.dart';
+import 'package:student_clearance_tracker/admin/widgets/office_form_dialog.dart';
 
 class OfficesScreen extends StatefulWidget {
   const OfficesScreen({super.key});

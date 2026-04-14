@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:student_clearance_tracker/core/theme/app_colors.dart';
-import '../../core/models/academic_period.dart';
-import '../../core/repositories/academic_period_repository.dart';
-import '../../core/widgets/app_card.dart';
-import '../../core/widgets/confirm_dialog.dart';
-import '../widgets/academic_period_form_dialog.dart';
+import 'package:student_clearance_tracker/core/models/academic_period.dart';
+import 'package:student_clearance_tracker/core/repositories/academic_period_repository.dart';
+import 'package:student_clearance_tracker/core/widgets/app_card.dart';
+import 'package:student_clearance_tracker/core/widgets/confirm_dialog.dart';
+import 'package:student_clearance_tracker/admin/widgets/academic_period_form_dialog.dart';
 
 class AcademicPeriodsScreen extends StatefulWidget {
   const AcademicPeriodsScreen({super.key});

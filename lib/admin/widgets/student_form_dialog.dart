@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:student_clearance_tracker/core/theme/app_colors.dart';
-import '../../core/models/school.dart';
-import '../../core/models/program.dart';
-import '../../core/models/student.dart';
-import '../../core/repositories/school_repository.dart';
-import '../../core/repositories/program_repository.dart';
+import 'package:student_clearance_tracker/core/models/school.dart';
+import 'package:student_clearance_tracker/core/models/program.dart';
+import 'package:student_clearance_tracker/core/models/student.dart';
+import 'package:student_clearance_tracker/core/repositories/school_repository.dart';
+import 'package:student_clearance_tracker/core/repositories/program_repository.dart';
 
 class StudentFormDialog extends StatefulWidget {
   final Student? student;

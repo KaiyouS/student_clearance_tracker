@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:student_clearance_tracker/core/theme/app_colors.dart';
-import '../../core/models/office.dart';
-import '../../core/models/office_staff.dart';
-import '../../core/repositories/office_repository.dart';
+import 'package:student_clearance_tracker/core/models/office.dart';
+import 'package:student_clearance_tracker/core/models/office_staff.dart';
+import 'package:student_clearance_tracker/core/repositories/office_repository.dart';
 
 class StaffFormDialog extends StatefulWidget {
   final OfficeStaff? staff; // null = create

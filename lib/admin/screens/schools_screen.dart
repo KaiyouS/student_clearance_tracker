@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:student_clearance_tracker/core/theme/app_colors.dart';
-import '../../core/models/program.dart';
-import '../../core/models/school.dart';
-import '../../core/repositories/program_repository.dart';
-import '../../core/repositories/school_repository.dart';
-import '../../core/widgets/app_card.dart';
-import '../../core/widgets/confirm_dialog.dart';
+import 'package:student_clearance_tracker/core/models/program.dart';
+import 'package:student_clearance_tracker/core/models/school.dart';
+import 'package:student_clearance_tracker/core/repositories/program_repository.dart';
+import 'package:student_clearance_tracker/core/repositories/school_repository.dart';
+import 'package:student_clearance_tracker/core/widgets/app_card.dart';
+import 'package:student_clearance_tracker/core/widgets/confirm_dialog.dart';
 
 class SchoolsScreen extends StatefulWidget {
   const SchoolsScreen({super.key});

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:student_clearance_tracker/core/theme/app_colors.dart';
-import '../../core/models/office.dart';
-import '../../core/repositories/office_repository.dart';
-import '../../core/widgets/app_card.dart';
-import '../../core/widgets/confirm_dialog.dart';
+import 'package:student_clearance_tracker/core/models/office.dart';
+import 'package:student_clearance_tracker/core/repositories/office_repository.dart';
+import 'package:student_clearance_tracker/core/widgets/app_card.dart';
+import 'package:student_clearance_tracker/core/widgets/confirm_dialog.dart';
 
 class PrerequisitesScreen extends StatefulWidget {
   const PrerequisitesScreen({super.key});

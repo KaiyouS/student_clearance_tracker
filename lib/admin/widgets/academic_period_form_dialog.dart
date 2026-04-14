@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:student_clearance_tracker/core/theme/app_colors.dart';
-import '../../core/models/academic_period.dart';
+import 'package:student_clearance_tracker/core/models/academic_period.dart';
 
 class AcademicPeriodFormDialog extends StatefulWidget {
   final AcademicPeriod? period;

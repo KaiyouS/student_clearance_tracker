@@ -1,4 +1,4 @@
-import 'school.dart';
+import 'package:student_clearance_tracker/core/models/school.dart';
 
 class Program {
   final int     id;

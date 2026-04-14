@@ -1,5 +1,5 @@
-import '../../main.dart';
-import '../models/user_profile.dart';
+import 'package:student_clearance_tracker/main.dart';
+import 'package:student_clearance_tracker/core/models/user_profile.dart';
 
 class UserProfileRepository {
   // Get profile for any user

@@ -3,10 +3,10 @@ import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../repositories/user_profile_repository.dart';
-import '../providers/staff_provider.dart';
-import '../providers/student_provider.dart';
-import '../services/auth_service.dart';
+import 'package:student_clearance_tracker/core/repositories/user_profile_repository.dart';
+import 'package:student_clearance_tracker/core/providers/staff_provider.dart';
+import 'package:student_clearance_tracker/core/providers/student_provider.dart';
+import 'package:student_clearance_tracker/core/services/auth_service.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});

@@ -1,4 +1,4 @@
-import '../../main.dart';
+import 'package:student_clearance_tracker/main.dart';
 
 class DashboardStats {
   final int totalStudents;

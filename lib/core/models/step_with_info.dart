@@ -1,4 +1,4 @@
-import 'clearance_step.dart';
+import 'package:student_clearance_tracker/core/models/clearance_step.dart';
 
 class StepWithInfo {
   final ClearanceStep step;

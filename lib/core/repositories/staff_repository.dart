@@ -1,6 +1,6 @@
-import '../../main.dart';
-import '../models/office_staff.dart';
-import '../models/office.dart';
+import 'package:student_clearance_tracker/main.dart';
+import 'package:student_clearance_tracker/core/models/office_staff.dart';
+import 'package:student_clearance_tracker/core/models/office.dart';
 
 class StaffRepository {
   Future<List<OfficeStaff>> getAll() async {

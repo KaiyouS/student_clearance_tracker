@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:student_clearance_tracker/core/theme/app_colors.dart';
-import '../../core/models/clearance_step.dart';
-import '../../core/models/step_with_info.dart';
-import '../../core/repositories/clearance_repository.dart';
+import 'package:student_clearance_tracker/core/models/clearance_step.dart';
+import 'package:student_clearance_tracker/core/models/step_with_info.dart';
+import 'package:student_clearance_tracker/core/repositories/clearance_repository.dart';
 
 class StepDetailScreen extends StatefulWidget {
   final StepWithInfo stepWithInfo;

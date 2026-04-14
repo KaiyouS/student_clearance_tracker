@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../core/models/office.dart';
+import 'package:student_clearance_tracker/core/models/office.dart';
 
 class OfficeFormDialog extends StatefulWidget {
   final Office? office; // null = create, non-null = edit

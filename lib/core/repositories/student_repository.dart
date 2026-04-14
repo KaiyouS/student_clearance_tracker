@@ -1,5 +1,5 @@
-import '../../main.dart';
-import '../models/student.dart';
+import 'package:student_clearance_tracker/main.dart';
+import 'package:student_clearance_tracker/core/models/student.dart';
 
 class StudentRepository {
   Future<List<Student>> getAll() async {

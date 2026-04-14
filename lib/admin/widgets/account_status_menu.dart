@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:student_clearance_tracker/core/theme/app_colors.dart';
-import '../../core/widgets/account_status_badge.dart';
+import 'package:student_clearance_tracker/core/widgets/account_status_badge.dart';
 
 class AccountStatusMenu extends StatelessWidget {
   final String currentStatus;

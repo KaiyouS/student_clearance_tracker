@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'core/providers/staff_provider.dart';
-import 'core/providers/student_provider.dart';
-import 'core/providers/theme_provider.dart';
-import 'core/theme/app_theme.dart';
-import 'router.dart';
-import 'supabase_config.dart';
+import 'package:student_clearance_tracker/core/providers/staff_provider.dart';
+import 'package:student_clearance_tracker/core/providers/student_provider.dart';
+import 'package:student_clearance_tracker/core/providers/theme_provider.dart';
+import 'package:student_clearance_tracker/core/theme/app_theme.dart';
+import 'package:student_clearance_tracker/router.dart';
+import 'package:student_clearance_tracker/supabase_config.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

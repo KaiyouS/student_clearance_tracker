@@ -1,5 +1,5 @@
-import '../../main.dart';
-import '../models/clearance_step.dart';
+import 'package:student_clearance_tracker/main.dart';
+import 'package:student_clearance_tracker/core/models/clearance_step.dart';
 
 class ClearanceRepository {
   // ── Admin: all students' clearance status for current period ──

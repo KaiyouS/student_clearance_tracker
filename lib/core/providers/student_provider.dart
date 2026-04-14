@@ -1,17 +1,17 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../main.dart';
-import '../models/academic_period.dart';
-import '../models/clearance_step.dart';
-import '../models/step_with_info.dart';
-import '../models/student.dart';
-import '../models/user_profile.dart';
-import '../repositories/academic_period_repository.dart';
-import '../repositories/clearance_repository.dart';
-import '../repositories/office_repository.dart';
-import '../repositories/student_repository.dart';
-import '../repositories/user_profile_repository.dart';
+import 'package:student_clearance_tracker/main.dart';
+import 'package:student_clearance_tracker/core/models/academic_period.dart';
+import 'package:student_clearance_tracker/core/models/clearance_step.dart';
+import 'package:student_clearance_tracker/core/models/step_with_info.dart';
+import 'package:student_clearance_tracker/core/models/student.dart';
+import 'package:student_clearance_tracker/core/models/user_profile.dart';
+import 'package:student_clearance_tracker/core/repositories/academic_period_repository.dart';
+import 'package:student_clearance_tracker/core/repositories/clearance_repository.dart';
+import 'package:student_clearance_tracker/core/repositories/office_repository.dart';
+import 'package:student_clearance_tracker/core/repositories/student_repository.dart';
+import 'package:student_clearance_tracker/core/repositories/user_profile_repository.dart';
 
 class InAppNotification {
   final String officeName;

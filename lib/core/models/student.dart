@@ -1,5 +1,5 @@
-import 'program.dart';
-import 'user_profile.dart';
+import 'package:student_clearance_tracker/core/models/program.dart';
+import 'package:student_clearance_tracker/core/models/user_profile.dart';
 
 class Student {
   final String   id;

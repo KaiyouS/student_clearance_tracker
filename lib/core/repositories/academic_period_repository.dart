@@ -1,5 +1,5 @@
-import '../../main.dart';
-import '../models/academic_period.dart';
+import 'package:student_clearance_tracker/main.dart';
+import 'package:student_clearance_tracker/core/models/academic_period.dart';
 
 class AcademicPeriodRepository {
   Future<List<AcademicPeriod>> getAll() async {

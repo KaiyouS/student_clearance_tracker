@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../models/office.dart';
-import '../models/office_staff.dart';
-import '../repositories/staff_repository.dart';
+import 'package:student_clearance_tracker/core/models/office.dart';
+import 'package:student_clearance_tracker/core/models/office_staff.dart';
+import 'package:student_clearance_tracker/core/repositories/staff_repository.dart';
 
 class StaffProvider extends ChangeNotifier {
   final _repo = StaffRepository();

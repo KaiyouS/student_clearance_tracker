@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../providers/theme_provider.dart';
+import 'package:student_clearance_tracker/core/providers/theme_provider.dart';
 
 class ThemeToggle extends StatelessWidget {
   const ThemeToggle({super.key});

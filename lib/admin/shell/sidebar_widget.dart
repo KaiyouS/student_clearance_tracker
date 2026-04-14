@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:go_router/go_router.dart';
-import '../../core/services/auth_service.dart';
-import '../../core/widgets/theme_toggle.dart';
+import 'package:student_clearance_tracker/core/services/auth_service.dart';
+import 'package:student_clearance_tracker/core/widgets/theme_toggle.dart';
 
 class SidebarWidget extends StatelessWidget {
   const SidebarWidget({super.key});

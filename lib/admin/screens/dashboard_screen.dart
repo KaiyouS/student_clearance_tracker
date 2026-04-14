@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:student_clearance_tracker/core/theme/app_colors.dart';
-import '../../core/repositories/dashboard_repository.dart';
+import 'package:student_clearance_tracker/core/repositories/dashboard_repository.dart';
 
 class AdminDashboardScreen extends StatefulWidget {
   const AdminDashboardScreen({super.key});
