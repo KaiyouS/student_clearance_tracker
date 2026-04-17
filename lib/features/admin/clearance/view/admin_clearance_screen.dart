@@ -1,157 +1,34 @@
 import 'package:flutter/material.dart';
-import 'package:student_clearance_tracker/core/theme/app_colors.dart';
+import 'package:provider/provider.dart';
 import 'package:student_clearance_tracker/core/models/clearance_step.dart';
-import 'package:student_clearance_tracker/core/repositories/academic_period_repository.dart';
-import 'package:student_clearance_tracker/core/repositories/clearance_repository.dart';
+import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:student_clearance_tracker/core/widgets/app_card.dart';
 import 'package:student_clearance_tracker/core/widgets/confirm_dialog.dart';
 import 'package:student_clearance_tracker/core/widgets/status_badge.dart';
+import 'package:student_clearance_tracker/features/admin/clearance/viewmodel/admin_clearance_viewmodel.dart';
 import 'package:student_clearance_tracker/main.dart';
 
-class AdminClearanceScreen extends StatefulWidget {
+class AdminClearanceScreen extends StatelessWidget {
   const AdminClearanceScreen({super.key});
 
   @override
-  State<AdminClearanceScreen> createState() => _AdminClearanceScreenState();
-}
-
-class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
-  final _clearanceRepo = ClearanceRepository();
-  final _periodRepo = AcademicPeriodRepository();
-
-  // Data
-  List<Map<String, dynamic>> _overview = [];
-  List<Map<String, dynamic>> _filtered = [];
-  List<ClearanceStep> _selectedSteps = [];
-  _OverviewStats _overviewStats = const _OverviewStats.empty();
-  int? _currentPeriodId;
-  String? _currentPeriodLabel;
-
-  // Selected student
-  Map<String, dynamic>? _selectedStudent;
-
-  // Filters
-  String _search = '';
-  String _statusFilter = 'all';
-
-  // Loading states
-  bool _isLoading = true;
-  bool _isLoadingSteps = false;
-  bool _isSaving = false;
-  bool _isGenerating = false;
-  String? _error;
-
-  @override
-  void initState() {
-    super.initState();
-    _load();
-  }
-
-  // ── Data ──────────────────────────────────────────────────
-
-  Future<void> _load() async {
-    setState(() {
-      _isLoading = true;
-      _error = null;
-    });
-    try {
-      final results = await Future.wait([
-        _clearanceRepo.getAdminOverview(),
-        _periodRepo.getCurrent(),
-      ]);
-
-      final period = results[1] as dynamic;
-      final overview = results[0] as List<Map<String, dynamic>>;
-
-      setState(() {
-        _overview = overview;
-        _overviewStats = _computeOverviewStats(overview);
-        _currentPeriodId = period?.id;
-        _currentPeriodLabel = period?.label;
-        _isLoading = false;
-      });
-
-      _applyFilters();
-
-      // Reload selected student's steps if one is selected
-      if (_selectedStudent != null) {
-        _loadSteps(_selectedStudent!['student_id']);
-      }
-    } catch (e) {
-      setState(() {
-        _error = e.toString();
-        _isLoading = false;
-      });
-    }
-  }
-
-  Future<void> _loadSteps(String studentId) async {
-    if (_currentPeriodId == null) return;
-    setState(() => _isLoadingSteps = true);
-    try {
-      final steps = await _clearanceRepo.getByStudent(
-        studentId,
-        _currentPeriodId!,
-      );
-      setState(() {
-        _selectedSteps = steps;
-        _isLoadingSteps = false;
-      });
-    } catch (e) {
-      setState(() => _isLoadingSteps = false);
-    }
-  }
-
-  void _applyFilters() {
-    final normalizedSearch = _search.trim().toLowerCase();
-
-    setState(() {
-      _filtered = _overview
-          .where((s) {
-            // Search
-            final name = (s['full_name'] ?? '').toLowerCase();
-            final matchSearch =
-                normalizedSearch.isEmpty || name.contains(normalizedSearch);
-
-            // Status
-            final status = s['clearance_status'] ?? 'incomplete';
-            final matchStatus =
-                _statusFilter == 'all' || status == _statusFilter;
-
-            return matchSearch && matchStatus;
-          })
-          .toList(growable: false);
-    });
-  }
-
-  _OverviewStats _computeOverviewStats(List<Map<String, dynamic>> data) {
-    var complete = 0;
-    var flagged = 0;
-    var noClearance = 0;
-
-    for (final student in data) {
-      if (student['clearance_status'] == 'complete') {
-        complete++;
-      }
-      if ((student['flagged_steps'] ?? 0) > 0) {
-        flagged++;
-      }
-      if ((student['total_steps'] ?? 0) == 0) {
-        noClearance++;
-      }
-    }
-
-    return _OverviewStats(
-      total: data.length,
-      complete: complete,
-      flagged: flagged,
-      noClearance: noClearance,
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (_) => AdminClearanceViewModel()..load(),
+      child: const _AdminClearanceScreenContent(),
     );
   }
+}
 
-  // ── Generate clearance ────────────────────────────────────
+class _AdminClearanceScreenContent extends StatelessWidget {
+  const _AdminClearanceScreenContent();
 
-  Future<void> _generateForStudent(String studentId, String name) async {
+  Future<void> _handleGenerateForStudent(
+    BuildContext context,
+    AdminClearanceViewModel vm,
+    String studentId,
+    String name,
+  ) async {
     final confirmed = await ConfirmDialog.show(
       context,
       title: 'Generate Clearance',
@@ -163,23 +40,15 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
     );
     if (!confirmed) return;
 
-    setState(() => _isSaving = true);
-    try {
-      final count = await _clearanceRepo.generateForStudent(studentId);
-      _showSuccess(
-        count > 0
-            ? 'Created $count clearance step${count != 1 ? 's' : ''} for $name.'
-            : 'All clearance steps already exist for $name.',
-      );
-      await _load();
-    } catch (e) {
-      _showError('Failed to generate clearance: $e');
-    } finally {
-      setState(() => _isSaving = false);
-    }
+    final success = await vm.generateForStudent(studentId, name);
+    if (!context.mounted) return;
+    _showActionResult(context, vm, success);
   }
 
-  Future<void> _generateForAll() async {
+  Future<void> _handleGenerateForAll(
+    BuildContext context,
+    AdminClearanceViewModel vm,
+  ) async {
     final confirmed = await ConfirmDialog.show(
       context,
       title: 'Generate Clearance for All Students',
@@ -192,24 +61,17 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
     );
     if (!confirmed) return;
 
-    setState(() => _isGenerating = true);
-    try {
-      final count = await _clearanceRepo.generateForAllStudents();
-      _showSuccess(
-        'Done. Created $count new clearance step${count != 1 ? 's' : ''} '
-        'across all students.',
-      );
-      await _load();
-    } catch (e) {
-      _showError('Failed to generate clearance: $e');
-    } finally {
-      setState(() => _isGenerating = false);
-    }
+    final success = await vm.generateForAll();
+    if (!context.mounted) return;
+    _showActionResult(context, vm, success);
   }
 
-  // ── Override actions (admin only) ─────────────────────────
-
-  Future<void> _overrideStep(ClearanceStep step, String newStatus) async {
+  Future<void> _handleOverrideStep(
+    BuildContext context,
+    AdminClearanceViewModel vm,
+    ClearanceStep step,
+    String newStatus,
+  ) async {
     final isReset = newStatus == 'pending';
     final confirmed = await ConfirmDialog.show(
       context,
@@ -224,34 +86,26 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
     );
     if (!confirmed) return;
 
-    setState(() => _isSaving = true);
-    try {
-      if (isReset) {
-        await _clearanceRepo.resetStep(step.id);
-      } else {
-        await _clearanceRepo.updateStatus(
-          stepId: step.id,
-          status: newStatus,
-          updatedBy: supabase.auth.currentUser!.id,
-        );
-      }
-      await _loadSteps(_selectedStudent!['student_id']);
-      await _load();
-      _showSuccess('Step updated.');
-    } catch (e) {
-      _showError('Failed to update step: $e');
-    } finally {
-      setState(() => _isSaving = false);
-    }
+    final success = await vm.overrideStep(
+      step,
+      newStatus,
+      supabase.auth.currentUser!.id,
+    );
+    if (!context.mounted) return;
+    _showActionResult(context, vm, success);
   }
 
-  Future<void> _flagWithRemark(ClearanceStep step) async {
+  Future<void> _handleFlagStep(
+    BuildContext context,
+    AdminClearanceViewModel vm,
+    ClearanceStep step,
+  ) async {
     final remarkController = TextEditingController();
     try {
       final confirmed = await showDialog<bool>(
         context: context,
         builder: (_) => AlertDialog(
-          title: Text('Flag Step'),
+          title: const Text('Flag Step'),
           content: SizedBox(
             width: 400,
             child: TextField(
@@ -268,7 +122,7 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
             TextButton(
               onPressed: () =>
                   Navigator.of(context, rootNavigator: true).pop(false),
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
@@ -277,7 +131,7 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
               ),
               onPressed: () =>
                   Navigator.of(context, rootNavigator: true).pop(true),
-              child: Text('Flag'),
+              child: const Text('Flag'),
             ),
           ],
         ),
@@ -285,29 +139,33 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
 
       if (confirmed != true) return;
 
-      setState(() => _isSaving = true);
-
-      await _clearanceRepo.updateStatus(
-        stepId: step.id,
-        status: 'flagged',
-        updatedBy: supabase.auth.currentUser!.id,
-        remarks: remarkController.text.trim().isEmpty
-            ? null
-            : remarkController.text.trim(),
+      final remarks = remarkController.text.trim();
+      final success = await vm.flagWithRemark(
+        step,
+        supabase.auth.currentUser!.id,
+        remarks.isEmpty ? null : remarks,
       );
-      await _loadSteps(_selectedStudent!['student_id']);
-      await _load();
-      _showSuccess('Step flagged.');
-    } catch (e) {
-      _showError('Failed to flag step: $e');
+
+      if (!context.mounted) return;
+      _showActionResult(context, vm, success);
     } finally {
       remarkController.dispose();
-      setState(() => _isSaving = false);
     }
   }
 
-  void _showSuccess(String msg) {
-    if (!mounted) return;
+  void _showActionResult(
+    BuildContext context,
+    AdminClearanceViewModel vm,
+    bool success,
+  ) {
+    if (success && vm.actionSuccess != null) {
+      _showSuccess(context, vm.actionSuccess!);
+    } else if (!success && vm.actionError != null) {
+      _showError(context, vm.actionError!);
+    }
+  }
+
+  void _showSuccess(BuildContext context, String msg) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(msg),
@@ -316,8 +174,7 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
     );
   }
 
-  void _showError(String msg) {
-    if (!mounted) return;
+  void _showError(BuildContext context, String msg) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(msg),
@@ -326,10 +183,10 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
     );
   }
 
-  // ── UI ────────────────────────────────────────────────────
-
   @override
   Widget build(BuildContext context) {
+    final vm = context.watch<AdminClearanceViewModel>();
+
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       body: Padding(
@@ -337,7 +194,6 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header
             Row(
               children: [
                 Expanded(
@@ -354,8 +210,8 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        _currentPeriodLabel != null
-                            ? 'Current period: $_currentPeriodLabel'
+                        vm.currentPeriodLabel != null
+                            ? 'Current period: ${vm.currentPeriodLabel}'
                             : 'No active period set.',
                         style: TextStyle(
                           color: Theme.of(
@@ -367,8 +223,7 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
                     ],
                   ),
                 ),
-                // Generate all button
-                if (_isGenerating)
+                if (vm.isGenerating)
                   const Padding(
                     padding: EdgeInsets.only(right: 16),
                     child: SizedBox(
@@ -378,11 +233,11 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
                     ),
                   ),
                 ElevatedButton.icon(
-                  onPressed: (_isGenerating || _currentPeriodId == null)
+                  onPressed: (vm.isGenerating || vm.currentPeriodId == null)
                       ? null
-                      : _generateForAll,
-                  icon: Icon(Icons.auto_awesome, size: 16),
-                  label: Text('Generate All'),
+                      : () => _handleGenerateForAll(context, vm),
+                  icon: const Icon(Icons.auto_awesome, size: 16),
+                  label: const Text('Generate All'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.of(context).success,
                   ),
@@ -390,30 +245,28 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
               ],
             ),
             const SizedBox(height: 24),
-
-            // Body
-            Expanded(child: _buildBody()),
+            Expanded(child: _buildBody(context, vm)),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildBody() {
-    if (_isLoading) {
+  Widget _buildBody(BuildContext context, AdminClearanceViewModel vm) {
+    if (vm.isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
-    if (_error != null) {
+    if (vm.error != null) {
       return Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              _error!,
+              vm.error!,
               style: TextStyle(color: AppColors.of(context).danger),
             ),
             const SizedBox(height: 8),
-            ElevatedButton(onPressed: _load, child: Text('Retry')),
+            ElevatedButton(onPressed: vm.load, child: const Text('Retry')),
           ],
         ),
       );
@@ -422,33 +275,24 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Left panel — student list
         SizedBox(
           width: 380,
           child: AppCard(
             padding: EdgeInsets.zero,
             child: Column(
               children: [
-                // Stats row
-                _buildStatsRow(),
+                _buildStatsRow(context, vm),
                 Divider(height: 1, color: AppColors.of(context).border),
-
-                // Filters
-                _buildFilters(),
+                _buildFilters(context, vm),
                 Divider(height: 1, color: AppColors.of(context).border),
-
-                // Student list
-                Expanded(child: _buildStudentList()),
+                Expanded(child: _buildStudentList(context, vm)),
               ],
             ),
           ),
         ),
-
         const SizedBox(width: 16),
-
-        // Right panel — student detail
         Expanded(
-          child: _selectedStudent == null
+          child: vm.selectedStudent == null
               ? AppCard(
                   child: Center(
                     child: Text(
@@ -461,37 +305,35 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
                     ),
                   ),
                 )
-              : _buildDetailPanel(),
+              : _buildDetailPanel(context, vm),
         ),
       ],
     );
   }
 
-  // ── Stats row ─────────────────────────────────────────────
-
-  Widget _buildStatsRow() {
+  Widget _buildStatsRow(BuildContext context, AdminClearanceViewModel vm) {
     return Padding(
       padding: const EdgeInsets.all(12),
       child: Row(
         children: [
           _MiniStat(
             label: 'Total',
-            value: _overviewStats.total,
+            value: vm.overviewStats.total,
             color: AppColors.of(context).info,
           ),
           _MiniStat(
             label: 'Complete',
-            value: _overviewStats.complete,
+            value: vm.overviewStats.complete,
             color: AppColors.of(context).statusSigned,
           ),
           _MiniStat(
             label: 'Flagged',
-            value: _overviewStats.flagged,
+            value: vm.overviewStats.flagged,
             color: AppColors.of(context).statusFlagged,
           ),
           _MiniStat(
             label: 'No Steps',
-            value: _overviewStats.noClearance,
+            value: vm.overviewStats.noClearance,
             color: Theme.of(
               context,
             ).colorScheme.onSurface.withValues(alpha: 0.65),
@@ -501,19 +343,13 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
     );
   }
 
-  // ── Filters ───────────────────────────────────────────────
-
-  Widget _buildFilters() {
+  Widget _buildFilters(BuildContext context, AdminClearanceViewModel vm) {
     return Padding(
       padding: const EdgeInsets.all(12),
       child: Column(
         children: [
-          // Search
           TextField(
-            onChanged: (v) {
-              _search = v;
-              _applyFilters();
-            },
+            onChanged: vm.updateSearch,
             decoration: const InputDecoration(
               hintText: 'Search by name...',
               prefixIcon: Icon(Icons.search),
@@ -521,13 +357,11 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
             ),
           ),
           const SizedBox(height: 8),
-
-          // Status filter chips
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(
               children: ['all', 'complete', 'incomplete'].map((status) {
-                final isSelected = _statusFilter == status;
+                final isSelected = vm.statusFilter == status;
                 return Padding(
                   padding: const EdgeInsets.only(right: 6),
                   child: FilterChip(
@@ -551,10 +385,7 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
                           ? AppColors.of(context).info
                           : AppColors.of(context).border,
                     ),
-                    onSelected: (_) {
-                      setState(() => _statusFilter = status);
-                      _applyFilters();
-                    },
+                    onSelected: (_) => vm.updateStatusFilter(status),
                   ),
                 );
               }).toList(),
@@ -565,10 +396,8 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
     );
   }
 
-  // ── Student list ──────────────────────────────────────────
-
-  Widget _buildStudentList() {
-    if (_filtered.isEmpty) {
+  Widget _buildStudentList(BuildContext context, AdminClearanceViewModel vm) {
+    if (vm.filtered.isEmpty) {
       return Center(
         child: Text(
           'No students match filters.',
@@ -582,13 +411,13 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
     }
 
     return ListView.separated(
-      itemCount: _filtered.length,
+      itemCount: vm.filtered.length,
       separatorBuilder: (_, _) =>
           Divider(height: 1, color: AppColors.of(context).border),
       itemBuilder: (context, i) {
-        final student = _filtered[i];
+        final student = vm.filtered[i];
         final isSelected =
-            _selectedStudent?['student_id'] == student['student_id'];
+            vm.selectedStudent?['student_id'] == student['student_id'];
         final total = student['total_steps'] ?? 0;
         final signed = student['signed_steps'] ?? 0;
         final flagged = student['flagged_steps'] ?? 0;
@@ -597,10 +426,7 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
         final noSteps = total == 0;
 
         return InkWell(
-          onTap: () {
-            setState(() => _selectedStudent = student);
-            _loadSteps(student['student_id']);
-          },
+          onTap: () => vm.selectStudent(student),
           child: Container(
             color: isSelected
                 ? AppColors.of(context).info.withValues(alpha: 0.06)
@@ -616,7 +442,7 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
                         children: [
                           Expanded(
                             child: Text(
-                              student['full_name'] ?? '—',
+                              student['full_name'] ?? '-',
                               style: TextStyle(
                                 fontWeight: FontWeight.w500,
                                 fontSize: 13,
@@ -646,7 +472,6 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
                           ),
                         )
                       else ...[
-                        // Progress bar
                         ClipRRect(
                           borderRadius: BorderRadius.circular(4),
                           child: LinearProgressIndicator(
@@ -682,10 +507,8 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
     );
   }
 
-  // ── Detail panel ──────────────────────────────────────────
-
-  Widget _buildDetailPanel() {
-    final student = _selectedStudent!;
+  Widget _buildDetailPanel(BuildContext context, AdminClearanceViewModel vm) {
+    final student = vm.selectedStudent!;
     final total = student['total_steps'] ?? 0;
     final signed = student['signed_steps'] ?? 0;
     final status = student['clearance_status'] ?? 'incomplete';
@@ -695,7 +518,6 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Student header
           Row(
             children: [
               Expanded(
@@ -703,7 +525,7 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      student['full_name'] ?? '—',
+                      student['full_name'] ?? '-',
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -725,37 +547,32 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
                   ],
                 ),
               ),
-              // Overall status badge
               if (!noSteps) StatusBadge(status: status),
-
               const SizedBox(width: 8),
-
-              // Generate clearance button
               if (noSteps || total < 20)
                 TextButton.icon(
-                  onPressed: _isSaving
+                  onPressed: vm.isSaving
                       ? null
-                      : () => _generateForStudent(
+                      : () => _handleGenerateForStudent(
+                          context,
+                          vm,
                           student['student_id'],
                           student['full_name'] ?? 'Student',
                         ),
-                  icon: Icon(Icons.auto_awesome, size: 14),
-                  label: Text('Generate'),
+                  icon: const Icon(Icons.auto_awesome, size: 14),
+                  label: const Text('Generate'),
                   style: TextButton.styleFrom(
                     foregroundColor: AppColors.of(context).info,
                   ),
                 ),
             ],
           ),
-
           const SizedBox(height: 16),
           Divider(color: AppColors.of(context).border),
           const SizedBox(height: 8),
-
-          // Steps list
-          if (_isLoadingSteps)
+          if (vm.isLoadingSteps)
             const Expanded(child: Center(child: CircularProgressIndicator()))
-          else if (_selectedSteps.isEmpty)
+          else if (vm.selectedSteps.isEmpty)
             Expanded(
               child: Center(
                 child: Column(
@@ -777,13 +594,15 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
                     ),
                     const SizedBox(height: 8),
                     ElevatedButton(
-                      onPressed: _isSaving
+                      onPressed: vm.isSaving
                           ? null
-                          : () => _generateForStudent(
+                          : () => _handleGenerateForStudent(
+                              context,
+                              vm,
                               student['student_id'],
                               student['full_name'] ?? 'Student',
                             ),
-                      child: Text('Generate Clearance'),
+                      child: const Text('Generate Clearance'),
                     ),
                   ],
                 ),
@@ -792,10 +611,11 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
           else
             Expanded(
               child: ListView.separated(
-                itemCount: _selectedSteps.length,
+                itemCount: vm.selectedSteps.length,
                 separatorBuilder: (_, _) =>
                     Divider(height: 1, color: AppColors.of(context).border),
-                itemBuilder: (context, i) => _buildStepRow(_selectedSteps[i]),
+                itemBuilder: (context, i) =>
+                    _buildStepRow(context, vm, vm.selectedSteps[i]),
               ),
             ),
         ],
@@ -803,18 +623,17 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
     );
   }
 
-  // ── Step row ──────────────────────────────────────────────
-
-  Widget _buildStepRow(ClearanceStep step) {
+  Widget _buildStepRow(
+    BuildContext context,
+    AdminClearanceViewModel vm,
+    ClearanceStep step,
+  ) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Row(
         children: [
-          // Status icon
           _StepStatusIcon(status: step.status),
           const SizedBox(width: 12),
-
-          // Office + remarks
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -852,12 +671,8 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
               ],
             ),
           ),
-
-          // Status badge
           StatusBadge(status: step.status),
           const SizedBox(width: 8),
-
-          // Override actions
           PopupMenuButton<String>(
             icon: Icon(
               Icons.more_vert,
@@ -869,9 +684,9 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
             tooltip: 'Override',
             onSelected: (action) {
               if (action == 'flag') {
-                _flagWithRemark(step);
+                _handleFlagStep(context, vm, step);
               } else {
-                _overrideStep(step, action);
+                _handleOverrideStep(context, vm, step, action);
               }
             },
             itemBuilder: (_) => [
@@ -885,8 +700,8 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
                         size: 16,
                         color: AppColors.of(context).statusSigned,
                       ),
-                      SizedBox(width: 8),
-                      Text('Mark as Signed'),
+                      const SizedBox(width: 8),
+                      const Text('Mark as Signed'),
                     ],
                   ),
                 ),
@@ -900,8 +715,8 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
                         size: 16,
                         color: AppColors.of(context).statusFlagged,
                       ),
-                      SizedBox(width: 8),
-                      Text('Flag'),
+                      const SizedBox(width: 8),
+                      const Text('Flag'),
                     ],
                   ),
                 ),
@@ -917,8 +732,8 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
                           context,
                         ).colorScheme.onSurface.withValues(alpha: 0.65),
                       ),
-                      SizedBox(width: 8),
-                      Text('Reset to Pending'),
+                      const SizedBox(width: 8),
+                      const Text('Reset to Pending'),
                     ],
                   ),
                 ),
@@ -928,8 +743,6 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
       ),
     );
   }
-
-  // ── Helpers ───────────────────────────────────────────────
 
   String _capitalize(String s) =>
       s.isEmpty ? s : s[0].toUpperCase() + s.substring(1);
@@ -941,27 +754,6 @@ class _AdminClearanceScreenState extends State<AdminClearanceScreen> {
   }
 }
 
-class _OverviewStats {
-  final int total;
-  final int complete;
-  final int flagged;
-  final int noClearance;
-
-  const _OverviewStats({
-    required this.total,
-    required this.complete,
-    required this.flagged,
-    required this.noClearance,
-  });
-
-  const _OverviewStats.empty()
-    : total = 0,
-      complete = 0,
-      flagged = 0,
-      noClearance = 0;
-}
-
-// ── Mini stat widget ──────────────────────────────────────────
 class _MiniStat extends StatelessWidget {
   final String label;
   final int value;
@@ -1001,9 +793,9 @@ class _MiniStat extends StatelessWidget {
   }
 }
 
-// ── Step status icon ──────────────────────────────────────────
 class _StepStatusIcon extends StatelessWidget {
   final String status;
+
   const _StepStatusIcon({required this.status});
 
   @override
