@@ -1,8 +1,10 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:student_clearance_tracker/core/models/step_with_info.dart';
 import 'package:student_clearance_tracker/core/theme/app_colors.dart';
+import 'package:student_clearance_tracker/core/theme/app_dimensions.dart';
+import 'package:student_clearance_tracker/core/theme/app_text_styles.dart';
 import 'package:student_clearance_tracker/features/student/shell/viewmodel/student_shell_viewmodel.dart';
 
 class NextStepCard extends StatelessWidget {
@@ -18,10 +20,10 @@ class NextStepCard extends StatelessWidget {
     if (step == null) {
       return Container(
         width: double.infinity,
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppDimensions.md),
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppDimensions.radiusLg),
           border: Border.all(
             color: isDark
                 ? Theme.of(context).dividerColor
@@ -33,18 +35,15 @@ class NextStepCard extends StatelessWidget {
             Icon(
               Icons.lock_clock_outlined,
               color: AppColors.warning,
-              size: 20,
+              size: AppDimensions.iconMd,
             ),
             const SizedBox(width: 12),
             Expanded(
               child: Text(
                 'No steps are ready to sign yet - '
                 'waiting for prerequisites.',
-                style: TextStyle(
-                  fontSize: 13,
-                  color: isDark
-                      ? AppColors.contentSecondary(context)
-                      : AppColors.contentSecondary(context),
+                style: AppTextStyles.bodySm.copyWith(
+                  color: AppColors.contentSecondary(context),
                 ),
               ),
             ),
@@ -57,7 +56,7 @@ class NextStepCard extends StatelessWidget {
       onTap: () => context.go('/student/clearance'),
       child: Container(
         width: double.infinity,
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppDimensions.md),
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
@@ -65,7 +64,7 @@ class NextStepCard extends StatelessWidget {
               Theme.of(context).colorScheme.primary.withValues(alpha: 0.04),
             ],
           ),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppDimensions.radiusLg),
           border: Border.all(
             color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
           ),
@@ -76,7 +75,9 @@ class NextStepCard extends StatelessWidget {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.15),
+                color: Theme.of(
+                  context,
+                ).colorScheme.primary.withValues(alpha: 0.15),
                 shape: BoxShape.circle,
               ),
               child: Icon(
@@ -92,8 +93,7 @@ class NextStepCard extends StatelessWidget {
                 children: [
                   Text(
                     'Next Step',
-                    style: TextStyle(
-                      fontSize: 11,
+                    style: AppTextStyles.label.copyWith(
                       fontWeight: FontWeight.w600,
                       color: Theme.of(context).colorScheme.primary,
                       letterSpacing: 0.5,
@@ -110,9 +110,8 @@ class NextStepCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    'Tap to view clearance steps â†’',
-                    style: TextStyle(
-                      fontSize: 12,
+                    'Tap to view clearance steps ->',
+                    style: AppTextStyles.caption.copyWith(
                       color: Theme.of(context).colorScheme.primary,
                     ),
                   ),
@@ -125,5 +124,3 @@ class NextStepCard extends StatelessWidget {
     );
   }
 }
-
-
