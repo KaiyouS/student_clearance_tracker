@@ -1,184 +1,84 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:student_clearance_tracker/core/models/student.dart';
-import 'package:student_clearance_tracker/core/repositories/student_repository.dart';
 import 'package:student_clearance_tracker/core/widgets/app_card.dart';
-import 'package:student_clearance_tracker/core/repositories/user_profile_repository.dart';
-import 'package:student_clearance_tracker/admin/widgets/account_status_menu.dart';
+import 'package:student_clearance_tracker/admin/widgets/account_status_menu.dart'; // Adjust if you moved this to core/widgets
 import 'package:student_clearance_tracker/features/admin/students/view/student_form_dialog.dart';
+import 'package:student_clearance_tracker/features/admin/students/viewmodel/students_viewmodel.dart';
 
-class StudentsScreen extends StatefulWidget {
+class StudentsScreen extends StatelessWidget {
   const StudentsScreen({super.key});
 
   @override
-  State<StudentsScreen> createState() => _StudentsScreenState();
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (_) => StudentsViewModel()..loadStudents(),
+      child: const _StudentsScreenContent(),
+    );
+  }
 }
 
-class _StudentsScreenState extends State<StudentsScreen> {
-  final _repo = StudentRepository();
-  final _profileRepo = UserProfileRepository();
+class _StudentsScreenContent extends StatelessWidget {
+  const _StudentsScreenContent();
 
-  List<Student> _students = [];
-  List<Student> _filtered = [];
-  bool _isLoading = true;
-  bool _isSaving = false;
-  String? _error;
-  String _search = '';
-
-  @override
-  void initState() {
-    super.initState();
-    _load();
-  }
-
-  // ── Data ──────────────────────────────────────────────────
-
-  Future<void> _load() async {
-    setState(() {
-      _isLoading = true;
-      _error = null;
-    });
-    try {
-      final students = await _repo.getAll();
-      setState(() {
-        _students = students;
-        _isLoading = false;
-      });
-      _applySearch(_search);
-    } catch (e) {
-      setState(() {
-        _error = e.toString();
-        _isLoading = false;
-      });
-    }
-  }
-
-  void _applySearch(String query) {
-    setState(() {
-      _search = query;
-      _filtered = query.isEmpty
-          ? List.from(_students)
-          : _students
-                .where(
-                  (s) =>
-                      s.fullName.toLowerCase().contains(query.toLowerCase()) ||
-                      s.studentNo.toLowerCase().contains(query.toLowerCase()) ||
-                      s.programName.toLowerCase().contains(
-                        query.toLowerCase(),
-                      ) ||
-                      s.schoolName.toLowerCase().contains(query.toLowerCase()),
-                )
-                .toList();
-    });
-  }
-
-  // ── CRUD ──────────────────────────────────────────────────
-
-  Future<void> _create() async {
+  Future<void> _handleCreate(BuildContext context) async {
     final result = await StudentFormDialog.show(context);
     if (result == null) return;
 
-    setState(() => _isSaving = true);
-    try {
-      await _repo.create(
-        email: result['email'],
-        studentNo: result['student_no'],
-        firstName: result['first_name'],
-        middleName: result['middle_name'].isEmpty
-            ? null
-            : result['middle_name'],
-        lastName: result['last_name'],
-        programId: result['program_id'],
-        yearLevel: result['year_level'],
-      );
-      _showSuccess(
-        'Student created. '
-        'They can log in with their email and student number as password.',
-      );
-      _load();
-    } catch (e) {
-      _showError('Failed to create student: $e');
-    } finally {
-      setState(() => _isSaving = false);
+    if (!context.mounted) return;
+    final vm = context.read<StudentsViewModel>();
+    final success = await vm.createStudent(result);
+
+    if (success && context.mounted) {
+      _showSuccess(context, 'Student created. They can log in with their email and student number as password.');
+    } else if (!success && context.mounted && vm.errorMessage != null) {
+      _showError(context, vm.errorMessage!);
     }
   }
 
-  Future<void> _edit(Student student) async {
+  Future<void> _handleEdit(BuildContext context, Student student) async {
     final result = await StudentFormDialog.show(context, student: student);
     if (result == null) return;
 
-    setState(() => _isSaving = true);
-    try {
-      await _repo.update(
-        id: student.id,
-        studentNo: result['student_no'],
-        firstName: result['first_name'],
-        middleName: result['middle_name'].isEmpty
-            ? null
-            : result['middle_name'],
-        lastName: result['last_name'],
-        programId: result['program_id'],
-        yearLevel: result['year_level'],
-      );
-      _showSuccess('Student updated.');
-      _load();
-    } catch (e) {
-      _showError('Failed to update student: $e');
-    } finally {
-      setState(() => _isSaving = false);
+    if (!context.mounted) return;
+    final vm = context.read<StudentsViewModel>();
+    final success = await vm.updateStudent(student.id, result);
+
+    if (success && context.mounted) {
+      _showSuccess(context, 'Student updated.');
+    } else if (!success && context.mounted && vm.errorMessage != null) {
+      _showError(context, vm.errorMessage!);
     }
   }
 
-  Future<void> _updateStatus(Student student, String newStatus) async {
-    try {
-      await _profileRepo.updateStatus(student.id, newStatus);
-      _showSuccess('Account status updated to $newStatus.');
-      _load();
-    } catch (e) {
-      _showError('Failed to update status: $e');
+  Future<void> _handleUpdateStatus(BuildContext context, Student student, String newStatus) async {
+    final vm = context.read<StudentsViewModel>();
+    final success = await vm.updateStatus(student.id, newStatus);
+    
+    if (success && context.mounted) {
+      _showSuccess(context, 'Account status updated to $newStatus.');
+    } else if (!success && context.mounted && vm.errorMessage != null) {
+      _showError(context, vm.errorMessage!);
     }
   }
 
-  // TODO: decide if we should implement delete
-  // Future<void> _delete(Student student) async {
-  //   final confirmed = await ConfirmDialog.show(
-  //     context,
-  //     title:   'Delete Student',
-  //     message: 'Are you sure you want to delete "${student.fullName}"? '
-  //              'Their account will be permanently removed.',
-  //   );
-  //   if (!confirmed) return;
-
-  //   setState(() => _isSaving = true);
-  //   try {
-  //     await _repo.delete(student.id);
-  //     _showSuccess('Student deleted.');
-  //     _load();
-  //   } catch (e) {
-  //     _showError('Failed to delete student: $e');
-  //   } finally {
-  //     setState(() => _isSaving = false);
-  //   }
-  // }
-
-  void _showSuccess(String message) {
-    if (!mounted) return;
+  void _showSuccess(BuildContext context, String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message), backgroundColor: AppColors.of(context).success),
     );
   }
 
-  void _showError(String message) {
-    if (!mounted) return;
+  void _showError(BuildContext context, String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message), backgroundColor: AppColors.of(context).danger),
     );
   }
 
-  // ── UI ────────────────────────────────────────────────────
-
   @override
   Widget build(BuildContext context) {
+    final vm = context.watch<StudentsViewModel>();
+
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       body: Padding(
@@ -192,84 +92,60 @@ class _StudentsScreenState extends State<StudentsScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'Students',
-                        style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).colorScheme.onSurface,
-                        ),
-                      ),
-                      SizedBox(height: 4),
-                      Text(
-                        'Manage graduating students and their accounts.',
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
-                          fontSize: 14,
-                        ),
-                      ),
+                      Text('Students', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface)),
+                      const SizedBox(height: 4),
+                      Text('Manage student accounts, programs, and access.', style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65), fontSize: 14)),
                     ],
                   ),
                 ),
-                if (_isSaving)
+                if (vm.isSaving)
                   const Padding(
                     padding: EdgeInsets.only(right: 16),
-                    child: SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    ),
+                    child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)),
                   ),
                 ElevatedButton.icon(
-                  onPressed: _isSaving ? null : _create,
-                  icon: Icon(Icons.add),
-                  label: Text('Add Student'),
+                  onPressed: vm.isSaving ? null : () => _handleCreate(context),
+                  icon: const Icon(Icons.add),
+                  label: const Text('Add Student'),
                 ),
               ],
             ),
             const SizedBox(height: 24),
-
             SizedBox(
               width: 320,
               child: TextField(
-                onChanged: _applySearch,
-                decoration: const InputDecoration(
-                  hintText: 'Search by name, student no, or course...',
-                  prefixIcon: Icon(Icons.search),
-                ),
+                onChanged: context.read<StudentsViewModel>().search,
+                decoration: const InputDecoration(hintText: 'Search by name or student no...', prefixIcon: Icon(Icons.search)),
               ),
             ),
             const SizedBox(height: 16),
-
-            Expanded(child: _buildContent()),
+            Expanded(child: _buildContent(context, vm)),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildContent() {
-    if (_isLoading) {
+  Widget _buildContent(BuildContext context, StudentsViewModel vm) {
+    if (vm.isLoading && vm.filteredStudents.isEmpty) {
       return const Center(child: CircularProgressIndicator());
     }
-    if (_error != null) {
+    if (vm.errorMessage != null && vm.filteredStudents.isEmpty) {
       return Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(_error!, style: TextStyle(color: AppColors.of(context).danger)),
+            Text(vm.errorMessage!, style: TextStyle(color: AppColors.of(context).danger)),
             const SizedBox(height: 8),
-            ElevatedButton(onPressed: _load, child: Text('Retry')),
+            ElevatedButton(onPressed: vm.loadStudents, child: const Text('Retry')),
           ],
         ),
       );
     }
-    if (_filtered.isEmpty) {
+    if (vm.filteredStudents.isEmpty) {
       return Center(
         child: Text(
-          _search.isEmpty
-              ? 'No students yet.'
-              : 'No students match "$_search".',
+          vm.searchQuery.isEmpty ? 'No students yet.' : 'No students match "${vm.searchQuery}".',
           style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65)),
         ),
       );
@@ -282,89 +158,53 @@ class _StudentsScreenState extends State<StudentsScreen> {
         child: SingleChildScrollView(
           child: Table(
             columnWidths: const {
-              0: FlexColumnWidth(2), // name
-              1: FixedColumnWidth(140), // student no
-              2: FlexColumnWidth(2), // program
-              3: FlexColumnWidth(2), // school
-              4: FixedColumnWidth(100), // year
-              5: FixedColumnWidth(130), // status
-              6: FixedColumnWidth(120), // actions
+              0: FlexColumnWidth(2),
+              1: FlexColumnWidth(2),
+              2: FlexColumnWidth(3),
+              3: FixedColumnWidth(130),
+              4: FixedColumnWidth(120),
             },
             children: [
               TableRow(
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surface,
-                ),
+                decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface),
                 children: [
-                  _headerCell('Name'),
-                  _headerCell('Student No.'),
-                  _headerCell('Program'),
-                  _headerCell('School'),
-                  _headerCell('Year'),
-                  _headerCell('Status'),
-                  _headerCell(''),
+                  _headerCell(context, 'Name'),
+                  _headerCell(context, 'Student No.'),
+                  _headerCell(context, 'Program'),
+                  _headerCell(context, 'Status'),
+                  _headerCell(context, ''),
                 ],
               ),
-              ..._filtered.map(
+              ...vm.filteredStudents.map(
                 (student) => TableRow(
-                  decoration: BoxDecoration(
-                    border: Border(
-                      top: BorderSide(color: AppColors.of(context).border),
-                    ),
-                  ),
+                  decoration: BoxDecoration(border: Border(top: BorderSide(color: AppColors.of(context).border))),
                   children: [
                     _dataCell(
-                      Text(
-                        student.fullName,
-                        style: TextStyle(
-                          fontWeight: FontWeight.w500,
-                          color: Theme.of(context).colorScheme.onSurface,
-                        ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(student.profile?.fullName ?? 'Unknown', style: TextStyle(fontWeight: FontWeight.w500, color: Theme.of(context).colorScheme.onSurface)),
+                        ],
                       ),
                     ),
                     _dataCell(
-                      Text(
-                        student.studentNo,
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
-                          fontSize: 13,
-                        ),
-                      ),
+                      Text(student.studentNo, style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65), fontSize: 13)),
                     ),
                     _dataCell(
-                      Text(
-                        student.programName,
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
-                          fontSize: 13,
-                        ),
-                      ),
-                    ),
-                    _dataCell(
-                      Text(
-                        student.schoolName,
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
-                          fontSize: 13,
-                        ),
-                      ),
-                    ),
-                    _dataCell(
-                      Text(
-                        student.yearLevel != null
-                            ? 'Year ${student.yearLevel}'
-                            : '—',
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
-                          fontSize: 13,
-                        ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(student.program?.name ?? 'No Program', style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 13)),
+                          if (student.yearLevel != null)
+                            Text('Year ${student.yearLevel}', style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65))),
+                        ],
                       ),
                     ),
                     _dataCell(
                       student.profile != null
                           ? AccountStatusMenu(
                               currentStatus: student.profile!.accountStatus,
-                              onStatusChanged: (s) => _updateStatus(student, s),
+                              onStatusChanged: (s) => _handleUpdateStatus(context, student, s),
                             )
                           : const SizedBox.shrink(),
                     ),
@@ -372,17 +212,16 @@ class _StudentsScreenState extends State<StudentsScreen> {
                       Row(
                         children: [
                           IconButton(
-                            icon: Icon(Icons.edit_outlined, size: 18),
+                            icon: const Icon(Icons.edit_outlined, size: 18),
                             color: AppColors.of(context).info,
                             tooltip: 'Edit',
-                            onPressed: _isSaving ? null : () => _edit(student),
+                            onPressed: vm.isSaving ? null : () => _handleEdit(context, student),
                           ),
                           IconButton(
-                            icon: Icon(Icons.delete_outline, size: 18),
-                            color: AppColors.of(context).danger,
-                            tooltip: 'Delete',
-                            onPressed: null,
-                            // _isSaving ? null : () => _delete(student),
+                            icon: const Icon(Icons.delete_outline, size: 18),
+                            color: AppColors.of(context).border, // Grayed out as in original
+                            tooltip: 'Delete (Disabled)',
+                            onPressed: null, // Disabled in your original file
                           ),
                         ],
                       ),
@@ -397,15 +236,11 @@ class _StudentsScreenState extends State<StudentsScreen> {
     );
   }
 
-  Widget _headerCell(String label) => Padding(
+  Widget _headerCell(BuildContext context, String label) => Padding(
     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
     child: Text(
       label,
-      style: TextStyle(
-        fontWeight: FontWeight.w600,
-        fontSize: 13,
-        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
-      ),
+      style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65)),
     ),
   );
 
