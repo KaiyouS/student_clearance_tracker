@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:student_clearance_tracker/core/theme/app_dimensions.dart';
+import 'package:student_clearance_tracker/core/theme/app_text_styles.dart';
 import 'package:student_clearance_tracker/features/auth/viewmodel/update_password_viewmodel.dart';
 
 class UpdatePasswordScreen extends StatelessWidget {
@@ -19,10 +21,12 @@ class _UpdatePasswordScreenContent extends StatefulWidget {
   const _UpdatePasswordScreenContent();
 
   @override
-  State<_UpdatePasswordScreenContent> createState() => _UpdatePasswordScreenContentState();
+  State<_UpdatePasswordScreenContent> createState() =>
+      _UpdatePasswordScreenContentState();
 }
 
-class _UpdatePasswordScreenContentState extends State<_UpdatePasswordScreenContent> {
+class _UpdatePasswordScreenContentState
+    extends State<_UpdatePasswordScreenContent> {
   final _formKey = GlobalKey<FormState>();
   final _currentPasswordController = TextEditingController();
   final _newPasswordController = TextEditingController();
@@ -51,7 +55,10 @@ class _UpdatePasswordScreenContentState extends State<_UpdatePasswordScreenConte
 
     if (success && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: const Text('Password updated successfully.'), backgroundColor: Theme.of(context).colorScheme.tertiary),
+        SnackBar(
+          content: const Text('Password updated successfully.'),
+          backgroundColor: Theme.of(context).colorScheme.tertiary,
+        ),
       );
       context.pop();
     }
@@ -66,10 +73,13 @@ class _UpdatePasswordScreenContentState extends State<_UpdatePasswordScreenConte
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.surface,
         title: const Text('Change Password'),
-        leading: IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => context.pop()),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.pop(),
+        ),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(AppDimensions.lg),
         child: Form(
           key: _formKey,
           child: Column(
@@ -77,69 +87,146 @@ class _UpdatePasswordScreenContentState extends State<_UpdatePasswordScreenConte
             children: [
               Container(
                 padding: const EdgeInsets.all(14),
-                decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(10), border: Border.all(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2))),
+                decoration: BoxDecoration(
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.primary.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.primary.withValues(alpha: 0.2),
+                  ),
+                ),
                 child: Row(
                   children: [
-                    Icon(Icons.info_outline, size: 16, color: Theme.of(context).colorScheme.primary),
+                    Icon(
+                      Icons.info_outline,
+                      size: 16,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
                     const SizedBox(width: 10),
-                    Expanded(child: Text('Enter your current password to confirm your identity, then choose a new password.', style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.primary))),
+                    Expanded(
+                      child: Text(
+                        'Enter your current password to confirm your identity, then choose a new password.',
+                        style: AppTextStyles.bodySm.copyWith(
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: AppDimensions.lg),
               TextFormField(
                 controller: _currentPasswordController,
                 obscureText: _obscureCurrent,
                 decoration: InputDecoration(
                   labelText: 'Current Password',
                   prefixIcon: const Icon(Icons.lock_outlined),
-                  suffixIcon: IconButton(icon: Icon(_obscureCurrent ? Icons.visibility_outlined : Icons.visibility_off_outlined), onPressed: () => setState(() => _obscureCurrent = !_obscureCurrent)),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscureCurrent
+                          ? Icons.visibility_outlined
+                          : Icons.visibility_off_outlined,
+                    ),
+                    onPressed: () =>
+                        setState(() => _obscureCurrent = !_obscureCurrent),
+                  ),
                 ),
-                validator: (v) => (v == null || v.trim().isEmpty) ? 'Current password is required' : null,
+                validator: (v) => (v == null || v.trim().isEmpty)
+                    ? 'Current password is required'
+                    : null,
                 textInputAction: TextInputAction.next,
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppDimensions.md),
               const Divider(),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppDimensions.md),
               TextFormField(
                 controller: _newPasswordController,
                 obscureText: _obscureNew,
                 decoration: InputDecoration(
                   labelText: 'New Password',
                   prefixIcon: const Icon(Icons.lock_reset_outlined),
-                  suffixIcon: IconButton(icon: Icon(_obscureNew ? Icons.visibility_outlined : Icons.visibility_off_outlined), onPressed: () => setState(() => _obscureNew = !_obscureNew)),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscureNew
+                          ? Icons.visibility_outlined
+                          : Icons.visibility_off_outlined,
+                    ),
+                    onPressed: () => setState(() => _obscureNew = !_obscureNew),
+                  ),
                 ),
                 validator: (v) {
-                  if (v == null || v.trim().isEmpty) return 'New password is required';
-                  if (v.trim().length < 8) return 'Password must be at least 8 characters';
-                  if (v.trim() == _currentPasswordController.text.trim()) return 'New password must differ from current password';
+                  if (v == null || v.trim().isEmpty) {
+                    return 'New password is required';
+                  }
+                  if (v.trim().length < 8) {
+                    return 'Password must be at least 8 characters';
+                  }
+                  if (v.trim() == _currentPasswordController.text.trim()) {
+                    return 'New password must differ from current password';
+                  }
                   return null;
                 },
                 textInputAction: TextInputAction.next,
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppDimensions.md),
               TextFormField(
                 controller: _confirmController,
                 obscureText: _obscureConfirm,
                 decoration: InputDecoration(
                   labelText: 'Confirm New Password',
                   prefixIcon: const Icon(Icons.lock_outlined),
-                  suffixIcon: IconButton(icon: Icon(_obscureConfirm ? Icons.visibility_outlined : Icons.visibility_off_outlined), onPressed: () => setState(() => _obscureConfirm = !_obscureConfirm)),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscureConfirm
+                          ? Icons.visibility_outlined
+                          : Icons.visibility_off_outlined,
+                    ),
+                    onPressed: () =>
+                        setState(() => _obscureConfirm = !_obscureConfirm),
+                  ),
                 ),
                 validator: (v) {
-                  if (v == null || v.trim().isEmpty) return 'Please confirm your new password';
-                  if (v.trim() != _newPasswordController.text.trim()) return 'Passwords do not match';
+                  if (v == null || v.trim().isEmpty) {
+                    return 'Please confirm your new password';
+                  }
+                  if (v.trim() != _newPasswordController.text.trim()) {
+                    return 'Passwords do not match';
+                  }
                   return null;
                 },
                 onFieldSubmitted: (_) => _handleSubmit(),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: AppDimensions.sm),
               if (vm.errorMessage != null)
-                Padding(padding: const EdgeInsets.only(top: 8, bottom: 4), child: Text(vm.errorMessage!, style: TextStyle(color: Theme.of(context).colorScheme.error, fontSize: 13), textAlign: TextAlign.center)),
-              const SizedBox(height: 16),
+                Padding(
+                  padding: const EdgeInsets.only(
+                    top: AppDimensions.sm,
+                    bottom: AppDimensions.xs,
+                  ),
+                  child: Text(
+                    vm.errorMessage!,
+                    style: AppTextStyles.bodySm.copyWith(
+                      color: Theme.of(context).colorScheme.error,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              const SizedBox(height: AppDimensions.md),
               ElevatedButton(
                 onPressed: vm.isLoading ? null : _handleSubmit,
-                child: vm.isLoading ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2)) : const Text('Update Password'),
+                child: vm.isLoading
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2,
+                        ),
+                      )
+                    : const Text('Update Password'),
               ),
             ],
           ),

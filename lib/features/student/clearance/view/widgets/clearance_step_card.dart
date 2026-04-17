@@ -1,7 +1,9 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:student_clearance_tracker/core/models/step_with_info.dart';
 import 'package:student_clearance_tracker/core/theme/app_colors.dart';
+import 'package:student_clearance_tracker/core/theme/app_dimensions.dart';
+import 'package:student_clearance_tracker/core/theme/app_text_styles.dart';
 import 'package:student_clearance_tracker/core/widgets/status_badge.dart';
 import 'package:student_clearance_tracker/features/student/clearance/view/step_detail_screen.dart';
 import 'package:student_clearance_tracker/features/student/clearance/view/widgets/step_detail_row.dart';
@@ -50,9 +52,9 @@ class ClearanceStepCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (isNewLevel) ...[
-            const SizedBox(height: 8),
+            const SizedBox(height: AppDimensions.sm),
             Padding(
-              padding: const EdgeInsets.only(bottom: 8),
+              padding: const EdgeInsets.only(bottom: AppDimensions.sm),
               child: Row(
                 children: [
                   Icon(
@@ -60,11 +62,10 @@ class ClearanceStepCard extends StatelessWidget {
                     size: 14,
                     color: AppColors.contentSecondary(context),
                   ),
-                  const SizedBox(width: 4),
+                  const SizedBox(width: AppDimensions.xs),
                   Text(
                     'Requires above steps',
-                    style: TextStyle(
-                      fontSize: 11,
+                    style: AppTextStyles.label.copyWith(
                       color: isDark
                           ? AppColors.contentSecondary(context)
                           : AppColors.contentSecondary(context),
@@ -94,13 +95,13 @@ class ClearanceStepCard extends StatelessWidget {
               const SizedBox(width: 12),
               Expanded(
                 child: Container(
-                  margin: const EdgeInsets.only(bottom: 8),
-                  padding: const EdgeInsets.all(16),
+                  margin: const EdgeInsets.only(bottom: AppDimensions.sm),
+                  padding: const EdgeInsets.all(AppDimensions.md),
                   decoration: BoxDecoration(
                     color: isDark
                         ? Theme.of(context).colorScheme.surface
                         : Theme.of(context).colorScheme.surface,
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppDimensions.radiusLg),
                     border: Border.all(
                       color: step.status == 'flagged'
                           ? Theme.of(
@@ -119,18 +120,19 @@ class ClearanceStepCard extends StatelessWidget {
                           Expanded(
                             child: Text(
                               step.officeName ?? '-',
-                              style: const TextStyle(
+                              style: AppTextStyles.titleSm.copyWith(
                                 fontWeight: FontWeight.w600,
-                                fontSize: 14,
                               ),
                             ),
                           ),
-                          const SizedBox(width: 8),
+                          const SizedBox(width: AppDimensions.sm),
                           if (wasChanged)
                             Container(
-                              margin: const EdgeInsets.only(right: 8),
+                              margin: const EdgeInsets.only(
+                                right: AppDimensions.sm,
+                              ),
                               padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
+                                horizontal: AppDimensions.sm,
                                 vertical: 3,
                               ),
                               decoration: BoxDecoration(
@@ -146,9 +148,8 @@ class ClearanceStepCard extends StatelessWidget {
                               ),
                               child: Text(
                                 'Updated',
-                                style: TextStyle(
+                                style: AppTextStyles.label.copyWith(
                                   color: Theme.of(context).colorScheme.primary,
-                                  fontSize: 11,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
@@ -156,7 +157,7 @@ class ClearanceStepCard extends StatelessWidget {
                           StatusBadge(status: step.status),
                         ],
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: AppDimensions.sm),
                       ..._buildDetails(context, item),
                     ],
                   ),
@@ -232,5 +233,3 @@ class ClearanceStepCard extends StatelessWidget {
     return '${months[dt.month - 1]} ${dt.day}, ${dt.year}';
   }
 }
-
-

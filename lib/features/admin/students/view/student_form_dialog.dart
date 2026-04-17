@@ -4,6 +4,8 @@ import 'package:student_clearance_tracker/core/models/program.dart';
 import 'package:student_clearance_tracker/core/models/student.dart';
 import 'package:student_clearance_tracker/core/repositories/school_repository.dart';
 import 'package:student_clearance_tracker/core/repositories/program_repository.dart';
+import 'package:student_clearance_tracker/core/theme/app_dimensions.dart';
+import 'package:student_clearance_tracker/core/theme/app_text_styles.dart';
 
 class StudentFormDialog extends StatefulWidget {
   final Student? student;
@@ -163,7 +165,7 @@ class _StudentFormDialogState extends State<StudentFormDialog> {
                       return null;
                     },
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: AppDimensions.md),
                 ],
 
                 // Student No
@@ -177,7 +179,7 @@ class _StudentFormDialogState extends State<StudentFormDialog> {
                       ? 'Student number is required'
                       : null,
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: AppDimensions.md),
 
                 // Name row
                 Row(
@@ -215,7 +217,7 @@ class _StudentFormDialogState extends State<StudentFormDialog> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: AppDimensions.md),
 
                 // School dropdown
                 _loadingSchools
@@ -242,7 +244,7 @@ class _StudentFormDialogState extends State<StudentFormDialog> {
                           }
                         },
                       ),
-                const SizedBox(height: 16),
+                const SizedBox(height: AppDimensions.md),
 
                 // Program dropdown - disabled until school is selected
                 DropdownButtonFormField<Program>(
@@ -251,7 +253,9 @@ class _StudentFormDialogState extends State<StudentFormDialog> {
                     labelText: 'Program',
                     // Visual hint when no school selected yet
                     disabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(
+                        AppDimensions.radiusMd,
+                      ),
                       borderSide: BorderSide(
                         color: Theme.of(context).dividerColor,
                       ),
@@ -263,8 +267,10 @@ class _StudentFormDialogState extends State<StudentFormDialog> {
                         : _loadingPrograms
                         ? 'Loading...'
                         : 'Select a program',
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
+                    style: AppTextStyles.bodyMd.copyWith(
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withValues(alpha: 0.65),
                     ),
                   ),
                   items: _programs
@@ -277,7 +283,7 @@ class _StudentFormDialogState extends State<StudentFormDialog> {
                       ? null
                       : (program) => setState(() => _selectedProgram = program),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: AppDimensions.md),
 
                 // Year level
                 DropdownButtonFormField<int>(
@@ -310,4 +316,3 @@ class _StudentFormDialogState extends State<StudentFormDialog> {
     );
   }
 }
-

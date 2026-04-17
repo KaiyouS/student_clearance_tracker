@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:student_clearance_tracker/core/models/office.dart';
 import 'package:student_clearance_tracker/core/models/office_staff.dart';
 import 'package:student_clearance_tracker/core/repositories/office_repository.dart';
+import 'package:student_clearance_tracker/core/theme/app_dimensions.dart';
+import 'package:student_clearance_tracker/core/theme/app_text_styles.dart';
 
 class StaffFormDialog extends StatefulWidget {
   final OfficeStaff? staff; // null = create
@@ -125,7 +127,7 @@ class _StaffFormDialogState extends State<StaffFormDialog> {
                       return null;
                     },
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: AppDimensions.md),
                 ],
 
                 // Employee No
@@ -136,7 +138,7 @@ class _StaffFormDialogState extends State<StaffFormDialog> {
                       ? 'Employee number is required'
                       : null,
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: AppDimensions.md),
 
                 // Name fields
                 Row(
@@ -174,26 +176,26 @@ class _StaffFormDialogState extends State<StaffFormDialog> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: AppDimensions.lg),
 
                 // Office assignments
                 Text(
                   'Assigned Offices',
-                  style: TextStyle(
+                  style: AppTextStyles.bodySm.copyWith(
                     fontWeight: FontWeight.w600,
-                    fontSize: 13,
                     color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: AppDimensions.xs),
                 Text(
                   'Select one or more offices this staff member can sign for.',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
+                  style: AppTextStyles.caption.copyWith(
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withValues(alpha: 0.65),
                   ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: AppDimensions.sm),
 
                 if (_loadingOffices)
                   const Center(child: CircularProgressIndicator())
@@ -201,13 +203,15 @@ class _StaffFormDialogState extends State<StaffFormDialog> {
                   Container(
                     constraints: const BoxConstraints(maxHeight: 200),
                     decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Theme.of(context).dividerColor,
+                      border: Border.all(color: Theme.of(context).dividerColor),
+                      borderRadius: BorderRadius.circular(
+                        AppDimensions.radiusMd,
                       ),
-                      borderRadius: BorderRadius.circular(8),
                     ),
                     child: ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(
+                        AppDimensions.radiusMd,
+                      ),
                       child: ListView.separated(
                         shrinkWrap: true,
                         itemCount: _allOffices.length,
@@ -223,7 +227,7 @@ class _StaffFormDialogState extends State<StaffFormDialog> {
                             value: selected,
                             title: Text(
                               office.name,
-                              style: TextStyle(fontSize: 13),
+                              style: AppTextStyles.bodySm,
                             ),
                             activeColor: Theme.of(context).colorScheme.primary,
                             controlAffinity: ListTileControlAffinity.leading,
@@ -251,4 +255,3 @@ class _StaffFormDialogState extends State<StaffFormDialog> {
     );
   }
 }
-

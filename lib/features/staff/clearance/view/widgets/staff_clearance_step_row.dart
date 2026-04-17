@@ -1,7 +1,9 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:student_clearance_tracker/core/models/clearance_step.dart';
 import 'package:student_clearance_tracker/core/theme/app_colors.dart';
+import 'package:student_clearance_tracker/core/theme/app_dimensions.dart';
+import 'package:student_clearance_tracker/core/theme/app_text_styles.dart';
 import 'package:student_clearance_tracker/core/widgets/status_badge.dart';
 import 'package:student_clearance_tracker/features/staff/clearance/view/widgets/staff_clearance_actions.dart';
 import 'package:student_clearance_tracker/features/staff/clearance/viewmodel/staff_clearance_viewmodel.dart';
@@ -28,24 +30,22 @@ class StaffClearanceStepRow extends StatelessWidget {
               children: [
                 Text(
                   step.studentName ?? '-',
-                  style: TextStyle(
+                  style: AppTextStyles.bodyMd.copyWith(
                     fontWeight: FontWeight.w500,
-                    fontSize: 14,
                     color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   step.studentNo ?? '-',
-                  style: TextStyle(
-                    fontSize: 12,
+                  style: AppTextStyles.caption.copyWith(
                     color: Theme.of(
                       context,
                     ).colorScheme.onSurface.withValues(alpha: 0.65),
                   ),
                 ),
                 if (isPending && !canSign) ...[
-                  const SizedBox(height: 4),
+                  const SizedBox(height: AppDimensions.xs),
                   Row(
                     children: [
                       Icon(
@@ -53,11 +53,10 @@ class StaffClearanceStepRow extends StatelessWidget {
                         size: 12,
                         color: AppColors.warning,
                       ),
-                      const SizedBox(width: 4),
+                      const SizedBox(width: AppDimensions.xs),
                       Text(
                         'Prerequisites not yet complete',
-                        style: TextStyle(
-                          fontSize: 11,
+                        style: AppTextStyles.label.copyWith(
                           color: AppColors.warning,
                         ),
                       ),
@@ -65,11 +64,10 @@ class StaffClearanceStepRow extends StatelessWidget {
                   ),
                 ],
                 if (isFlagged && step.remarks != null) ...[
-                  const SizedBox(height: 4),
+                  const SizedBox(height: AppDimensions.xs),
                   Text(
                     step.remarks!,
-                    style: TextStyle(
-                      fontSize: 12,
+                    style: AppTextStyles.caption.copyWith(
                       color: Theme.of(context).colorScheme.error,
                     ),
                   ),
@@ -123,5 +121,3 @@ class StaffClearanceStepRow extends StatelessWidget {
     );
   }
 }
-
-

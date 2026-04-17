@@ -1,7 +1,9 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:student_clearance_tracker/core/models/clearance_step.dart';
 import 'package:student_clearance_tracker/core/theme/app_colors.dart';
+import 'package:student_clearance_tracker/core/theme/app_dimensions.dart';
+import 'package:student_clearance_tracker/core/theme/app_text_styles.dart';
 import 'package:student_clearance_tracker/core/widgets/status_badge.dart';
 import 'package:student_clearance_tracker/features/student/clearance/view/widgets/detail_row.dart';
 import 'package:student_clearance_tracker/features/student/clearance/viewmodel/step_detail_viewmodel.dart';
@@ -19,7 +21,7 @@ class StatusDetailCard extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppDimensions.radiusXl),
         border: Border.all(color: Theme.of(context).dividerColor),
       ),
       child: Column(
@@ -31,7 +33,7 @@ class StatusDetailCard extends StatelessWidget {
               context,
             ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppDimensions.md),
           ..._buildRows(context, step, vm.isBlocked),
         ],
       ),
@@ -70,12 +72,12 @@ class StatusDetailCard extends StatelessWidget {
           ),
         if (step.remarks != null)
           DetailRow(label: 'Reason', value: step.remarks!, isRed: true),
-        const SizedBox(height: 8),
+        const SizedBox(height: AppDimensions.sm),
         Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.error.withValues(alpha: 0.06),
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
             border: Border.all(
               color: Theme.of(context).colorScheme.error.withValues(alpha: 0.2),
             ),
@@ -87,13 +89,12 @@ class StatusDetailCard extends StatelessWidget {
                 size: 14,
                 color: Theme.of(context).colorScheme.error,
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: AppDimensions.sm),
               Expanded(
                 child: Text(
                   'Visit this office to resolve the flag before '
                   'your clearance can proceed.',
-                  style: TextStyle(
-                    fontSize: 12,
+                  style: AppTextStyles.caption.copyWith(
                     color: Theme.of(context).colorScheme.error,
                   ),
                 ),
@@ -109,14 +110,14 @@ class StatusDetailCard extends StatelessWidget {
         label: 'Status',
         child: StatusBadge(status: step.status),
       ),
-      const SizedBox(height: 8),
+      const SizedBox(height: AppDimensions.sm),
       Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: isBlocked
               ? AppColors.warning.withValues(alpha: 0.06)
               : Theme.of(context).colorScheme.primary.withValues(alpha: 0.06),
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
           border: Border.all(
             color: isBlocked
                 ? AppColors.warning.withValues(alpha: 0.3)
@@ -132,14 +133,13 @@ class StatusDetailCard extends StatelessWidget {
                   ? AppColors.warning
                   : Theme.of(context).colorScheme.primary,
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: AppDimensions.sm),
             Expanded(
               child: Text(
                 isBlocked
                     ? 'This step is locked until prerequisites are complete.'
                     : 'Visit this office in person to get your clearance signed.',
-                style: TextStyle(
-                  fontSize: 12,
+                style: AppTextStyles.caption.copyWith(
                   color: isBlocked
                       ? AppColors.warning
                       : Theme.of(context).colorScheme.primary,
@@ -172,4 +172,3 @@ class StatusDetailCard extends StatelessWidget {
         '${dt.minute.toString().padLeft(2, '0')}';
   }
 }
-
