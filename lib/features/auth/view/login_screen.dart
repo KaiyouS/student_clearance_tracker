@@ -2,111 +2,30 @@ import 'package:flutter/material.dart';
 import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:student_clearance_tracker/core/repositories/user_profile_repository.dart';
-import 'package:student_clearance_tracker/features/staff/shell/viewmodel/staff_shell_viewmodel.dart';
-import 'package:student_clearance_tracker/features/student/shell/viewmodel/student_shell_viewmodel.dart';
-import 'package:student_clearance_tracker/core/services/auth_service.dart';
+import 'package:student_clearance_tracker/features/auth/viewmodel/login_viewmodel.dart';
 
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (_) => LoginViewModel(),
+      child: const _LoginScreenContent(),
+    );
+  }
 }
 
-class _LoginScreenState extends State<LoginScreen> {
-  final _profileRepo = UserProfileRepository();
+class _LoginScreenContent extends StatefulWidget {
+  const _LoginScreenContent();
+
+  @override
+  State<_LoginScreenContent> createState() => _LoginScreenContentState();
+}
+
+class _LoginScreenContentState extends State<_LoginScreenContent> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _authService = AuthService();
-
-  bool _isLoading = false;
-  String? _errorMessage;
-
-  Future<void> _handleLogin() async {
-    setState(() {
-      _isLoading = true;
-      _errorMessage = null;
-    });
-
-    try {
-      final response = await _authService.signIn(
-        _emailController.text.trim(),
-        _passwordController.text.trim(),
-      );
-
-      final user = response.user;
-      if (user == null) throw Exception('Login failed.');
-
-      final roles = await _authService.getUserRoles(user.id);
-      final profile = await _profileRepo.getById(user.id);
-
-      if (!mounted) return;
-
-      if (roles.contains('office_staff')) {
-        if (context.mounted) {
-          await context.read<StaffShellViewModel>().loadProfile(user.id);
-        }
-      }
-
-      // Account status checks
-      if (profile == null) {
-        setState(() => _errorMessage = 'Account profile not found.');
-        await _authService.signOut();
-        return;
-      }
-
-      if (profile.isLocked) {
-        setState(
-          () => _errorMessage =
-              'Your account has been locked. Please contact the administrator.',
-        );
-        await _authService.signOut();
-        return;
-      }
-
-      if (profile.isInactive) {
-        setState(
-          () => _errorMessage =
-              'Your account is inactive. Please contact the administrator.',
-        );
-        await _authService.signOut();
-        return;
-      }
-
-      // Force password change on first login
-      if (profile.needsPasswordChange) {
-        if (!mounted) return;
-        context.go('/change-password');
-        return;
-      }
-
-      if (roles.contains('student')) {
-        if (!mounted) return;
-        await context.read<StudentShellViewModel>().loadData(user.id);
-      }
-
-      // Route based on role
-      if (!mounted) return;
-      if (roles.contains('super_admin') || roles.contains('office_staff')) {
-        context.go('/admin/dashboard');
-      } else if (roles.contains('student')) {
-        context.go('/student/home');
-      } else {
-        setState(() => _errorMessage = 'Your account has no assigned role.');
-        await _authService.signOut();
-      }
-    } on AuthException catch (e) {
-      setState(() => _errorMessage = e.message);
-    } catch (e) {
-      setState(() => _errorMessage = 'Something went wrong. Please try again.');
-    } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
-    }
-  }
 
   @override
   void dispose() {
@@ -115,8 +34,22 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
+  Future<void> _handleLogin() async {
+    final vm = context.read<LoginViewModel>();
+    final destinationRoute = await vm.login(
+      _emailController.text.trim(),
+      _passwordController.text.trim(),
+    );
+
+    if (destinationRoute != null && mounted) {
+      context.go(destinationRoute);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final vm = context.watch<LoginViewModel>();
+
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       body: Center(
@@ -151,9 +84,7 @@ class _LoginScreenState extends State<LoginScreen> {
               Text(
                 'Sign in to your account',
                 style: TextStyle(
-                  color: Theme.of(
-                    context,
-                  ).colorScheme.onSurface.withValues(alpha: 0.65),
+                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -177,11 +108,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 onSubmitted: (_) => _handleLogin(),
               ),
               const SizedBox(height: 8),
-              if (_errorMessage != null)
+              if (vm.errorMessage != null)
                 Padding(
                   padding: const EdgeInsets.only(bottom: 8),
                   child: Text(
-                    _errorMessage!,
+                    vm.errorMessage!,
                     style: TextStyle(
                       color: AppColors.of(context).danger,
                       fontSize: 13,
@@ -191,8 +122,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               const SizedBox(height: 8),
               ElevatedButton(
-                onPressed: _isLoading ? null : _handleLogin,
-                child: _isLoading
+                onPressed: vm.isLoading ? null : _handleLogin,
+                child: vm.isLoading
                     ? SizedBox(
                         width: 20,
                         height: 20,
