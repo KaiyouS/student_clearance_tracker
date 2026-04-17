@@ -90,13 +90,6 @@ final router = GoRouter(
       return isLoggingIn ? null : '/login';
     }
 
-    if (_isGoogleUser() &&
-        !_authService.isAllowedStudentEmail(session.user.email)) {
-      _clearAccessSnapshot();
-      await supabase.auth.signOut();
-      return '/login';
-    }
-
     // ── Logged in — load cached access context ──
     final access = await _getAccessSnapshot(session.user.id);
     final profile = access.profile;
@@ -104,7 +97,7 @@ final router = GoRouter(
 
     // First-time Google student account: route to onboarding until profile is created.
     if (profile == null) {
-      if (_isGoogleUser()) {
+      if (_isGoogleUser() || isLoggingIn || isStudentOnboarding) {
         return isStudentOnboarding ? null : '/student/onboarding';
       }
       _clearAccessSnapshot();
