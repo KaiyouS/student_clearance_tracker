@@ -1,25 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:student_clearance_tracker/core/theme/app_colors.dart';
-import 'package:student_clearance_tracker/core/models/student.dart';
-import 'package:student_clearance_tracker/core/repositories/student_repository.dart';
+import 'package:student_clearance_tracker/core/models/office_staff.dart';
+import 'package:student_clearance_tracker/core/repositories/staff_repository.dart';
 import 'package:student_clearance_tracker/core/widgets/app_card.dart';
+import 'package:student_clearance_tracker/core/widgets/confirm_dialog.dart';
 import 'package:student_clearance_tracker/core/repositories/user_profile_repository.dart';
 import 'package:student_clearance_tracker/admin/widgets/account_status_menu.dart';
-import 'package:student_clearance_tracker/admin/widgets/student_form_dialog.dart';
+import 'package:student_clearance_tracker/features/admin/staff/view/staff_form_dialog.dart';
 
-class StudentsScreen extends StatefulWidget {
-  const StudentsScreen({super.key});
+class StaffScreen extends StatefulWidget {
+  const StaffScreen({super.key});
 
   @override
-  State<StudentsScreen> createState() => _StudentsScreenState();
+  State<StaffScreen> createState() => _StaffScreenState();
 }
 
-class _StudentsScreenState extends State<StudentsScreen> {
-  final _repo = StudentRepository();
+class _StaffScreenState extends State<StaffScreen> {
+  final _repo = StaffRepository();
   final _profileRepo = UserProfileRepository();
 
-  List<Student> _students = [];
-  List<Student> _filtered = [];
+  List<OfficeStaff> _staff = [];
+  List<OfficeStaff> _filtered = [];
   bool _isLoading = true;
   bool _isSaving = false;
   String? _error;
@@ -39,9 +40,9 @@ class _StudentsScreenState extends State<StudentsScreen> {
       _error = null;
     });
     try {
-      final students = await _repo.getAll();
+      final staff = await _repo.getAll();
       setState(() {
-        _students = students;
+        _staff = staff;
         _isLoading = false;
       });
       _applySearch(_search);
@@ -57,16 +58,12 @@ class _StudentsScreenState extends State<StudentsScreen> {
     setState(() {
       _search = query;
       _filtered = query.isEmpty
-          ? List.from(_students)
-          : _students
+          ? List.from(_staff)
+          : _staff
                 .where(
                   (s) =>
                       s.fullName.toLowerCase().contains(query.toLowerCase()) ||
-                      s.studentNo.toLowerCase().contains(query.toLowerCase()) ||
-                      s.programName.toLowerCase().contains(
-                        query.toLowerCase(),
-                      ) ||
-                      s.schoolName.toLowerCase().contains(query.toLowerCase()),
+                      s.employeeNo.toLowerCase().contains(query.toLowerCase()),
                 )
                 .toList();
     });
@@ -75,91 +72,89 @@ class _StudentsScreenState extends State<StudentsScreen> {
   // ── CRUD ──────────────────────────────────────────────────
 
   Future<void> _create() async {
-    final result = await StudentFormDialog.show(context);
+    final result = await StaffFormDialog.show(context);
     if (result == null) return;
 
     setState(() => _isSaving = true);
     try {
       await _repo.create(
         email: result['email'],
-        studentNo: result['student_no'],
+        employeeNo: result['employee_no'],
         firstName: result['first_name'],
         middleName: result['middle_name'].isEmpty
             ? null
             : result['middle_name'],
         lastName: result['last_name'],
-        programId: result['program_id'],
-        yearLevel: result['year_level'],
+        officeIds: List<int>.from(result['office_ids']),
       );
       _showSuccess(
-        'Student created. '
-        'They can log in with their email and student number as password.',
+        'Staff member created. '
+        'They can log in with their email and employee number as password.',
       );
       _load();
     } catch (e) {
-      _showError('Failed to create student: $e');
+      _showError('Failed to create staff: $e');
     } finally {
       setState(() => _isSaving = false);
     }
   }
 
-  Future<void> _edit(Student student) async {
-    final result = await StudentFormDialog.show(context, student: student);
+  Future<void> _edit(OfficeStaff staff) async {
+    final result = await StaffFormDialog.show(context, staff: staff);
     if (result == null) return;
 
     setState(() => _isSaving = true);
     try {
       await _repo.update(
-        id: student.id,
-        studentNo: result['student_no'],
+        id: staff.id,
+        employeeNo: result['employee_no'],
         firstName: result['first_name'],
         middleName: result['middle_name'].isEmpty
             ? null
             : result['middle_name'],
         lastName: result['last_name'],
-        programId: result['program_id'],
-        yearLevel: result['year_level'],
+        officeIds: List<int>.from(result['office_ids']),
       );
-      _showSuccess('Student updated.');
+      _showSuccess('Staff member updated.');
       _load();
     } catch (e) {
-      _showError('Failed to update student: $e');
+      _showError('Failed to update staff: $e');
     } finally {
       setState(() => _isSaving = false);
     }
   }
 
-  Future<void> _updateStatus(Student student, String newStatus) async {
+  Future<void> _delete(OfficeStaff staff) async {
+    final confirmed = await ConfirmDialog.show(
+      context,
+      title: 'Delete Staff Member',
+      message:
+          'Are you sure you want to delete "${staff.fullName}"? '
+          'Their account will be permanently removed.',
+    );
+    if (!confirmed) return;
+
+    setState(() => _isSaving = true);
     try {
-      await _profileRepo.updateStatus(student.id, newStatus);
+      await _repo.delete(staff.id);
+      _showSuccess('Staff member deleted.');
+      _load();
+    } catch (e) {
+      _showError('Failed to delete staff: $e');
+    } finally {
+      setState(() => _isSaving = false);
+    }
+  }
+
+  Future<void> _updateStatus(OfficeStaff staff, String newStatus) async {
+    try {
+      await _profileRepo.updateStatus(staff.id, newStatus);
       _showSuccess('Account status updated to $newStatus.');
       _load();
     } catch (e) {
       _showError('Failed to update status: $e');
     }
   }
-
-  // TODO: decide if we should implement delete
-  // Future<void> _delete(Student student) async {
-  //   final confirmed = await ConfirmDialog.show(
-  //     context,
-  //     title:   'Delete Student',
-  //     message: 'Are you sure you want to delete "${student.fullName}"? '
-  //              'Their account will be permanently removed.',
-  //   );
-  //   if (!confirmed) return;
-
-  //   setState(() => _isSaving = true);
-  //   try {
-  //     await _repo.delete(student.id);
-  //     _showSuccess('Student deleted.');
-  //     _load();
-  //   } catch (e) {
-  //     _showError('Failed to delete student: $e');
-  //   } finally {
-  //     setState(() => _isSaving = false);
-  //   }
-  // }
 
   void _showSuccess(String message) {
     if (!mounted) return;
@@ -186,6 +181,7 @@ class _StudentsScreenState extends State<StudentsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Header
             Row(
               children: [
                 Expanded(
@@ -193,7 +189,7 @@ class _StudentsScreenState extends State<StudentsScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Students',
+                        'Staff',
                         style: TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.bold,
@@ -202,7 +198,7 @@ class _StudentsScreenState extends State<StudentsScreen> {
                       ),
                       SizedBox(height: 4),
                       Text(
-                        'Manage graduating students and their accounts.',
+                        'Manage office staff and their office assignments.',
                         style: TextStyle(
                           color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
                           fontSize: 14,
@@ -223,18 +219,19 @@ class _StudentsScreenState extends State<StudentsScreen> {
                 ElevatedButton.icon(
                   onPressed: _isSaving ? null : _create,
                   icon: Icon(Icons.add),
-                  label: Text('Add Student'),
+                  label: Text('Add Staff'),
                 ),
               ],
             ),
             const SizedBox(height: 24),
 
+            // Search
             SizedBox(
               width: 320,
               child: TextField(
                 onChanged: _applySearch,
                 decoration: const InputDecoration(
-                  hintText: 'Search by name, student no, or course...',
+                  hintText: 'Search by name or employee no...',
                   prefixIcon: Icon(Icons.search),
                 ),
               ),
@@ -267,9 +264,7 @@ class _StudentsScreenState extends State<StudentsScreen> {
     if (_filtered.isEmpty) {
       return Center(
         child: Text(
-          _search.isEmpty
-              ? 'No students yet.'
-              : 'No students match "$_search".',
+          _search.isEmpty ? 'No staff yet.' : 'No staff match "$_search".',
           style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65)),
         ),
       );
@@ -283,12 +278,10 @@ class _StudentsScreenState extends State<StudentsScreen> {
           child: Table(
             columnWidths: const {
               0: FlexColumnWidth(2), // name
-              1: FixedColumnWidth(140), // student no
-              2: FlexColumnWidth(2), // program
-              3: FlexColumnWidth(2), // school
-              4: FixedColumnWidth(100), // year
-              5: FixedColumnWidth(130), // status
-              6: FixedColumnWidth(120), // actions
+              1: FixedColumnWidth(140), // employee no
+              2: FlexColumnWidth(3), // offices
+              3: FixedColumnWidth(130), // status
+              4: FixedColumnWidth(120), // actions
             },
             children: [
               TableRow(
@@ -297,16 +290,14 @@ class _StudentsScreenState extends State<StudentsScreen> {
                 ),
                 children: [
                   _headerCell('Name'),
-                  _headerCell('Student No.'),
-                  _headerCell('Program'),
-                  _headerCell('School'),
-                  _headerCell('Year'),
+                  _headerCell('Employee No.'),
+                  _headerCell('Assigned Offices'),
                   _headerCell('Status'),
                   _headerCell(''),
                 ],
               ),
               ..._filtered.map(
-                (student) => TableRow(
+                (staff) => TableRow(
                   decoration: BoxDecoration(
                     border: Border(
                       top: BorderSide(color: AppColors.of(context).border),
@@ -314,26 +305,22 @@ class _StudentsScreenState extends State<StudentsScreen> {
                   ),
                   children: [
                     _dataCell(
-                      Text(
-                        student.fullName,
-                        style: TextStyle(
-                          fontWeight: FontWeight.w500,
-                          color: Theme.of(context).colorScheme.onSurface,
-                        ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            staff.fullName,
+                            style: TextStyle(
+                              fontWeight: FontWeight.w500,
+                              color: Theme.of(context).colorScheme.onSurface,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     _dataCell(
                       Text(
-                        student.studentNo,
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
-                          fontSize: 13,
-                        ),
-                      ),
-                    ),
-                    _dataCell(
-                      Text(
-                        student.programName,
+                        staff.employeeNo,
                         style: TextStyle(
                           color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
                           fontSize: 13,
@@ -341,30 +328,27 @@ class _StudentsScreenState extends State<StudentsScreen> {
                       ),
                     ),
                     _dataCell(
-                      Text(
-                        student.schoolName,
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
-                          fontSize: 13,
-                        ),
-                      ),
+                      staff.offices == null || staff.offices!.isEmpty
+                          ? Text(
+                              'No offices assigned',
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
+                                fontSize: 13,
+                              ),
+                            )
+                          : Wrap(
+                              spacing: 6,
+                              runSpacing: 4,
+                              children: staff.offices!
+                                  .map((o) => _OfficeBadge(name: o.name))
+                                  .toList(),
+                            ),
                     ),
                     _dataCell(
-                      Text(
-                        student.yearLevel != null
-                            ? 'Year ${student.yearLevel}'
-                            : '—',
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
-                          fontSize: 13,
-                        ),
-                      ),
-                    ),
-                    _dataCell(
-                      student.profile != null
+                      staff.profile != null
                           ? AccountStatusMenu(
-                              currentStatus: student.profile!.accountStatus,
-                              onStatusChanged: (s) => _updateStatus(student, s),
+                              currentStatus: staff.profile!.accountStatus,
+                              onStatusChanged: (s) => _updateStatus(staff, s),
                             )
                           : const SizedBox.shrink(),
                     ),
@@ -375,14 +359,13 @@ class _StudentsScreenState extends State<StudentsScreen> {
                             icon: Icon(Icons.edit_outlined, size: 18),
                             color: AppColors.of(context).info,
                             tooltip: 'Edit',
-                            onPressed: _isSaving ? null : () => _edit(student),
+                            onPressed: _isSaving ? null : () => _edit(staff),
                           ),
                           IconButton(
                             icon: Icon(Icons.delete_outline, size: 18),
                             color: AppColors.of(context).danger,
                             tooltip: 'Delete',
-                            onPressed: null,
-                            // _isSaving ? null : () => _delete(student),
+                            onPressed: _isSaving ? null : () => _delete(staff),
                           ),
                         ],
                       ),
@@ -413,4 +396,32 @@ class _StudentsScreenState extends State<StudentsScreen> {
     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
     child: child,
   );
+}
+
+// ── Small office badge chip ───────────────────────────────────
+class _OfficeBadge extends StatelessWidget {
+  final String name;
+  const _OfficeBadge({required this.name});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: AppColors.of(context).info.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: AppColors.of(context).info.withValues(alpha: 0.25),
+        ),
+      ),
+      child: Text(
+        name,
+        style: TextStyle(
+          fontSize: 11,
+          color: AppColors.of(context).info,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+    );
+  }
 }

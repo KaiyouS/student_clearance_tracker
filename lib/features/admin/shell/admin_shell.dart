@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:student_clearance_tracker/core/theme/app_colors.dart';
-import 'package:student_clearance_tracker/admin/shell/sidebar_widget.dart';
+import 'package:student_clearance_tracker/features/admin/shell/sidebar_widget.dart';
 
 class AdminShell extends StatelessWidget {
   final Widget child;

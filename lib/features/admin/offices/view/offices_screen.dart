@@ -4,7 +4,7 @@ import 'package:student_clearance_tracker/core/models/office.dart';
 import 'package:student_clearance_tracker/core/repositories/office_repository.dart';
 import 'package:student_clearance_tracker/core/widgets/app_card.dart';
 import 'package:student_clearance_tracker/core/widgets/confirm_dialog.dart';
-import 'package:student_clearance_tracker/admin/widgets/office_form_dialog.dart';
+import 'package:student_clearance_tracker/features/admin/offices/view/office_form_dialog.dart';
 
 class OfficesScreen extends StatefulWidget {
   const OfficesScreen({super.key});
