@@ -40,10 +40,11 @@ class LoginViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final response = await _authService.signInWithGoogle();
+      final result = await _authService.signInWithGoogle();
       return await _resolveDestinationAfterSignIn(
-        response,
+        result.authResponse,
         allowGoogleOnboarding: true,
+        googleEmailHint: result.googleEmail,
       );
     } on AuthException catch (e) {
       errorMessage = e.message;
@@ -60,11 +61,12 @@ class LoginViewModel extends ChangeNotifier {
   Future<String?> _resolveDestinationAfterSignIn(
     AuthResponse response, {
     required bool allowGoogleOnboarding,
+    String? googleEmailHint,
   }) async {
     final user = response.user;
     if (user == null) throw Exception('Login failed.');
 
-    final email = user.email;
+    final email = _resolveGoogleEmail(user, googleEmailHint: googleEmailHint);
     if (allowGoogleOnboarding && !_authService.isAllowedStudentEmail(email)) {
       await _authService.signOut();
       throw AuthException('Use your addu.edu.ph Google account to continue.');
@@ -120,5 +122,27 @@ class LoginViewModel extends ChangeNotifier {
 
     await _authService.signOut();
     throw Exception('Your account has no assigned role.');
+  }
+
+  String? _resolveGoogleEmail(User user, {String? googleEmailHint}) {
+    if (googleEmailHint != null && googleEmailHint.trim().isNotEmpty) {
+      return googleEmailHint.trim();
+    }
+
+    if (user.email != null && user.email!.trim().isNotEmpty) {
+      return user.email!.trim();
+    }
+
+    final identities = user.identities;
+    if (identities != null) {
+      for (final identity in identities) {
+        final rawEmail = identity.identityData?['email'];
+        if (rawEmail is String && rawEmail.trim().isNotEmpty) {
+          return rawEmail.trim();
+        }
+      }
+    }
+
+    return null;
   }
 }

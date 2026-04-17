@@ -3,6 +3,16 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:student_clearance_tracker/core/constants/app_config.dart';
 import 'package:student_clearance_tracker/main.dart';
 
+class GoogleAuthSignInResult {
+  final AuthResponse authResponse;
+  final String googleEmail;
+
+  const GoogleAuthSignInResult({
+    required this.authResponse,
+    required this.googleEmail,
+  });
+}
+
 class AuthService {
   static bool _googleInitialized = false;
 
@@ -25,16 +35,31 @@ class AuthService {
   }
 
   // Sign in with Google and exchange token with Supabase
-  Future<AuthResponse> signInWithGoogle() async {
+  Future<GoogleAuthSignInResult> signInWithGoogle() async {
     await _ensureGoogleInitialized();
 
     if (!GoogleSignIn.instance.supportsAuthenticate()) {
-      throw AuthException(
-        'Google sign in is not available on this platform.',
-      );
+      throw AuthException('Google sign in is not available on this platform.');
+    }
+
+    // Force account selection to avoid silently reusing a previous non-ADdU account.
+    try {
+      await GoogleSignIn.instance.signOut();
+    } catch (_) {
+      // Ignore failures and continue with interactive auth.
     }
 
     final account = await GoogleSignIn.instance.authenticate();
+    final googleEmail = account.email.trim();
+    if (!isAllowedStudentEmail(googleEmail)) {
+      await supabase.auth.signOut();
+      try {
+        await GoogleSignIn.instance.signOut();
+      } catch (_) {
+        // Ignore cleanup failures.
+      }
+      throw AuthException('Use your addu.edu.ph Google account to continue.');
+    }
 
     final auth = account.authentication;
     final idToken = auth.idToken;
@@ -42,9 +67,14 @@ class AuthService {
       throw AuthException('Google sign in did not return an ID token.');
     }
 
-    return supabase.auth.signInWithIdToken(
+    final authResponse = await supabase.auth.signInWithIdToken(
       provider: OAuthProvider.google,
       idToken: idToken,
+    );
+
+    return GoogleAuthSignInResult(
+      authResponse: authResponse,
+      googleEmail: googleEmail,
     );
   }
 
