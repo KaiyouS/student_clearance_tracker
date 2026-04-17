@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:student_clearance_tracker/core/constants/app_config.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:student_clearance_tracker/features/staff/shell/viewmodel/staff_shell_viewmodel.dart';
 import 'package:student_clearance_tracker/features/student/shell/viewmodel/student_shell_viewmodel.dart';
 import 'package:student_clearance_tracker/core/providers/theme_provider.dart';
 import 'package:student_clearance_tracker/core/theme/app_theme.dart';
 import 'package:student_clearance_tracker/router/app_routes.dart';
-import 'package:student_clearance_tracker/supabase_config.dart';
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -18,8 +17,8 @@ void main() async {
   // Ensure Supabase only initializes once
   try {
     await Supabase.initialize(
-      url: SupabaseConfig.url,
-      anonKey: SupabaseConfig.anonKey,
+      url: AppConfig.supabaseUrl,
+      anonKey: AppConfig.supabaseAnonKey,
     );
   } catch (e) {
     // Already initialized — safe to ignore
