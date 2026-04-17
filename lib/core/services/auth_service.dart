@@ -49,7 +49,12 @@ class AuthService {
       // Ignore failures and continue with interactive auth.
     }
 
-    final account = await GoogleSignIn.instance.authenticate();
+    GoogleSignInAccount account;
+    try {
+      account = await GoogleSignIn.instance.authenticate();
+    } on GoogleSignInException catch (e) {
+      throw AuthException(_googleErrorMessage(e));
+    }
     final googleEmail = account.email.trim();
     if (!isAllowedStudentEmail(googleEmail)) {
       await supabase.auth.signOut();
@@ -76,6 +81,26 @@ class AuthService {
       authResponse: authResponse,
       googleEmail: googleEmail,
     );
+  }
+
+  String _googleErrorMessage(GoogleSignInException error) {
+    switch (error.code) {
+      case GoogleSignInExceptionCode.canceled:
+        return 'Google sign in was cancelled.';
+      case GoogleSignInExceptionCode.clientConfigurationError:
+      case GoogleSignInExceptionCode.providerConfigurationError:
+        return 'Google sign in is misconfigured. Check your Google OAuth app configuration (client ID, SHA-1/SHA-256, and consent screen user type).';
+      case GoogleSignInExceptionCode.uiUnavailable:
+        return 'Google sign in UI is unavailable on this device right now.';
+      case GoogleSignInExceptionCode.interrupted:
+        return 'Google sign in was interrupted. Please try again.';
+      case GoogleSignInExceptionCode.userMismatch:
+        return 'Google account mismatch detected. Please try again.';
+      case GoogleSignInExceptionCode.unknownError:
+        return error.description?.trim().isNotEmpty == true
+            ? error.description!.trim()
+            : 'Google sign in failed. Please try again.';
+    }
   }
 
   bool isAllowedStudentEmail(String? email) {
