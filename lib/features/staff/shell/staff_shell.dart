@@ -3,7 +3,7 @@ import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:student_clearance_tracker/core/models/office.dart';
-import 'package:student_clearance_tracker/features/staff/clearance/viewmodel/staff_provider.dart';
+import 'package:student_clearance_tracker/features/staff/shell/viewmodel/staff_shell_viewmodel.dart';
 import 'package:student_clearance_tracker/core/services/auth_service.dart';
 import 'package:student_clearance_tracker/main.dart';
 
@@ -20,7 +20,7 @@ class _StaffShellState extends State<StaffShell> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final provider = context.read<StaffProvider>();
+      final provider = context.read<StaffShellViewModel>();
       final user = supabase.auth.currentUser;
       if (user != null && !provider.initialized) {
         provider.loadProfile(user.id);
@@ -30,18 +30,20 @@ class _StaffShellState extends State<StaffShell> {
 
   @override
   Widget build(BuildContext context) {
-    final isLoading = context.select<StaffProvider, bool>((p) => p.isLoading);
-    final assignedOffices = context.select<StaffProvider, List<Office>>(
+    final isLoading = context.select<StaffShellViewModel, bool>(
+      (p) => p.isLoading,
+    );
+    final assignedOffices = context.select<StaffShellViewModel, List<Office>>(
       (p) => p.assignedOffices,
     );
-    final selectedOffice = context.select<StaffProvider, Office?>(
+    final selectedOffice = context.select<StaffShellViewModel, Office?>(
       (p) => p.selectedOffice,
     );
-    final staffName = context.select<StaffProvider, String?>(
+    final staffName = context.select<StaffShellViewModel, String?>(
       (p) => p.profile?.fullName,
     );
 
-    final provider = context.read<StaffProvider>();
+    final provider = context.read<StaffShellViewModel>();
 
     if (isLoading) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
@@ -69,7 +71,10 @@ class _StaffShellState extends State<StaffShell> {
             if (assignedOffices.isEmpty)
               Text(
                 'No offices assigned',
-                style: TextStyle(color: AppColors.of(context).danger, fontSize: 13),
+                style: TextStyle(
+                  color: AppColors.of(context).danger,
+                  fontSize: 13,
+                ),
               )
             else
               _OfficeSelector(
@@ -89,14 +94,18 @@ class _StaffShellState extends State<StaffShell> {
                   Icon(
                     Icons.person_outline,
                     size: 16,
-                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withValues(alpha: 0.65),
                   ),
                   const SizedBox(width: 4),
                   Text(
                     staffName,
                     style: TextStyle(
                       fontSize: 13,
-                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withValues(alpha: 0.65),
                     ),
                   ),
                 ],
@@ -115,7 +124,10 @@ class _StaffShellState extends State<StaffShell> {
             ),
             label: Text(
               'Sign Out',
-              style: TextStyle(color: AppColors.of(context).danger, fontSize: 13),
+              style: TextStyle(
+                color: AppColors.of(context).danger,
+                fontSize: 13,
+              ),
             ),
           ),
           const SizedBox(width: 8),

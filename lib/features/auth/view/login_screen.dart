@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:student_clearance_tracker/core/repositories/user_profile_repository.dart';
-import 'package:student_clearance_tracker/features/staff/clearance/viewmodel/staff_provider.dart';
+import 'package:student_clearance_tracker/features/staff/shell/viewmodel/staff_shell_viewmodel.dart';
 import 'package:student_clearance_tracker/features/student/clearance/viewmodel/student_provider.dart';
 import 'package:student_clearance_tracker/core/services/auth_service.dart';
 
@@ -46,7 +46,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (roles.contains('office_staff')) {
         if (context.mounted) {
-          await context.read<StaffProvider>().loadProfile(user.id);
+          await context.read<StaffShellViewModel>().loadProfile(user.id);
         }
       }
 
@@ -151,7 +151,9 @@ class _LoginScreenState extends State<LoginScreen> {
               Text(
                 'Sign in to your account',
                 style: TextStyle(
-                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.65),
                 ),
                 textAlign: TextAlign.center,
               ),

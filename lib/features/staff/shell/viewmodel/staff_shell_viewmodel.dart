@@ -3,7 +3,7 @@ import 'package:student_clearance_tracker/core/models/office.dart';
 import 'package:student_clearance_tracker/core/models/office_staff.dart';
 import 'package:student_clearance_tracker/core/repositories/staff_repository.dart';
 
-class StaffProvider extends ChangeNotifier {
+class StaffShellViewModel extends ChangeNotifier {
   final _repo = StaffRepository();
 
   OfficeStaff? _profile;
