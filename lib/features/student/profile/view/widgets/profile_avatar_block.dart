@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:student_clearance_tracker/core/models/student.dart';
 import 'package:student_clearance_tracker/core/models/user_profile.dart';
 import 'package:student_clearance_tracker/core/theme/app_colors.dart';
@@ -24,7 +24,7 @@ class ProfileAvatarBlock extends StatelessWidget {
             width: 80,
             height: 80,
             decoration: BoxDecoration(
-              color: AppColors.of(context).info.withValues(alpha: 0.15),
+              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.15),
               shape: BoxShape.circle,
             ),
             child: Center(
@@ -33,7 +33,7 @@ class ProfileAvatarBlock extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.of(context).info,
+                  color: Theme.of(context).colorScheme.primary,
                 ),
               ),
             ),
@@ -51,7 +51,7 @@ class ProfileAvatarBlock extends StatelessWidget {
             Text(
               student!.studentNo,
               style: TextStyle(
-                color: AppColors.of(context).neutral,
+                color: AppColors.contentSecondary(context),
                 fontSize: 14,
               ),
             ),
@@ -62,3 +62,4 @@ class ProfileAvatarBlock extends StatelessWidget {
     );
   }
 }
+

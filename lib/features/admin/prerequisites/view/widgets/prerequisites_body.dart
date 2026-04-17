@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:student_clearance_tracker/core/widgets/app_card.dart';
 import 'package:student_clearance_tracker/features/admin/prerequisites/view/widgets/prerequisites_office_list_panel.dart';
 import 'package:student_clearance_tracker/features/admin/prerequisites/view/widgets/prerequisites_prerequisite_panel.dart';
@@ -23,7 +22,7 @@ class PrerequisitesBody extends StatelessWidget {
           children: [
             Text(
               vm.errorMessage!,
-              style: TextStyle(color: AppColors.of(context).danger),
+              style: TextStyle(color: Theme.of(context).colorScheme.error),
             ),
             const SizedBox(height: 8),
             ElevatedButton(onPressed: vm.loadData, child: const Text('Retry')),
@@ -57,3 +56,4 @@ class PrerequisitesBody extends StatelessWidget {
     );
   }
 }
+

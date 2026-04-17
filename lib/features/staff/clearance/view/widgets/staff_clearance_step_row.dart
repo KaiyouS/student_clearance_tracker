@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:student_clearance_tracker/core/models/clearance_step.dart';
 import 'package:student_clearance_tracker/core/theme/app_colors.dart';
@@ -27,7 +27,7 @@ class StaffClearanceStepRow extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  step.studentName ?? '—',
+                  step.studentName ?? '-',
                   style: TextStyle(
                     fontWeight: FontWeight.w500,
                     fontSize: 14,
@@ -36,7 +36,7 @@ class StaffClearanceStepRow extends StatelessWidget {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  step.studentNo ?? '—',
+                  step.studentNo ?? '-',
                   style: TextStyle(
                     fontSize: 12,
                     color: Theme.of(
@@ -51,14 +51,14 @@ class StaffClearanceStepRow extends StatelessWidget {
                       Icon(
                         Icons.lock_outline,
                         size: 12,
-                        color: AppColors.of(context).warning,
+                        color: AppColors.warning,
                       ),
                       const SizedBox(width: 4),
                       Text(
                         'Prerequisites not yet complete',
                         style: TextStyle(
                           fontSize: 11,
-                          color: AppColors.of(context).warning,
+                          color: AppColors.warning,
                         ),
                       ),
                     ],
@@ -70,7 +70,7 @@ class StaffClearanceStepRow extends StatelessWidget {
                     step.remarks!,
                     style: TextStyle(
                       fontSize: 12,
-                      color: AppColors.of(context).statusFlagged,
+                      color: Theme.of(context).colorScheme.error,
                     ),
                   ),
                 ],
@@ -86,8 +86,8 @@ class StaffClearanceStepRow extends StatelessWidget {
                   : () => handleSignAction(context, step),
               style: ElevatedButton.styleFrom(
                 backgroundColor: canSign
-                    ? AppColors.of(context).statusSigned
-                    : AppColors.of(context).border,
+                    ? Theme.of(context).colorScheme.tertiary
+                    : Theme.of(context).dividerColor,
                 foregroundColor: Colors.white,
                 minimumSize: const Size(72, 36),
               ),
@@ -99,8 +99,8 @@ class StaffClearanceStepRow extends StatelessWidget {
                   ? null
                   : () => handleFlagAction(context, step),
               style: OutlinedButton.styleFrom(
-                foregroundColor: AppColors.of(context).danger,
-                side: BorderSide(color: AppColors.of(context).danger),
+                foregroundColor: Theme.of(context).colorScheme.error,
+                side: BorderSide(color: Theme.of(context).colorScheme.error),
                 minimumSize: const Size(72, 36),
               ),
               child: const Text('Flag', style: TextStyle(fontSize: 13)),
@@ -111,7 +111,7 @@ class StaffClearanceStepRow extends StatelessWidget {
                   ? null
                   : () => handleSignAction(context, step),
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.of(context).statusSigned,
+                backgroundColor: Theme.of(context).colorScheme.tertiary,
                 foregroundColor: Colors.white,
                 minimumSize: const Size(80, 36),
               ),
@@ -123,3 +123,5 @@ class StaffClearanceStepRow extends StatelessWidget {
     );
   }
 }
+
+

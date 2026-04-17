@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:student_clearance_tracker/features/admin/clearance/view/widgets/admin_clearance_student_tile.dart';
 import 'package:student_clearance_tracker/features/admin/clearance/viewmodel/admin_clearance_viewmodel.dart';
 
@@ -29,8 +28,9 @@ class AdminClearanceStudentList extends StatelessWidget {
     return ListView.separated(
       itemCount: count,
       separatorBuilder: (_, _) =>
-          Divider(height: 1, color: AppColors.of(context).border),
+          Divider(height: 1, color: Theme.of(context).dividerColor),
       itemBuilder: (context, i) => AdminClearanceStudentTile(index: i),
     );
   }
 }
+

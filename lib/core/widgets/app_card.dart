@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 
 class AppCard extends StatelessWidget {
   final Widget child;
@@ -14,9 +13,10 @@ class AppCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.of(context).border),
+        border: Border.all(color: Theme.of(context).dividerColor),
       ),
       child: child,
     );
   }
 }
+

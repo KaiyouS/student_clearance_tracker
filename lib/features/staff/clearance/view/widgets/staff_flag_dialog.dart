@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:student_clearance_tracker/core/models/clearance_step.dart';
-import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 
 Future<String?> showStaffFlagDialog(
   BuildContext context,
@@ -32,7 +31,7 @@ Future<String?> showStaffFlagDialog(
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.of(context).danger,
+              backgroundColor: Theme.of(context).colorScheme.error,
               foregroundColor: Colors.white,
             ),
             onPressed: () =>
@@ -52,3 +51,4 @@ Future<String?> showStaffFlagDialog(
     remarkController.dispose();
   }
 }
+

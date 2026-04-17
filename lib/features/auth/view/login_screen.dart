@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:student_clearance_tracker/features/auth/viewmodel/login_viewmodel.dart';
@@ -114,7 +113,7 @@ class _LoginScreenContentState extends State<_LoginScreenContent> {
                   child: Text(
                     vm.errorMessage!,
                     style: TextStyle(
-                      color: AppColors.of(context).danger,
+                      color: Theme.of(context).colorScheme.error,
                       fontSize: 13,
                     ),
                     textAlign: TextAlign.center,

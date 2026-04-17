@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:student_clearance_tracker/core/models/clearance_step.dart';
-import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:student_clearance_tracker/features/staff/clearance/view/widgets/staff_clearance_step_row.dart';
 import 'package:student_clearance_tracker/features/staff/clearance/viewmodel/staff_clearance_viewmodel.dart';
 
@@ -33,8 +32,9 @@ class StaffClearanceStepList extends StatelessWidget {
       padding: const EdgeInsets.all(0),
       itemCount: steps.length,
       separatorBuilder: (_, _) =>
-          Divider(height: 1, color: AppColors.of(context).border),
+          Divider(height: 1, color: Theme.of(context).dividerColor),
       itemBuilder: (context, i) => StaffClearanceStepRow(step: steps[i]),
     );
   }
 }
+

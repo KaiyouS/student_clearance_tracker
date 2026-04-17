@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:student_clearance_tracker/core/widgets/app_card.dart';
@@ -22,26 +22,26 @@ class StaffClearanceTabPanel extends StatelessWidget {
         children: [
           TabBar(
             controller: tabController,
-            labelColor: AppColors.of(context).info,
+            labelColor: Theme.of(context).colorScheme.primary,
             unselectedLabelColor: Theme.of(
               context,
             ).colorScheme.onSurface.withValues(alpha: 0.65),
-            indicatorColor: AppColors.of(context).info,
+            indicatorColor: Theme.of(context).colorScheme.primary,
             tabs: [
               StaffClearanceStatusTab(
                 label: 'Pending',
                 count: vm.statusCounts['pending'] ?? 0,
-                color: AppColors.of(context).statusPending,
+                color: AppColors.warning,
               ),
               StaffClearanceStatusTab(
                 label: 'Flagged',
                 count: vm.statusCounts['flagged'] ?? 0,
-                color: AppColors.of(context).statusFlagged,
+                color: Theme.of(context).colorScheme.error,
               ),
               StaffClearanceStatusTab(
                 label: 'Signed',
                 count: vm.statusCounts['signed'] ?? 0,
-                color: AppColors.of(context).statusSigned,
+                color: Theme.of(context).colorScheme.tertiary,
               ),
             ],
           ),
@@ -53,7 +53,7 @@ class StaffClearanceTabPanel extends StatelessWidget {
                 ? Center(
                     child: Text(
                       vm.error!,
-                      style: TextStyle(color: AppColors.of(context).danger),
+                      style: TextStyle(color: Theme.of(context).colorScheme.error),
                     ),
                   )
                 : TabBarView(
@@ -70,3 +70,4 @@ class StaffClearanceTabPanel extends StatelessWidget {
     );
   }
 }
+

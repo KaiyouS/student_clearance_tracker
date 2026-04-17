@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:student_clearance_tracker/core/models/office.dart';
@@ -22,15 +22,15 @@ class _OfficeRequirementsScreenContent extends StatelessWidget {
 
   void _showError(BuildContext context, String msg) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(msg), backgroundColor: AppColors.of(context).danger),
+      SnackBar(content: Text(msg), backgroundColor: Theme.of(context).colorScheme.error),
     );
   }
 
   Color _requirementColor(BuildContext context, Office office, RequirementsViewModel vm) {
     final summary = vm.requirementSummary(office);
-    if (summary == 'No students') return AppColors.of(context).neutral;
-    if (summary == 'All students') return AppColors.of(context).statusSigned;
-    return AppColors.of(context).info;
+    if (summary == 'No students') return AppColors.contentSecondary(context);
+    if (summary == 'All students') return Theme.of(context).colorScheme.tertiary;
+    return Theme.of(context).colorScheme.primary;
   }
 
   @override
@@ -64,7 +64,7 @@ class _OfficeRequirementsScreenContent extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(vm.errorMessage!, style: TextStyle(color: AppColors.of(context).danger)),
+            Text(vm.errorMessage!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
             const SizedBox(height: 8),
             ElevatedButton(onPressed: vm.loadData, child: const Text('Retry')),
           ],
@@ -75,7 +75,7 @@ class _OfficeRequirementsScreenContent extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Left — office list
+        // Left - office list
         SizedBox(
           width: 300,
           child: AppCard(
@@ -87,11 +87,11 @@ class _OfficeRequirementsScreenContent extends StatelessWidget {
                   padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
                   child: Text('Offices', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: Theme.of(context).colorScheme.onSurface)),
                 ),
-                Divider(height: 1, color: AppColors.of(context).border),
+                Divider(height: 1, color: Theme.of(context).dividerColor),
                 Expanded(
                   child: ListView.separated(
                     itemCount: vm.offices.length,
-                    separatorBuilder: (_, _) => Divider(height: 1, color: AppColors.of(context).border),
+                    separatorBuilder: (_, _) => Divider(height: 1, color: Theme.of(context).dividerColor),
                     itemBuilder: (context, i) {
                       final office = vm.offices[i];
                       final isSelected = vm.selectedOffice?.id == office.id;
@@ -100,8 +100,8 @@ class _OfficeRequirementsScreenContent extends StatelessWidget {
 
                       return ListTile(
                         selected: isSelected,
-                        selectedColor: AppColors.of(context).info,
-                        selectedTileColor: AppColors.of(context).info.withValues(alpha: 0.08),
+                        selectedColor: Theme.of(context).colorScheme.primary,
+                        selectedTileColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.08),
                         title: Text(office.name, style: const TextStyle(fontSize: 13)),
                         trailing: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
@@ -120,7 +120,7 @@ class _OfficeRequirementsScreenContent extends StatelessWidget {
 
         const SizedBox(width: 16),
 
-        // Right — requirements for selected office
+        // Right - requirements for selected office
         Expanded(
           child: vm.selectedOffice == null
               ? AppCard(
@@ -163,15 +163,15 @@ class _OfficeRequirementsScreenContent extends StatelessWidget {
           ),
 
           const SizedBox(height: 16),
-          Divider(color: AppColors.of(context).border),
+          Divider(color: Theme.of(context).dividerColor),
           const SizedBox(height: 8),
 
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: vm.appliesToAll ? AppColors.of(context).statusSigned.withValues(alpha: 0.06) : Theme.of(context).colorScheme.surface,
+              color: vm.appliesToAll ? Theme.of(context).colorScheme.tertiary.withValues(alpha: 0.06) : Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: vm.appliesToAll ? AppColors.of(context).statusSigned.withValues(alpha: 0.3) : AppColors.of(context).border),
+              border: Border.all(color: vm.appliesToAll ? Theme.of(context).colorScheme.tertiary.withValues(alpha: 0.3) : Theme.of(context).dividerColor),
             ),
             child: Row(
               children: [
@@ -188,7 +188,7 @@ class _OfficeRequirementsScreenContent extends StatelessWidget {
                 ),
                 Switch(
                   value: vm.appliesToAll,
-                  activeThumbColor: AppColors.of(context).info,
+                  activeThumbColor: Theme.of(context).colorScheme.primary,
                   onChanged: vm.isSaving ? null : (v) async {
                     final success = await context.read<RequirementsViewModel>().toggleAppliesToAll(v);
                     if (!success && context.mounted && vm.errorMessage != null) _showError(context, vm.errorMessage!);
@@ -221,7 +221,7 @@ class _OfficeRequirementsScreenContent extends StatelessWidget {
                           child: Text(school.name, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65), letterSpacing: 0.5)),
                         ),
                         Container(
-                          decoration: BoxDecoration(border: Border.all(color: AppColors.of(context).border), borderRadius: BorderRadius.circular(8)),
+                          decoration: BoxDecoration(border: Border.all(color: Theme.of(context).dividerColor), borderRadius: BorderRadius.circular(8)),
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(8),
                             child: Column(
@@ -232,11 +232,11 @@ class _OfficeRequirementsScreenContent extends StatelessWidget {
 
                                 return Column(
                                   children: [
-                                    if (idx > 0) Divider(height: 1, color: AppColors.of(context).border),
+                                    if (idx > 0) Divider(height: 1, color: Theme.of(context).dividerColor),
                                     CheckboxListTile(
                                       dense: true,
                                       value: checked,
-                                      activeColor: AppColors.of(context).info,
+                                      activeColor: Theme.of(context).colorScheme.primary,
                                       title: Text(program.name, style: const TextStyle(fontSize: 13)),
                                       controlAffinity: ListTileControlAffinity.leading,
                                       onChanged: vm.isSaving ? null : (v) async {
@@ -262,3 +262,4 @@ class _OfficeRequirementsScreenContent extends StatelessWidget {
     );
   }
 }
+

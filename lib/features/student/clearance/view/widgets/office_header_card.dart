@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:student_clearance_tracker/core/widgets/status_badge.dart';
@@ -10,7 +10,7 @@ class OfficeHeaderCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final step = context.watch<StepDetailViewModel>().step;
-    final statusColor = AppColors.statusColorFromString(context, step.status);
+    final statusColor = AppColors.forStatus( step.status);
 
     return Container(
       width: double.infinity,
@@ -45,7 +45,7 @@ class OfficeHeaderCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      step.officeName ?? '—',
+                      step.officeName ?? '-',
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -77,3 +77,5 @@ class OfficeHeaderCard extends StatelessWidget {
     );
   }
 }
+
+

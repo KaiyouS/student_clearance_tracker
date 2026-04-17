@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:student_clearance_tracker/features/student/clearance/viewmodel/step_detail_viewmodel.dart';
@@ -14,7 +14,7 @@ class ActivityLogItem extends StatelessWidget {
     final logs = context.watch<StepDetailViewModel>().logs;
     final log = logs[index];
     final status = log['new_status'] as String? ?? 'pending';
-    final color = AppColors.statusColorFromString(context, status);
+    final color = AppColors.forStatus( status);
     final changedAt = log['changed_at'] != null
         ? DateTime.parse(log['changed_at'])
         : null;
@@ -42,7 +42,7 @@ class ActivityLogItem extends StatelessWidget {
               Container(
                 width: 2,
                 height: 48,
-                color: AppColors.of(context).border,
+                color: Theme.of(context).dividerColor,
               ),
           ],
         ),
@@ -62,14 +62,13 @@ class ActivityLogItem extends StatelessWidget {
                       TextSpan(
                         text: _capitalize(oldStatus),
                         style: TextStyle(
-                          color: AppColors.statusColorFromString(
-                            context,
+                          color: AppColors.forStatus(
                             oldStatus,
                           ),
                           fontWeight: FontWeight.w600,
                         ),
                       ),
-                      const TextSpan(text: ' → '),
+                      const TextSpan(text: ' â†’ '),
                       TextSpan(
                         text: _capitalize(status),
                         style: TextStyle(
@@ -162,3 +161,4 @@ class ActivityLogItem extends StatelessWidget {
         '${dt.minute.toString().padLeft(2, '0')}';
   }
 }
+

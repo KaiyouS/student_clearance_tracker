@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:student_clearance_tracker/features/admin/shell/sidebar_widget.dart';
 
 class AdminShell extends StatelessWidget {
@@ -14,7 +13,7 @@ class AdminShell extends StatelessWidget {
         children: [
           const SidebarWidget(),
           // Divider line
-          Container(width: 1, color: AppColors.of(context).border),
+          Container(width: 1, color: Theme.of(context).dividerColor),
           // Main content area
           Expanded(child: child),
         ],
@@ -22,3 +21,4 @@ class AdminShell extends StatelessWidget {
     );
   }
 }
+

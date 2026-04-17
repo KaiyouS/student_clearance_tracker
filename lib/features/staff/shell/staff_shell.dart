@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:student_clearance_tracker/core/models/office.dart';
@@ -62,7 +61,7 @@ class _StaffShellState extends State<StaffShell> {
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: AppColors.of(context).info,
+                color: Theme.of(context).colorScheme.primary,
               ),
             ),
             const SizedBox(width: 24),
@@ -72,7 +71,7 @@ class _StaffShellState extends State<StaffShell> {
               Text(
                 'No offices assigned',
                 style: TextStyle(
-                  color: AppColors.of(context).danger,
+                  color: Theme.of(context).colorScheme.error,
                   fontSize: 13,
                 ),
               )
@@ -120,12 +119,12 @@ class _StaffShellState extends State<StaffShell> {
             icon: Icon(
               Icons.logout,
               size: 16,
-              color: AppColors.of(context).danger,
+              color: Theme.of(context).colorScheme.error,
             ),
             label: Text(
               'Sign Out',
               style: TextStyle(
-                color: AppColors.of(context).danger,
+                color: Theme.of(context).colorScheme.error,
                 fontSize: 13,
               ),
             ),
@@ -134,7 +133,7 @@ class _StaffShellState extends State<StaffShell> {
         ],
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(1),
-          child: Divider(height: 1, color: AppColors.of(context).border),
+          child: Divider(height: 1, color: Theme.of(context).dividerColor),
         ),
       ),
       body: widget.child,
@@ -142,7 +141,7 @@ class _StaffShellState extends State<StaffShell> {
   }
 }
 
-// ── Office selector dropdown ──────────────────────────────────
+// â”€â”€ Office selector dropdown â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 class _OfficeSelector extends StatelessWidget {
   final List<Office> offices;
   final Office? selectedOffice;
@@ -159,10 +158,10 @@ class _OfficeSelector extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
       decoration: BoxDecoration(
-        color: AppColors.of(context).info.withValues(alpha: 0.08),
+        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: AppColors.of(context).info.withValues(alpha: 0.3),
+          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
         ),
       ),
       child: DropdownButtonHideUnderline(
@@ -172,11 +171,11 @@ class _OfficeSelector extends StatelessWidget {
           icon: Icon(
             Icons.keyboard_arrow_down,
             size: 16,
-            color: AppColors.of(context).info,
+            color: Theme.of(context).colorScheme.primary,
           ),
           style: TextStyle(
             fontSize: 13,
-            color: AppColors.of(context).info,
+            color: Theme.of(context).colorScheme.primary,
             fontWeight: FontWeight.w600,
           ),
           items: offices
@@ -190,3 +189,4 @@ class _OfficeSelector extends StatelessWidget {
     );
   }
 }
+

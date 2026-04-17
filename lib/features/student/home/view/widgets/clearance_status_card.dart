@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:student_clearance_tracker/features/student/shell/viewmodel/student_shell_viewmodel.dart';
 
 class ClearanceStatusCard extends StatelessWidget {
@@ -22,8 +21,8 @@ class ClearanceStatusCard extends StatelessWidget {
     );
 
     final color = isComplete
-        ? AppColors.of(context).statusSigned
-        : AppColors.of(context).info;
+        ? Theme.of(context).colorScheme.tertiary
+        : Theme.of(context).colorScheme.primary;
 
     return Container(
       width: double.infinity,
@@ -85,3 +84,4 @@ class ClearanceStatusCard extends StatelessWidget {
     );
   }
 }
+

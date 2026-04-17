@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 
 class StepStatusCircle extends StatelessWidget {
@@ -8,7 +8,7 @@ class StepStatusCircle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = AppColors.statusColorFromString(context, status);
+    final color = AppColors.forStatus( status);
     final icon = switch (status) {
       'signed' => Icons.check,
       'flagged' => Icons.flag,
@@ -27,3 +27,4 @@ class StepStatusCircle extends StatelessWidget {
     );
   }
 }
+

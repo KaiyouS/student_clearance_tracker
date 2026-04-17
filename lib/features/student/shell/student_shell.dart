@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:student_clearance_tracker/features/student/shell/viewmodel/student_shell_viewmodel.dart';
@@ -125,7 +124,7 @@ class _StudentShellState extends State<StudentShell> {
   }
 }
 
-// ── In-app notification banner ────────────────────────────────
+// â”€â”€ In-app notification banner â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 class _NotificationBanner extends StatefulWidget {
   final InAppNotification notification;
   final VoidCallback onDismiss;
@@ -188,8 +187,8 @@ class _NotificationBannerState extends State<_NotificationBanner>
   Widget build(BuildContext context) {
     final isSigned = widget.notification.status == 'signed';
     final color = isSigned
-        ? AppColors.of(context).statusSigned
-        : AppColors.of(context).statusFlagged;
+        ? Theme.of(context).colorScheme.tertiary
+        : Theme.of(context).colorScheme.error;
 
     return Positioned(
       top: MediaQuery.of(context).padding.top + 8,
@@ -236,3 +235,4 @@ class _NotificationBannerState extends State<_NotificationBanner>
     );
   }
 }
+

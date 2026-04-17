@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:student_clearance_tracker/core/models/student.dart';
 import 'package:student_clearance_tracker/core/widgets/app_card.dart';
 import 'package:student_clearance_tracker/admin/widgets/account_status_menu.dart'; // Adjust if you moved this to core/widgets
@@ -65,13 +64,13 @@ class _StudentsScreenContent extends StatelessWidget {
 
   void _showSuccess(BuildContext context, String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message), backgroundColor: AppColors.of(context).success),
+      SnackBar(content: Text(message), backgroundColor: Theme.of(context).colorScheme.tertiary),
     );
   }
 
   void _showError(BuildContext context, String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message), backgroundColor: AppColors.of(context).danger),
+      SnackBar(content: Text(message), backgroundColor: Theme.of(context).colorScheme.error),
     );
   }
 
@@ -135,7 +134,7 @@ class _StudentsScreenContent extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(vm.errorMessage!, style: TextStyle(color: AppColors.of(context).danger)),
+            Text(vm.errorMessage!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
             const SizedBox(height: 8),
             ElevatedButton(onPressed: vm.loadStudents, child: const Text('Retry')),
           ],
@@ -177,7 +176,7 @@ class _StudentsScreenContent extends StatelessWidget {
               ),
               ...vm.filteredStudents.map(
                 (student) => TableRow(
-                  decoration: BoxDecoration(border: Border(top: BorderSide(color: AppColors.of(context).border))),
+                  decoration: BoxDecoration(border: Border(top: BorderSide(color: Theme.of(context).dividerColor))),
                   children: [
                     _dataCell(
                       Column(
@@ -213,13 +212,13 @@ class _StudentsScreenContent extends StatelessWidget {
                         children: [
                           IconButton(
                             icon: const Icon(Icons.edit_outlined, size: 18),
-                            color: AppColors.of(context).info,
+                            color: Theme.of(context).colorScheme.primary,
                             tooltip: 'Edit',
                             onPressed: vm.isSaving ? null : () => _handleEdit(context, student),
                           ),
                           IconButton(
                             icon: const Icon(Icons.delete_outline, size: 18),
-                            color: AppColors.of(context).border, // Grayed out as in original
+                            color: Theme.of(context).dividerColor, // Grayed out as in original
                             tooltip: 'Delete (Disabled)',
                             onPressed: null, // Disabled in your original file
                           ),

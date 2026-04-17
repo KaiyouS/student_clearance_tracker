@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:student_clearance_tracker/core/models/school.dart';
-import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:student_clearance_tracker/core/widgets/confirm_dialog.dart';
 import 'package:student_clearance_tracker/features/admin/schools/view/widgets/school_program_form_dialogs.dart';
 import 'package:student_clearance_tracker/features/admin/schools/viewmodel/schools_viewmodel.dart';
@@ -56,7 +55,7 @@ class SchoolListTile extends StatelessWidget {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(msg),
-        backgroundColor: AppColors.of(context).success,
+        backgroundColor: Theme.of(context).colorScheme.tertiary,
       ),
     );
   }
@@ -65,7 +64,7 @@ class SchoolListTile extends StatelessWidget {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(msg),
-        backgroundColor: AppColors.of(context).danger,
+        backgroundColor: Theme.of(context).colorScheme.error,
       ),
     );
   }
@@ -76,8 +75,8 @@ class SchoolListTile extends StatelessWidget {
 
     return ListTile(
       selected: isSelected,
-      selectedColor: AppColors.of(context).info,
-      selectedTileColor: AppColors.of(context).info.withValues(alpha: 0.08),
+      selectedColor: Theme.of(context).colorScheme.primary,
+      selectedTileColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.08),
       title: Text(school.name, style: const TextStyle(fontSize: 13)),
       subtitle: school.description != null
           ? Text(
@@ -92,13 +91,13 @@ class SchoolListTile extends StatelessWidget {
         children: [
           IconButton(
             icon: const Icon(Icons.edit_outlined, size: 16),
-            color: AppColors.of(context).info,
+            color: Theme.of(context).colorScheme.primary,
             tooltip: 'Edit',
             onPressed: vm.isSaving ? null : () => _handleEditSchool(context),
           ),
           IconButton(
             icon: const Icon(Icons.delete_outline, size: 16),
-            color: AppColors.of(context).danger,
+            color: Theme.of(context).colorScheme.error,
             tooltip: 'Delete',
             onPressed: vm.isSaving ? null : () => _handleDeleteSchool(context),
           ),
@@ -108,3 +107,4 @@ class SchoolListTile extends StatelessWidget {
     );
   }
 }
+

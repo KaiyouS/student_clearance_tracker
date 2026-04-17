@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:student_clearance_tracker/core/models/office.dart';
-import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:student_clearance_tracker/core/widgets/confirm_dialog.dart';
 import 'package:student_clearance_tracker/features/admin/prerequisites/view/widgets/add_prerequisite_dialog.dart';
 import 'package:student_clearance_tracker/features/admin/prerequisites/viewmodel/prerequisites_viewmodel.dart';
@@ -59,7 +58,8 @@ void _showError(BuildContext context, String message) {
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
       content: Text(message),
-      backgroundColor: AppColors.of(context).danger,
+      backgroundColor: Theme.of(context).colorScheme.error,
     ),
   );
 }
+

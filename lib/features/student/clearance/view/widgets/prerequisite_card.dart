@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:student_clearance_tracker/features/student/clearance/viewmodel/step_detail_viewmodel.dart';
@@ -17,7 +17,7 @@ class PrerequisiteCard extends StatelessWidget {
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: AppColors.of(context).warning.withValues(alpha: 0.4),
+          color: AppColors.warning.withValues(alpha: 0.4),
         ),
       ),
       child: Column(
@@ -27,7 +27,7 @@ class PrerequisiteCard extends StatelessWidget {
             children: [
               Icon(
                 Icons.lock_clock_outlined,
-                color: AppColors.of(context).warning,
+                color: AppColors.warning,
                 size: 18,
               ),
               const SizedBox(width: 8),
@@ -35,7 +35,7 @@ class PrerequisiteCard extends StatelessWidget {
                 'Waiting For Prerequisites',
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
                   fontWeight: FontWeight.w600,
-                  color: AppColors.of(context).warning,
+                  color: AppColors.warning,
                 ),
               ),
             ],
@@ -54,7 +54,7 @@ class PrerequisiteCard extends StatelessWidget {
                   Icon(
                     Icons.radio_button_unchecked,
                     size: 14,
-                    color: AppColors.of(context).warning,
+                    color: AppColors.warning,
                   ),
                   const SizedBox(width: 8),
                   Text(
@@ -73,3 +73,4 @@ class PrerequisiteCard extends StatelessWidget {
     );
   }
 }
+

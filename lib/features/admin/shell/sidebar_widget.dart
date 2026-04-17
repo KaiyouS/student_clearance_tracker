@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:go_router/go_router.dart';
 import 'package:student_clearance_tracker/core/services/auth_service.dart';
 import 'package:student_clearance_tracker/core/widgets/theme_toggle.dart';
@@ -25,13 +24,13 @@ class SidebarWidget extends StatelessWidget {
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: AppColors.of(context).info,
+                color: Theme.of(context).colorScheme.primary,
                 height: 1.2,
               ),
             ),
           ),
 
-          Divider(height: 1, color: AppColors.of(context).border),
+          Divider(height: 1, color: Theme.of(context).dividerColor),
           const SizedBox(height: 8),
 
           // Nav items
@@ -90,7 +89,7 @@ class SidebarWidget extends StatelessWidget {
             isActive: location == '/admin/periods',
           ),
           const Spacer(),
-          Divider(height: 1, color: AppColors.of(context).border),
+          Divider(height: 1, color: Theme.of(context).dividerColor),
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             child: ThemeToggle(),
@@ -104,7 +103,7 @@ class SidebarWidget extends StatelessWidget {
   }
 }
 
-// ── Individual nav item ──────────────────────────────────────
+// â”€â”€ Individual nav item â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 class _NavItem extends StatelessWidget {
   final IconData icon;
   final String label;
@@ -124,7 +123,7 @@ class _NavItem extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
       child: Material(
         color: isActive
-            ? AppColors.of(context).info.withValues(alpha: 0.1)
+            ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.1)
             : Colors.transparent,
         borderRadius: BorderRadius.circular(8),
         child: InkWell(
@@ -138,7 +137,7 @@ class _NavItem extends StatelessWidget {
                   icon,
                   size: 20,
                   color: isActive
-                      ? AppColors.of(context).info
+                      ? Theme.of(context).colorScheme.primary
                       : Theme.of(
                           context,
                         ).colorScheme.onSurface.withValues(alpha: 0.65),
@@ -150,7 +149,7 @@ class _NavItem extends StatelessWidget {
                     fontSize: 14,
                     fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
                     color: isActive
-                        ? AppColors.of(context).info
+                        ? Theme.of(context).colorScheme.primary
                         : Theme.of(
                             context,
                           ).colorScheme.onSurface.withValues(alpha: 0.65),
@@ -165,7 +164,7 @@ class _NavItem extends StatelessWidget {
   }
 }
 
-// ── Sign out button ──────────────────────────────────────────
+// â”€â”€ Sign out button â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 class _SignOutButton extends StatelessWidget {
   final _authService = AuthService();
 
@@ -191,14 +190,14 @@ class _SignOutButton extends StatelessWidget {
                 Icon(
                   Icons.logout,
                   size: 20,
-                  color: AppColors.of(context).danger,
+                  color: Theme.of(context).colorScheme.error,
                 ),
                 SizedBox(width: 12),
                 Text(
                   'Sign Out',
                   style: TextStyle(
                     fontSize: 14,
-                    color: AppColors.of(context).danger,
+                    color: Theme.of(context).colorScheme.error,
                   ),
                 ),
               ],
@@ -209,3 +208,4 @@ class _SignOutButton extends StatelessWidget {
     );
   }
 }
+

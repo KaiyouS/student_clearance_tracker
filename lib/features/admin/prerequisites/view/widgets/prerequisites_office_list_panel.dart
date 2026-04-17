@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:student_clearance_tracker/core/widgets/app_card.dart';
 import 'package:student_clearance_tracker/features/admin/prerequisites/view/widgets/prerequisites_office_list_tile.dart';
 import 'package:student_clearance_tracker/features/admin/prerequisites/viewmodel/prerequisites_viewmodel.dart';
@@ -21,10 +20,11 @@ class PrerequisitesOfficeListPanel extends StatelessWidget {
         child: ListView.separated(
           itemCount: count,
           separatorBuilder: (_, _) =>
-              Divider(height: 1, color: AppColors.of(context).border),
+              Divider(height: 1, color: Theme.of(context).dividerColor),
           itemBuilder: (context, i) => PrerequisitesOfficeListTile(index: i),
         ),
       ),
     );
   }
 }
+

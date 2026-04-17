@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:student_clearance_tracker/core/models/academic_period.dart';
 
@@ -124,7 +124,7 @@ class _AcademicPeriodFormDialogState extends State<AcademicPeriodFormDialog> {
                   ),
                   const SizedBox(width: 12),
                   Text(
-                    '–',
+                    '-',
                     style: TextStyle(
                       color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
                     ),
@@ -158,7 +158,7 @@ class _AcademicPeriodFormDialogState extends State<AcademicPeriodFormDialog> {
   }
 }
 
-// ── Simple date picker field ──────────────────────────────────
+// â”€â”€ Simple date picker field â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 class _DatePickerField extends StatelessWidget {
   final String label;
   final String value;
@@ -184,7 +184,7 @@ class _DatePickerField extends StatelessWidget {
           value,
           style: TextStyle(
             color: value == 'Select date'
-                ? AppColors.of(context).neutral
+                ? AppColors.contentSecondary(context)
                 : Theme.of(context).colorScheme.onSurface,
             fontSize: 14,
           ),
@@ -193,3 +193,5 @@ class _DatePickerField extends StatelessWidget {
     );
   }
 }
+
+

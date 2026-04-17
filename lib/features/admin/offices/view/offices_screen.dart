@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:student_clearance_tracker/core/models/office.dart';
 import 'package:student_clearance_tracker/core/widgets/app_card.dart';
 import 'package:student_clearance_tracker/core/widgets/confirm_dialog.dart';
@@ -77,7 +76,7 @@ class _OfficesScreenContent extends StatelessWidget {
 
   void _showError(BuildContext context, String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message), backgroundColor: AppColors.of(context).danger),
+      SnackBar(content: Text(message), backgroundColor: Theme.of(context).colorScheme.error),
     );
   }
 
@@ -144,7 +143,7 @@ class _OfficesScreenContent extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('Failed to load offices.', style: TextStyle(color: AppColors.of(context).danger)),
+            Text('Failed to load offices.', style: TextStyle(color: Theme.of(context).colorScheme.error)),
             const SizedBox(height: 8),
             ElevatedButton(onPressed: vm.loadOffices, child: const Text('Retry')),
           ],
@@ -182,22 +181,22 @@ class _OfficesScreenContent extends StatelessWidget {
               ),
               ...vm.filteredOffices.map(
                 (office) => TableRow(
-                  decoration: BoxDecoration(border: Border(top: BorderSide(color: AppColors.of(context).border))),
+                  decoration: BoxDecoration(border: Border(top: BorderSide(color: Theme.of(context).dividerColor))),
                   children: [
                     _dataCell(Text(office.name, style: TextStyle(fontWeight: FontWeight.w500, color: Theme.of(context).colorScheme.onSurface))),
-                    _dataCell(Text(office.description ?? '—', style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65)), maxLines: 2, overflow: TextOverflow.ellipsis)),
+                    _dataCell(Text(office.description ?? '-', style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65)), maxLines: 2, overflow: TextOverflow.ellipsis)),
                     _dataCell(
                       Row(
                         children: [
                           IconButton(
                             icon: const Icon(Icons.edit_outlined, size: 18),
-                            color: AppColors.of(context).info,
+                            color: Theme.of(context).colorScheme.primary,
                             tooltip: 'Edit',
                             onPressed: vm.isLoading ? null : () => _handleEdit(context, office),
                           ),
                           IconButton(
                             icon: const Icon(Icons.delete_outline, size: 18),
-                            color: AppColors.of(context).danger,
+                            color: Theme.of(context).colorScheme.error,
                             tooltip: 'Delete',
                             onPressed: vm.isLoading ? null : () => _handleDelete(context, office),
                           ),

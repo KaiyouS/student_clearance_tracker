@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:student_clearance_tracker/core/widgets/app_card.dart';
 import 'package:student_clearance_tracker/features/admin/clearance/view/widgets/admin_clearance_detail_panel.dart';
 import 'package:student_clearance_tracker/features/admin/clearance/view/widgets/admin_clearance_overview_panel.dart';
@@ -23,7 +22,7 @@ class AdminClearanceBody extends StatelessWidget {
           children: [
             Text(
               vm.error!,
-              style: TextStyle(color: AppColors.of(context).danger),
+              style: TextStyle(color: Theme.of(context).colorScheme.error),
             ),
             const SizedBox(height: 8),
             ElevatedButton(onPressed: vm.load, child: const Text('Retry')),
@@ -57,3 +56,4 @@ class AdminClearanceBody extends StatelessWidget {
     );
   }
 }
+

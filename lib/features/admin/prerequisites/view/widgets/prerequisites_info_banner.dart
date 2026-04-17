@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 
 class PrerequisitesInfoBanner extends StatelessWidget {
   final String officeName;
@@ -11,20 +10,20 @@ class PrerequisitesInfoBanner extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: AppColors.of(context).info.withValues(alpha: 0.05),
+        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: AppColors.of(context).info.withValues(alpha: 0.2),
+          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
         ),
       ),
       child: Row(
         children: [
-          Icon(Icons.info_outline, size: 16, color: AppColors.of(context).info),
+          Icon(Icons.info_outline, size: 16, color: Theme.of(context).colorScheme.primary),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
               'The listed offices must sign the student\'s clearance before "$officeName" can sign.',
-              style: TextStyle(fontSize: 12, color: AppColors.of(context).info),
+              style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.primary),
             ),
           ),
         ],
@@ -32,3 +31,4 @@ class PrerequisitesInfoBanner extends StatelessWidget {
     );
   }
 }
+

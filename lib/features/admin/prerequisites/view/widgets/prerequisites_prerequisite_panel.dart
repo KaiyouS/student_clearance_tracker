@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:student_clearance_tracker/core/widgets/app_card.dart';
 import 'package:student_clearance_tracker/features/admin/prerequisites/view/widgets/prerequisite_chip_row.dart';
 import 'package:student_clearance_tracker/features/admin/prerequisites/view/widgets/prerequisites_actions.dart';
@@ -42,7 +41,7 @@ class PrerequisitesPrerequisitePanel extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       prereqs.isEmpty
-                          ? 'No prerequisites — can be signed at any time.'
+                          ? 'No prerequisites - can be signed at any time.'
                           : 'Must be preceded by ${prereqs.length} office${prereqs.length > 1 ? 's' : ''}.',
                       style: TextStyle(
                         color: Theme.of(
@@ -69,7 +68,7 @@ class PrerequisitesPrerequisitePanel extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 20),
-          Divider(color: AppColors.of(context).border),
+          Divider(color: Theme.of(context).dividerColor),
           const SizedBox(height: 12),
           if (prereqs.isEmpty)
             Padding(
@@ -98,3 +97,4 @@ class PrerequisitesPrerequisitePanel extends StatelessWidget {
     );
   }
 }
+

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 
 class CurrentPeriodBadge extends StatelessWidget {
   const CurrentPeriodBadge({super.key});
@@ -9,10 +8,10 @@ class CurrentPeriodBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: AppColors.of(context).info.withValues(alpha: 0.1),
+        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: AppColors.of(context).info.withValues(alpha: 0.4),
+          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.4),
         ),
       ),
       child: Row(
@@ -21,13 +20,13 @@ class CurrentPeriodBadge extends StatelessWidget {
           Icon(
             Icons.radio_button_checked,
             size: 12,
-            color: AppColors.of(context).info,
+            color: Theme.of(context).colorScheme.primary,
           ),
           const SizedBox(width: 4),
           Text(
             'Current',
             style: TextStyle(
-              color: AppColors.of(context).info,
+              color: Theme.of(context).colorScheme.primary,
               fontSize: 12,
               fontWeight: FontWeight.w600,
             ),
@@ -37,3 +36,4 @@ class CurrentPeriodBadge extends StatelessWidget {
     );
   }
 }
+

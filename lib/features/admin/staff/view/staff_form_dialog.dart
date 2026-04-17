@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:student_clearance_tracker/core/models/office.dart';
 import 'package:student_clearance_tracker/core/models/office_staff.dart';
 import 'package:student_clearance_tracker/core/repositories/office_repository.dart';
@@ -108,7 +107,7 @@ class _StaffFormDialogState extends State<StaffFormDialog> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Email — only shown on create
+                // Email - only shown on create
                 if (!_isEditing) ...[
                   TextFormField(
                     controller: _emailController,
@@ -203,7 +202,7 @@ class _StaffFormDialogState extends State<StaffFormDialog> {
                     constraints: const BoxConstraints(maxHeight: 200),
                     decoration: BoxDecoration(
                       border: Border.all(
-                        color: AppColors.of(context).border,
+                        color: Theme.of(context).dividerColor,
                       ),
                       borderRadius: BorderRadius.circular(8),
                     ),
@@ -214,7 +213,7 @@ class _StaffFormDialogState extends State<StaffFormDialog> {
                         itemCount: _allOffices.length,
                         separatorBuilder: (_, _) => Divider(
                           height: 1,
-                          color: AppColors.of(context).border,
+                          color: Theme.of(context).dividerColor,
                         ),
                         itemBuilder: (context, i) {
                           final office = _allOffices[i];
@@ -226,7 +225,7 @@ class _StaffFormDialogState extends State<StaffFormDialog> {
                               office.name,
                               style: TextStyle(fontSize: 13),
                             ),
-                            activeColor: AppColors.of(context).info,
+                            activeColor: Theme.of(context).colorScheme.primary,
                             controlAffinity: ListTileControlAffinity.leading,
                             onChanged: (_) => _toggleOffice(office.id),
                           );
@@ -252,3 +251,4 @@ class _StaffFormDialogState extends State<StaffFormDialog> {
     );
   }
 }
+

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:student_clearance_tracker/features/admin/dashboard/viewmodel/dashboard_viewmodel.dart';
@@ -39,7 +39,7 @@ class _AdminDashboardScreenContent extends StatelessWidget {
                   Text(
                     'Failed to load dashboard.\n${vm.errorMessage}',
                     textAlign: TextAlign.center,
-                    style: TextStyle(color: AppColors.of(context).danger),
+                    style: TextStyle(color: Theme.of(context).colorScheme.error),
                   ),
                   const SizedBox(height: 16),
                   ElevatedButton(
@@ -84,7 +84,7 @@ class _AdminDashboardScreenContent extends StatelessWidget {
                     ),
                     IconButton(
                       icon: const Icon(Icons.refresh),
-                      color: AppColors.of(context).info,
+                      color: Theme.of(context).colorScheme.primary,
                       onPressed: () => context.read<DashboardViewModel>().loadStats(),
                     ),
                   ],
@@ -99,37 +99,37 @@ class _AdminDashboardScreenContent extends StatelessWidget {
                       label: 'Total Students',
                       value: stats.totalStudents,
                       icon: Icons.school_outlined,
-                      color: AppColors.of(context).info,
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                     _StatCard(
                       label: 'Total Offices',
                       value: stats.totalOffices,
                       icon: Icons.business_outlined,
-                      color: AppColors.of(context).info,
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                     _StatCard(
                       label: 'Total Staff',
                       value: stats.totalStaff,
                       icon: Icons.people_outlined,
-                      color: AppColors.of(context).info,
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                     _StatCard(
                       label: 'Cleared Students',
                       value: stats.completedStudents,
                       icon: Icons.check_circle_outline,
-                      color: AppColors.of(context).statusSigned,
+                      color: Theme.of(context).colorScheme.tertiary,
                     ),
                     _StatCard(
                       label: 'Pending Steps',
                       value: stats.pendingSteps,
                       icon: Icons.hourglass_empty_outlined,
-                      color: AppColors.of(context).statusPending,
+                      color: AppColors.warning,
                     ),
                     _StatCard(
                       label: 'Flagged Steps',
                       value: stats.flaggedSteps,
                       icon: Icons.flag_outlined,
-                      color: AppColors.of(context).statusFlagged,
+                      color: Theme.of(context).colorScheme.error,
                     ),
                   ],
                 ),
@@ -142,7 +142,7 @@ class _AdminDashboardScreenContent extends StatelessWidget {
   }
 }
 
-// ── Stat card widget ─────────────────────────────────────────
+// â”€â”€ Stat card widget â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 class _StatCard extends StatelessWidget {
   final String label;
   final int value;
@@ -164,7 +164,7 @@ class _StatCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.of(context).border),
+        border: Border.all(color: Theme.of(context).dividerColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

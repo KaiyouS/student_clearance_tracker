@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:student_clearance_tracker/core/models/clearance_step.dart';
-import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:student_clearance_tracker/core/widgets/status_badge.dart';
 import 'package:student_clearance_tracker/features/admin/clearance/view/widgets/admin_clearance_actions.dart';
 import 'package:student_clearance_tracker/features/admin/clearance/view/widgets/admin_clearance_step_status_icon.dart';
@@ -49,7 +48,7 @@ class AdminClearanceStepRow extends StatelessWidget {
                     step.remarks!,
                     style: TextStyle(
                       fontSize: 12,
-                      color: AppColors.of(context).statusFlagged,
+                      color: Theme.of(context).colorScheme.error,
                     ),
                   ),
                 ],
@@ -95,7 +94,7 @@ class AdminClearanceStepRow extends StatelessWidget {
                       Icon(
                         Icons.check_circle_outline,
                         size: 16,
-                        color: AppColors.of(context).statusSigned,
+                        color: Theme.of(context).colorScheme.tertiary,
                       ),
                       const SizedBox(width: 8),
                       const Text('Mark as Signed'),
@@ -110,7 +109,7 @@ class AdminClearanceStepRow extends StatelessWidget {
                       Icon(
                         Icons.flag_outlined,
                         size: 16,
-                        color: AppColors.of(context).statusFlagged,
+                        color: Theme.of(context).colorScheme.error,
                       ),
                       const SizedBox(width: 8),
                       const Text('Flag'),
@@ -147,3 +146,4 @@ String _formatDateTime(DateTime dt) {
       '${dt.hour.toString().padLeft(2, '0')}:'
       '${dt.minute.toString().padLeft(2, '0')}';
 }
+

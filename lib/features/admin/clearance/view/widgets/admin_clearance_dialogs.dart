@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:student_clearance_tracker/core/models/clearance_step.dart';
 import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:student_clearance_tracker/core/widgets/confirm_dialog.dart';
@@ -11,7 +11,7 @@ Future<bool> confirmGenerateForStudent(BuildContext context, String name) {
         'Generate clearance steps for $name for the '
         'current period? Existing steps will not be affected.',
     confirmLabel: 'Generate',
-    confirmColor: AppColors.of(context).info,
+    confirmColor: Theme.of(context).colorScheme.primary,
   );
 }
 
@@ -24,7 +24,7 @@ Future<bool> confirmGenerateForAll(BuildContext context) {
         'for the current period based on their program. '
         'Existing steps will not be affected.',
     confirmLabel: 'Generate All',
-    confirmColor: AppColors.of(context).info,
+    confirmColor: Theme.of(context).colorScheme.primary,
   );
 }
 
@@ -42,8 +42,8 @@ Future<bool> confirmOverrideStep(
         : 'Override "${step.officeName}" step to $newStatus?',
     confirmLabel: isReset ? 'Reset' : 'Override',
     confirmColor: isReset
-        ? AppColors.of(context).warning
-        : AppColors.of(context).info,
+        ? AppColors.warning
+        : Theme.of(context).colorScheme.primary,
   );
 }
 
@@ -74,7 +74,7 @@ Future<String?> promptFlagRemark(BuildContext context) async {
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.of(context).danger,
+              backgroundColor: Theme.of(context).colorScheme.error,
               foregroundColor: Colors.white,
             ),
             onPressed: () =>
@@ -94,3 +94,4 @@ Future<String?> promptFlagRemark(BuildContext context) async {
     remarkController.dispose();
   }
 }
+

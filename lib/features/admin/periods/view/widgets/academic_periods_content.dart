@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:student_clearance_tracker/features/admin/periods/view/widgets/academic_periods_table.dart';
 import 'package:student_clearance_tracker/features/admin/periods/viewmodel/periods_viewmodel.dart';
 
@@ -21,7 +20,7 @@ class AcademicPeriodsContent extends StatelessWidget {
           children: [
             Text(
               vm.errorMessage!,
-              style: TextStyle(color: AppColors.of(context).danger),
+              style: TextStyle(color: Theme.of(context).colorScheme.error),
             ),
             const SizedBox(height: 8),
             ElevatedButton(
@@ -48,3 +47,4 @@ class AcademicPeriodsContent extends StatelessWidget {
     return AcademicPeriodsTable(periods: vm.periods);
   }
 }
+

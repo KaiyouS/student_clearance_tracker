@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:student_clearance_tracker/features/auth/viewmodel/update_password_viewmodel.dart';
@@ -52,7 +51,7 @@ class _UpdatePasswordScreenContentState extends State<_UpdatePasswordScreenConte
 
     if (success && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: const Text('Password updated successfully.'), backgroundColor: AppColors.of(context).success),
+        SnackBar(content: const Text('Password updated successfully.'), backgroundColor: Theme.of(context).colorScheme.tertiary),
       );
       context.pop();
     }
@@ -78,12 +77,12 @@ class _UpdatePasswordScreenContentState extends State<_UpdatePasswordScreenConte
             children: [
               Container(
                 padding: const EdgeInsets.all(14),
-                decoration: BoxDecoration(color: AppColors.of(context).info.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(10), border: Border.all(color: AppColors.of(context).info.withValues(alpha: 0.2))),
+                decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(10), border: Border.all(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2))),
                 child: Row(
                   children: [
-                    Icon(Icons.info_outline, size: 16, color: AppColors.of(context).info),
+                    Icon(Icons.info_outline, size: 16, color: Theme.of(context).colorScheme.primary),
                     const SizedBox(width: 10),
-                    Expanded(child: Text('Enter your current password to confirm your identity, then choose a new password.', style: TextStyle(fontSize: 13, color: AppColors.of(context).info))),
+                    Expanded(child: Text('Enter your current password to confirm your identity, then choose a new password.', style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.primary))),
                   ],
                 ),
               ),
@@ -136,7 +135,7 @@ class _UpdatePasswordScreenContentState extends State<_UpdatePasswordScreenConte
               ),
               const SizedBox(height: 8),
               if (vm.errorMessage != null)
-                Padding(padding: const EdgeInsets.only(top: 8, bottom: 4), child: Text(vm.errorMessage!, style: TextStyle(color: AppColors.of(context).danger, fontSize: 13), textAlign: TextAlign.center)),
+                Padding(padding: const EdgeInsets.only(top: 8, bottom: 4), child: Text(vm.errorMessage!, style: TextStyle(color: Theme.of(context).colorScheme.error, fontSize: 13), textAlign: TextAlign.center)),
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: vm.isLoading ? null : _handleSubmit,

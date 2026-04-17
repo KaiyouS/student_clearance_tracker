@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:student_clearance_tracker/features/admin/staff/view/widgets/staff_table.dart';
 import 'package:student_clearance_tracker/features/admin/staff/viewmodel/staff_viewmodel.dart';
 
@@ -21,7 +20,7 @@ class StaffContent extends StatelessWidget {
           children: [
             Text(
               vm.errorMessage!,
-              style: TextStyle(color: AppColors.of(context).danger),
+              style: TextStyle(color: Theme.of(context).colorScheme.error),
             ),
             const SizedBox(height: 8),
             ElevatedButton(onPressed: vm.loadStaff, child: const Text('Retry')),
@@ -47,3 +46,4 @@ class StaffContent extends StatelessWidget {
     return StaffTable(staffList: vm.filteredStaff);
   }
 }
+

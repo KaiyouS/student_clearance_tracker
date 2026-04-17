@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:student_clearance_tracker/core/models/clearance_step.dart';
-import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:student_clearance_tracker/features/admin/clearance/view/widgets/admin_clearance_dialogs.dart';
 import 'package:student_clearance_tracker/features/admin/clearance/viewmodel/admin_clearance_viewmodel.dart';
 import 'package:student_clearance_tracker/main.dart';
@@ -97,13 +96,14 @@ void _showSuccess(BuildContext context, String msg) {
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
       content: Text(msg),
-      backgroundColor: AppColors.of(context).success,
+      backgroundColor: Theme.of(context).colorScheme.tertiary,
     ),
   );
 }
 
 void _showError(BuildContext context, String msg) {
   ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(content: Text(msg), backgroundColor: AppColors.of(context).danger),
+    SnackBar(content: Text(msg), backgroundColor: Theme.of(context).colorScheme.error),
   );
 }
+

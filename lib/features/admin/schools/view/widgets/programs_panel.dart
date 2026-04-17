@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:student_clearance_tracker/core/widgets/app_card.dart';
 import 'package:student_clearance_tracker/features/admin/schools/view/widgets/program_list_tile.dart';
 import 'package:student_clearance_tracker/features/admin/schools/view/widgets/school_program_form_dialogs.dart';
@@ -30,7 +29,7 @@ class ProgramsPanel extends StatelessWidget {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(msg),
-        backgroundColor: AppColors.of(context).success,
+        backgroundColor: Theme.of(context).colorScheme.tertiary,
       ),
     );
   }
@@ -39,7 +38,7 @@ class ProgramsPanel extends StatelessWidget {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(msg),
-        backgroundColor: AppColors.of(context).danger,
+        backgroundColor: Theme.of(context).colorScheme.error,
       ),
     );
   }
@@ -96,7 +95,7 @@ class ProgramsPanel extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
-          Divider(color: AppColors.of(context).border),
+          Divider(color: Theme.of(context).dividerColor),
           const SizedBox(height: 8),
           if (vm.isLoadingPrograms)
             const Center(
@@ -124,7 +123,7 @@ class ProgramsPanel extends StatelessWidget {
               child: ListView.separated(
                 itemCount: vm.programs.length,
                 separatorBuilder: (_, _) =>
-                    Divider(height: 1, color: AppColors.of(context).border),
+                    Divider(height: 1, color: Theme.of(context).dividerColor),
                 itemBuilder: (context, i) {
                   return ProgramListTile(program: vm.programs[i]);
                 },
@@ -135,3 +134,4 @@ class ProgramsPanel extends StatelessWidget {
     );
   }
 }
+

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:student_clearance_tracker/core/widgets/app_card.dart';
 import 'package:student_clearance_tracker/features/admin/schools/view/widgets/school_list_tile.dart';
 import 'package:student_clearance_tracker/features/admin/schools/view/widgets/school_program_form_dialogs.dart';
@@ -28,7 +27,7 @@ class SchoolsListPanel extends StatelessWidget {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(msg),
-        backgroundColor: AppColors.of(context).success,
+        backgroundColor: Theme.of(context).colorScheme.tertiary,
       ),
     );
   }
@@ -37,7 +36,7 @@ class SchoolsListPanel extends StatelessWidget {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(msg),
-        backgroundColor: AppColors.of(context).danger,
+        backgroundColor: Theme.of(context).colorScheme.error,
       ),
     );
   }
@@ -66,7 +65,7 @@ class SchoolsListPanel extends StatelessWidget {
                 ),
                 IconButton(
                   icon: const Icon(Icons.add, size: 20),
-                  color: AppColors.of(context).info,
+                  color: Theme.of(context).colorScheme.primary,
                   tooltip: 'Add School',
                   onPressed: vm.isSaving
                       ? null
@@ -75,7 +74,7 @@ class SchoolsListPanel extends StatelessWidget {
               ],
             ),
           ),
-          Divider(height: 1, color: AppColors.of(context).border),
+          Divider(height: 1, color: Theme.of(context).dividerColor),
           Expanded(
             child: vm.schools.isEmpty
                 ? Center(
@@ -94,7 +93,7 @@ class SchoolsListPanel extends StatelessWidget {
                 : ListView.separated(
                     itemCount: vm.schools.length,
                     separatorBuilder: (_, _) =>
-                        Divider(height: 1, color: AppColors.of(context).border),
+                        Divider(height: 1, color: Theme.of(context).dividerColor),
                     itemBuilder: (context, i) {
                       final school = vm.schools[i];
                       final isSelected = vm.selectedSchool?.id == school.id;
@@ -111,3 +110,4 @@ class SchoolsListPanel extends StatelessWidget {
     );
   }
 }
+

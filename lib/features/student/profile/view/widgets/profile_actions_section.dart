@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:student_clearance_tracker/core/services/auth_service.dart';
-import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 
 class ProfileActionsSection extends StatelessWidget {
   const ProfileActionsSection({super.key});
@@ -28,13 +27,13 @@ class ProfileActionsSection extends StatelessWidget {
                 context.go('/login');
               }
             },
-            icon: Icon(Icons.logout, color: AppColors.of(context).danger),
+            icon: Icon(Icons.logout, color: Theme.of(context).colorScheme.error),
             label: Text(
               'Sign Out',
-              style: TextStyle(color: AppColors.of(context).danger),
+              style: TextStyle(color: Theme.of(context).colorScheme.error),
             ),
             style: OutlinedButton.styleFrom(
-              side: BorderSide(color: AppColors.of(context).danger),
+              side: BorderSide(color: Theme.of(context).colorScheme.error),
             ),
           ),
         ),
@@ -42,3 +41,4 @@ class ProfileActionsSection extends StatelessWidget {
     );
   }
 }
+

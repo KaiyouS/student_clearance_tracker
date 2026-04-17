@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:student_clearance_tracker/admin/widgets/account_status_menu.dart';
 import 'package:student_clearance_tracker/core/models/office_staff.dart';
-import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:student_clearance_tracker/features/admin/staff/view/widgets/staff_actions.dart';
 import 'package:student_clearance_tracker/features/admin/staff/view/widgets/staff_office_badge.dart';
 
@@ -12,7 +11,7 @@ TableRow buildStaffTableRow({
 }) {
   return TableRow(
     decoration: BoxDecoration(
-      border: Border(top: BorderSide(color: AppColors.of(context).border)),
+      border: Border(top: BorderSide(color: Theme.of(context).dividerColor)),
     ),
     children: [
       _dataCell(
@@ -73,7 +72,7 @@ TableRow buildStaffTableRow({
           children: [
             IconButton(
               icon: const Icon(Icons.edit_outlined, size: 18),
-              color: AppColors.of(context).info,
+              color: Theme.of(context).colorScheme.primary,
               tooltip: 'Edit',
               onPressed: isSaving
                   ? null
@@ -81,7 +80,7 @@ TableRow buildStaffTableRow({
             ),
             IconButton(
               icon: const Icon(Icons.delete_outline, size: 18),
-              color: AppColors.of(context).danger,
+              color: Theme.of(context).colorScheme.error,
               tooltip: 'Delete',
               onPressed: isSaving
                   ? null
@@ -100,3 +99,4 @@ Widget _dataCell(Widget child) {
     child: child,
   );
 }
+

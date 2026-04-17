@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:student_clearance_tracker/features/student/clearance/view/widgets/activity_log_item.dart';
 import 'package:student_clearance_tracker/features/student/clearance/viewmodel/step_detail_viewmodel.dart';
 
@@ -19,7 +18,7 @@ class ActivityLogPanel extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.of(context).border),
+        border: Border.all(color: Theme.of(context).dividerColor),
       ),
       child: Column(
         children: List.generate(
@@ -31,3 +30,4 @@ class ActivityLogPanel extends StatelessWidget {
     );
   }
 }
+

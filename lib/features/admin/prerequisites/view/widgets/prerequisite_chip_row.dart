@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:student_clearance_tracker/core/models/office.dart';
-import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:student_clearance_tracker/features/admin/prerequisites/view/widgets/prerequisites_actions.dart';
 
 class PrerequisiteChipRow extends StatelessWidget {
@@ -22,7 +21,7 @@ class PrerequisiteChipRow extends StatelessWidget {
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: AppColors.of(context).border),
+          border: Border.all(color: Theme.of(context).dividerColor),
         ),
         child: Row(
           children: [
@@ -62,7 +61,7 @@ class PrerequisiteChipRow extends StatelessWidget {
             ),
             IconButton(
               icon: const Icon(Icons.remove_circle_outline, size: 18),
-              color: AppColors.of(context).danger,
+              color: Theme.of(context).colorScheme.error,
               tooltip: 'Remove',
               onPressed: () =>
                   handleRemovePrerequisiteAction(context, office, prerequisite),
@@ -73,3 +72,4 @@ class PrerequisiteChipRow extends StatelessWidget {
     );
   }
 }
+

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:student_clearance_tracker/features/student/shell/viewmodel/student_shell_viewmodel.dart';
 import 'package:student_clearance_tracker/main.dart';
 
@@ -20,13 +19,13 @@ class HomeErrorState extends StatelessWidget {
           Icon(
             Icons.error_outline,
             size: 48,
-            color: AppColors.of(context).danger,
+            color: Theme.of(context).colorScheme.error,
           ),
           const SizedBox(height: 12),
           Text(
             error ?? '',
             textAlign: TextAlign.center,
-            style: TextStyle(color: AppColors.of(context).danger),
+            style: TextStyle(color: Theme.of(context).colorScheme.error),
           ),
           const SizedBox(height: 12),
           ElevatedButton(
@@ -40,3 +39,4 @@ class HomeErrorState extends StatelessWidget {
     );
   }
 }
+

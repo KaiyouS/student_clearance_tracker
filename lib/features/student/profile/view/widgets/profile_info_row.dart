@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 
 class ProfileInfoRow extends StatelessWidget {
@@ -27,7 +27,7 @@ class ProfileInfoRow extends StatelessWidget {
                   label,
                   style: TextStyle(
                     fontSize: 13,
-                    color: AppColors.of(context).neutral,
+                    color: AppColors.contentSecondary(context),
                   ),
                 ),
               ),
@@ -48,3 +48,4 @@ class ProfileInfoRow extends StatelessWidget {
     );
   }
 }
+

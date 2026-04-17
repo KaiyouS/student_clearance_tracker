@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:student_clearance_tracker/features/admin/clearance/viewmodel/admin_clearance_viewmodel.dart';
 
 class AdminClearanceFilters extends StatelessWidget {
@@ -45,13 +44,13 @@ class AdminClearanceFilters extends StatelessWidget {
                       ),
                     ),
                     selected: isSelected,
-                    selectedColor: AppColors.of(context).info,
+                    selectedColor: Theme.of(context).colorScheme.primary,
                     backgroundColor: Theme.of(context).colorScheme.surface,
                     checkmarkColor: Theme.of(context).colorScheme.surface,
                     side: BorderSide(
                       color: isSelected
-                          ? AppColors.of(context).info
-                          : AppColors.of(context).border,
+                          ? Theme.of(context).colorScheme.primary
+                          : Theme.of(context).dividerColor,
                     ),
                     onSelected: (_) => context
                         .read<AdminClearanceViewModel>()
@@ -69,3 +68,4 @@ class AdminClearanceFilters extends StatelessWidget {
 
 String _capitalize(String s) =>
     s.isEmpty ? s : s[0].toUpperCase() + s.substring(1);
+

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:student_clearance_tracker/core/models/office.dart';
 import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 
@@ -74,7 +74,7 @@ class _AddPrerequisiteDialogState extends State<AddPrerequisiteDialog> {
                 child: ListView.separated(
                   itemCount: _filtered.length,
                   separatorBuilder: (_, _) =>
-                      Divider(height: 1, color: AppColors.of(context).border),
+                      Divider(height: 1, color: Theme.of(context).dividerColor),
                   itemBuilder: (context, i) {
                     final office = _filtered[i];
                     final disabled = _isDisabled(office);
@@ -86,7 +86,7 @@ class _AddPrerequisiteDialogState extends State<AddPrerequisiteDialog> {
                         style: TextStyle(
                           fontSize: 14,
                           color: disabled
-                              ? AppColors.of(context).neutral
+                              ? AppColors.contentSecondary(context)
                               : Theme.of(context).colorScheme.onSurface,
                         ),
                       ),
@@ -95,7 +95,7 @@ class _AddPrerequisiteDialogState extends State<AddPrerequisiteDialog> {
                               reason,
                               style: TextStyle(
                                 fontSize: 12,
-                                color: AppColors.of(context).danger,
+                                color: Theme.of(context).colorScheme.error,
                               ),
                             )
                           : office.description != null
@@ -107,10 +107,10 @@ class _AddPrerequisiteDialogState extends State<AddPrerequisiteDialog> {
                             )
                           : null,
                       selected: _chosen?.id == office.id,
-                      selectedColor: AppColors.of(context).info,
-                      selectedTileColor: AppColors.of(
+                      selectedColor: Theme.of(context).colorScheme.primary,
+                      selectedTileColor: Theme.of(
                         context,
-                      ).info.withValues(alpha: 0.08),
+                      ).colorScheme.primary.withValues(alpha: 0.08),
                       trailing: disabled
                           ? Tooltip(
                               message: 'Cannot be added',
@@ -150,3 +150,4 @@ class _AddPrerequisiteDialogState extends State<AddPrerequisiteDialog> {
     );
   }
 }
+

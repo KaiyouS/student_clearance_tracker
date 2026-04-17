@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:student_clearance_tracker/features/admin/clearance/view/widgets/admin_clearance_mini_stat.dart';
 import 'package:student_clearance_tracker/features/admin/clearance/viewmodel/admin_clearance_viewmodel.dart';
 
@@ -21,17 +20,17 @@ class AdminClearanceStatsRow extends StatelessWidget {
           AdminClearanceMiniStat(
             label: 'Total',
             value: stats.total,
-            color: AppColors.of(context).info,
+            color: Theme.of(context).colorScheme.primary,
           ),
           AdminClearanceMiniStat(
             label: 'Complete',
             value: stats.complete,
-            color: AppColors.of(context).statusSigned,
+            color: Theme.of(context).colorScheme.tertiary,
           ),
           AdminClearanceMiniStat(
             label: 'Flagged',
             value: stats.flagged,
-            color: AppColors.of(context).statusFlagged,
+            color: Theme.of(context).colorScheme.error,
           ),
           AdminClearanceMiniStat(
             label: 'No Steps',
@@ -45,3 +44,4 @@ class AdminClearanceStatsRow extends StatelessWidget {
     );
   }
 }
+

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:student_clearance_tracker/features/admin/clearance/view/widgets/admin_clearance_actions.dart';
 import 'package:student_clearance_tracker/features/admin/clearance/viewmodel/admin_clearance_viewmodel.dart';
 
@@ -56,10 +55,11 @@ class AdminClearanceHeader extends StatelessWidget {
           icon: const Icon(Icons.auto_awesome, size: 16),
           label: const Text('Generate All'),
           style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.of(context).success,
+            backgroundColor: Theme.of(context).colorScheme.tertiary,
           ),
         ),
       ],
     );
   }
 }
+

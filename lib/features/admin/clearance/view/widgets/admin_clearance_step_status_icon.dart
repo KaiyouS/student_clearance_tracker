@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 
 class AdminClearanceStepStatusIcon extends StatelessWidget {
@@ -8,7 +8,7 @@ class AdminClearanceStepStatusIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = AppColors.statusColorFromString(context, status);
+    final color = AppColors.forStatus( status);
     final icon = switch (status) {
       'signed' => Icons.check_circle,
       'flagged' => Icons.flag,
@@ -26,3 +26,4 @@ class AdminClearanceStepStatusIcon extends StatelessWidget {
     );
   }
 }
+

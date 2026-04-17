@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:student_clearance_tracker/core/models/academic_period.dart';
-import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:student_clearance_tracker/core/widgets/confirm_dialog.dart';
 import 'package:student_clearance_tracker/features/admin/periods/view/academic_period_form_dialog.dart';
 import 'package:student_clearance_tracker/features/admin/periods/viewmodel/periods_viewmodel.dart';
@@ -92,7 +91,7 @@ Future<void> handleSetCurrentPeriodAction(
     message:
         'Set "${period.label}" as the current academic period? The previous current period will be unset.',
     confirmLabel: 'Set as Current',
-    confirmColor: AppColors.of(context).info,
+    confirmColor: Theme.of(context).colorScheme.primary,
   );
   if (!confirmed) {
     return;
@@ -115,13 +114,14 @@ void _showSuccess(BuildContext context, String msg) {
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
       content: Text(msg),
-      backgroundColor: AppColors.of(context).success,
+      backgroundColor: Theme.of(context).colorScheme.tertiary,
     ),
   );
 }
 
 void _showError(BuildContext context, String msg) {
   ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(content: Text(msg), backgroundColor: AppColors.of(context).danger),
+    SnackBar(content: Text(msg), backgroundColor: Theme.of(context).colorScheme.error),
   );
 }
+

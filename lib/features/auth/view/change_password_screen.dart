@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:student_clearance_tracker/core/services/auth_service.dart';
@@ -76,8 +75,8 @@ class _ChangePasswordScreenContentState extends State<_ChangePasswordScreenConte
                 Container(
                   width: 56,
                   height: 56,
-                  decoration: BoxDecoration(color: AppColors.of(context).info.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12)),
-                  child: Icon(Icons.lock_reset_outlined, color: AppColors.of(context).info, size: 28),
+                  decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12)),
+                  child: Icon(Icons.lock_reset_outlined, color: Theme.of(context).colorScheme.primary, size: 28),
                 ),
                 const SizedBox(height: 24),
                 Text('Set a New Password', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface)),
@@ -116,7 +115,7 @@ class _ChangePasswordScreenContentState extends State<_ChangePasswordScreenConte
                 ),
                 const SizedBox(height: 8),
                 if (vm.errorMessage != null)
-                  Padding(padding: const EdgeInsets.only(bottom: 8), child: Text(vm.errorMessage!, style: TextStyle(color: AppColors.of(context).danger, fontSize: 13), textAlign: TextAlign.center)),
+                  Padding(padding: const EdgeInsets.only(bottom: 8), child: Text(vm.errorMessage!, style: TextStyle(color: Theme.of(context).colorScheme.error, fontSize: 13), textAlign: TextAlign.center)),
                 const SizedBox(height: 8),
                 ElevatedButton(
                   onPressed: vm.isLoading ? null : _handleSubmit,

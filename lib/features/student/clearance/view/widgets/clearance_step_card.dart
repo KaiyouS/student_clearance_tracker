@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:student_clearance_tracker/core/models/step_with_info.dart';
 import 'package:student_clearance_tracker/core/theme/app_colors.dart';
@@ -58,7 +58,7 @@ class ClearanceStepCard extends StatelessWidget {
                   Icon(
                     Icons.arrow_downward,
                     size: 14,
-                    color: AppColors.of(context).neutral,
+                    color: AppColors.contentSecondary(context),
                   ),
                   const SizedBox(width: 4),
                   Text(
@@ -66,8 +66,8 @@ class ClearanceStepCard extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 11,
                       color: isDark
-                          ? AppColors.of(context).neutral
-                          : AppColors.of(context).neutral,
+                          ? AppColors.contentSecondary(context)
+                          : AppColors.contentSecondary(context),
                       fontStyle: FontStyle.italic,
                     ),
                   ),
@@ -86,8 +86,8 @@ class ClearanceStepCard extends StatelessWidget {
                       width: 2,
                       height: 60,
                       color: isDark
-                          ? AppColors.of(context).border
-                          : AppColors.of(context).border,
+                          ? Theme.of(context).dividerColor
+                          : Theme.of(context).dividerColor,
                     ),
                 ],
               ),
@@ -103,12 +103,12 @@ class ClearanceStepCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
                       color: step.status == 'flagged'
-                          ? AppColors.of(
+                          ? Theme.of(
                               context,
-                            ).statusFlagged.withValues(alpha: 0.5)
+                            ).colorScheme.error.withValues(alpha: 0.5)
                           : isDark
-                          ? AppColors.of(context).border
-                          : AppColors.of(context).border,
+                          ? Theme.of(context).dividerColor
+                          : Theme.of(context).dividerColor,
                     ),
                   ),
                   child: Column(
@@ -118,7 +118,7 @@ class ClearanceStepCard extends StatelessWidget {
                         children: [
                           Expanded(
                             child: Text(
-                              step.officeName ?? '—',
+                              step.officeName ?? '-',
                               style: const TextStyle(
                                 fontWeight: FontWeight.w600,
                                 fontSize: 14,
@@ -134,20 +134,20 @@ class ClearanceStepCard extends StatelessWidget {
                                 vertical: 3,
                               ),
                               decoration: BoxDecoration(
-                                color: AppColors.of(
+                                color: Theme.of(
                                   context,
-                                ).info.withValues(alpha: 0.1),
+                                ).colorScheme.primary.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(12),
                                 border: Border.all(
-                                  color: AppColors.of(
+                                  color: Theme.of(
                                     context,
-                                  ).info.withValues(alpha: 0.4),
+                                  ).colorScheme.primary.withValues(alpha: 0.4),
                                 ),
                               ),
                               child: Text(
                                 'Updated',
                                 style: TextStyle(
-                                  color: AppColors.of(context).info,
+                                  color: Theme.of(context).colorScheme.primary,
                                   fontSize: 11,
                                   fontWeight: FontWeight.w600,
                                 ),
@@ -177,7 +177,7 @@ class ClearanceStepCard extends StatelessWidget {
       details.add(
         StepDetailRow(
           icon: Icons.check_circle_outline,
-          color: AppColors.of(context).statusSigned,
+          color: Theme.of(context).colorScheme.tertiary,
           text: step.updatedAt != null
               ? 'Signed on ${_formatDate(step.updatedAt!)}'
               : 'Signed',
@@ -187,7 +187,7 @@ class ClearanceStepCard extends StatelessWidget {
       details.add(
         StepDetailRow(
           icon: Icons.flag_outlined,
-          color: AppColors.of(context).statusFlagged,
+          color: Theme.of(context).colorScheme.error,
           text: step.remarks != null
               ? 'Flagged: ${step.remarks}'
               : 'This step has been flagged.',
@@ -197,7 +197,7 @@ class ClearanceStepCard extends StatelessWidget {
       details.add(
         StepDetailRow(
           icon: Icons.lock_outline,
-          color: AppColors.of(context).warning,
+          color: AppColors.warning,
           text: 'Waiting for: ${item.waitingFor.join(', ')}',
         ),
       );
@@ -205,7 +205,7 @@ class ClearanceStepCard extends StatelessWidget {
       details.add(
         StepDetailRow(
           icon: Icons.pending_outlined,
-          color: AppColors.of(context).statusPending,
+          color: AppColors.warning,
           text: 'Visit this office to get your clearance signed.',
         ),
       );
@@ -232,3 +232,5 @@ class ClearanceStepCard extends StatelessWidget {
     return '${months[dt.month - 1]} ${dt.day}, ${dt.year}';
   }
 }
+
+

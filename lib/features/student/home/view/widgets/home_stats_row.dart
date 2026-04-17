@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:student_clearance_tracker/features/student/home/view/widgets/stat_card.dart';
@@ -25,7 +25,7 @@ class HomeStatsRow extends StatelessWidget {
           child: StatCard(
             label: 'Pending',
             value: pendingSteps,
-            color: AppColors.of(context).statusPending,
+            color: AppColors.warning,
             icon: Icons.hourglass_empty_outlined,
           ),
         ),
@@ -34,7 +34,7 @@ class HomeStatsRow extends StatelessWidget {
           child: StatCard(
             label: 'Flagged',
             value: flaggedSteps,
-            color: AppColors.of(context).statusFlagged,
+            color: Theme.of(context).colorScheme.error,
             icon: Icons.flag_outlined,
           ),
         ),
@@ -43,7 +43,7 @@ class HomeStatsRow extends StatelessWidget {
           child: StatCard(
             label: 'Signed',
             value: signedSteps,
-            color: AppColors.of(context).statusSigned,
+            color: Theme.of(context).colorScheme.tertiary,
             icon: Icons.check_circle_outline,
           ),
         ),
@@ -51,3 +51,4 @@ class HomeStatsRow extends StatelessWidget {
     );
   }
 }
+

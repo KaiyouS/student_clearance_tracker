@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:student_clearance_tracker/core/models/user_profile.dart';
 import 'package:student_clearance_tracker/core/widgets/theme_toggle.dart';
@@ -23,7 +23,7 @@ class ProfileAccountSection extends StatelessWidget {
           children: [
             ProfileInfoRow(
               label: 'Email',
-              value: supabase.auth.currentUser?.email ?? '—',
+              value: supabase.auth.currentUser?.email ?? '-',
             ),
             ProfileInfoRow(label: 'Status', value: profile.accountStatus),
             Padding(
@@ -36,7 +36,7 @@ class ProfileAccountSection extends StatelessWidget {
                       'Theme',
                       style: TextStyle(
                         fontSize: 13,
-                        color: AppColors.of(context).neutral,
+                        color: AppColors.contentSecondary(context),
                       ),
                     ),
                   ),
@@ -50,3 +50,5 @@ class ProfileAccountSection extends StatelessWidget {
     );
   }
 }
+
+

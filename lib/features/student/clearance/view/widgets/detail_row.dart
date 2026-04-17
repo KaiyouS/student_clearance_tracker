@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 
 class DetailRow extends StatelessWidget {
   final String label;
@@ -38,11 +37,11 @@ class DetailRow extends StatelessWidget {
             child:
                 child ??
                 Text(
-                  value ?? '—',
+                  value ?? '-',
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w500,
-                    color: isRed ? AppColors.of(context).danger : null,
+                    color: isRed ? Theme.of(context).colorScheme.error : null,
                   ),
                 ),
           ),
@@ -51,3 +50,4 @@ class DetailRow extends StatelessWidget {
     );
   }
 }
+

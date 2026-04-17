@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:student_clearance_tracker/features/staff/clearance/viewmodel/staff_clearance_viewmodel.dart';
 import 'package:student_clearance_tracker/features/staff/shell/viewmodel/staff_shell_viewmodel.dart';
 
@@ -48,7 +47,7 @@ class StaffClearanceHeader extends StatelessWidget {
         ),
         IconButton(
           icon: const Icon(Icons.refresh),
-          color: AppColors.of(context).info,
+          color: Theme.of(context).colorScheme.primary,
           tooltip: 'Refresh',
           onPressed: isLoading
               ? null
@@ -60,3 +59,4 @@ class StaffClearanceHeader extends StatelessWidget {
     );
   }
 }
+

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 
 class ProfileSectionTitle extends StatelessWidget {
@@ -12,8 +12,9 @@ class ProfileSectionTitle extends StatelessWidget {
       title,
       style: Theme.of(context).textTheme.titleSmall?.copyWith(
         fontWeight: FontWeight.w600,
-        color: AppColors.of(context).neutral,
+        color: AppColors.contentSecondary(context),
       ),
     );
   }
 }
+

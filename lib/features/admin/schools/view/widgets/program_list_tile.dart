@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:student_clearance_tracker/core/models/program.dart';
-import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:student_clearance_tracker/core/widgets/confirm_dialog.dart';
 import 'package:student_clearance_tracker/features/admin/schools/view/widgets/school_program_form_dialogs.dart';
 import 'package:student_clearance_tracker/features/admin/schools/viewmodel/schools_viewmodel.dart';
@@ -51,7 +50,7 @@ class ProgramListTile extends StatelessWidget {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(msg),
-        backgroundColor: AppColors.of(context).success,
+        backgroundColor: Theme.of(context).colorScheme.tertiary,
       ),
     );
   }
@@ -60,7 +59,7 @@ class ProgramListTile extends StatelessWidget {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(msg),
-        backgroundColor: AppColors.of(context).danger,
+        backgroundColor: Theme.of(context).colorScheme.error,
       ),
     );
   }
@@ -74,13 +73,13 @@ class ProgramListTile extends StatelessWidget {
         width: 32,
         height: 32,
         decoration: BoxDecoration(
-          color: AppColors.of(context).info.withValues(alpha: 0.1),
+          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(6),
         ),
         child: Icon(
           Icons.school_outlined,
           size: 16,
-          color: AppColors.of(context).info,
+          color: Theme.of(context).colorScheme.primary,
         ),
       ),
       title: Text(
@@ -96,13 +95,13 @@ class ProgramListTile extends StatelessWidget {
         children: [
           IconButton(
             icon: const Icon(Icons.edit_outlined, size: 18),
-            color: AppColors.of(context).info,
+            color: Theme.of(context).colorScheme.primary,
             tooltip: 'Edit',
             onPressed: vm.isSaving ? null : () => _handleEditProgram(context),
           ),
           IconButton(
             icon: const Icon(Icons.delete_outline, size: 18),
-            color: AppColors.of(context).danger,
+            color: Theme.of(context).colorScheme.error,
             tooltip: 'Delete',
             onPressed: vm.isSaving ? null : () => _handleDeleteProgram(context),
           ),
@@ -111,3 +110,4 @@ class ProgramListTile extends StatelessWidget {
     );
   }
 }
+

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:student_clearance_tracker/core/widgets/app_card.dart';
 import 'package:student_clearance_tracker/core/widgets/status_badge.dart';
 import 'package:student_clearance_tracker/features/admin/clearance/view/widgets/admin_clearance_actions.dart';
@@ -71,13 +70,13 @@ class AdminClearanceDetailPanel extends StatelessWidget {
                   icon: const Icon(Icons.auto_awesome, size: 14),
                   label: const Text('Generate'),
                   style: TextButton.styleFrom(
-                    foregroundColor: AppColors.of(context).info,
+                    foregroundColor: Theme.of(context).colorScheme.primary,
                   ),
                 ),
             ],
           ),
           const SizedBox(height: 16),
-          Divider(color: AppColors.of(context).border),
+          Divider(color: Theme.of(context).dividerColor),
           const SizedBox(height: 8),
           if (vm.isLoadingSteps)
             const Expanded(child: Center(child: CircularProgressIndicator()))
@@ -90,7 +89,7 @@ class AdminClearanceDetailPanel extends StatelessWidget {
                     Icon(
                       Icons.checklist_outlined,
                       size: 48,
-                      color: AppColors.of(context).border,
+                      color: Theme.of(context).dividerColor,
                     ),
                     const SizedBox(height: 12),
                     Text(
@@ -121,7 +120,7 @@ class AdminClearanceDetailPanel extends StatelessWidget {
               child: ListView.separated(
                 itemCount: vm.selectedSteps.length,
                 separatorBuilder: (_, _) =>
-                    Divider(height: 1, color: AppColors.of(context).border),
+                    Divider(height: 1, color: Theme.of(context).dividerColor),
                 itemBuilder: (context, i) => AdminClearanceStepRow(index: i),
               ),
             ),
@@ -130,3 +129,4 @@ class AdminClearanceDetailPanel extends StatelessWidget {
     );
   }
 }
+

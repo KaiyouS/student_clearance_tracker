@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:student_clearance_tracker/core/models/school.dart';
 import 'package:student_clearance_tracker/core/models/program.dart';
 import 'package:student_clearance_tracker/core/models/student.dart';
@@ -146,7 +145,7 @@ class _StudentFormDialogState extends State<StudentFormDialog> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Email — create only
+                // Email - create only
                 if (!_isEditing) ...[
                   TextFormField(
                     controller: _emailController,
@@ -245,7 +244,7 @@ class _StudentFormDialogState extends State<StudentFormDialog> {
                       ),
                 const SizedBox(height: 16),
 
-                // Program dropdown — disabled until school is selected
+                // Program dropdown - disabled until school is selected
                 DropdownButtonFormField<Program>(
                   initialValue: _selectedProgram,
                   decoration: InputDecoration(
@@ -254,7 +253,7 @@ class _StudentFormDialogState extends State<StudentFormDialog> {
                     disabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                       borderSide: BorderSide(
-                        color: AppColors.of(context).border,
+                        color: Theme.of(context).dividerColor,
                       ),
                     ),
                   ),
@@ -311,3 +310,4 @@ class _StudentFormDialogState extends State<StudentFormDialog> {
     );
   }
 }
+

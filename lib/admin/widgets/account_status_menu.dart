@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:student_clearance_tracker/core/widgets/account_status_badge.dart';
 
@@ -15,11 +15,11 @@ class AccountStatusMenu extends StatelessWidget {
   static const _allStatuses = ['active', 'inactive', 'locked', 'pending'];
 
   Color _colorFor(BuildContext context, String status) => switch (status) {
-    'active' => AppColors.of(context).statusSigned,
-    'inactive' => AppColors.of(context).neutral,
-    'locked' => AppColors.of(context).danger,
-    'pending' => AppColors.of(context).statusPending,
-    _ => AppColors.of(context).neutral,
+    'active' => Theme.of(context).colorScheme.tertiary,
+    'inactive' => AppColors.contentSecondary(context),
+    'locked' => Theme.of(context).colorScheme.error,
+    'pending' => AppColors.warning,
+    _ => AppColors.contentSecondary(context),
   };
 
   @override
@@ -58,3 +58,4 @@ class AccountStatusMenu extends StatelessWidget {
     _ => Icons.help_outline,
   };
 }
+

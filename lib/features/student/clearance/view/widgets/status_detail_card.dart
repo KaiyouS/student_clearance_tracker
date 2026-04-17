@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:student_clearance_tracker/core/models/clearance_step.dart';
 import 'package:student_clearance_tracker/core/theme/app_colors.dart';
@@ -20,7 +20,7 @@ class StatusDetailCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.of(context).border),
+        border: Border.all(color: Theme.of(context).dividerColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -74,10 +74,10 @@ class StatusDetailCard extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: AppColors.of(context).danger.withValues(alpha: 0.06),
+            color: Theme.of(context).colorScheme.error.withValues(alpha: 0.06),
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
-              color: AppColors.of(context).danger.withValues(alpha: 0.2),
+              color: Theme.of(context).colorScheme.error.withValues(alpha: 0.2),
             ),
           ),
           child: Row(
@@ -85,7 +85,7 @@ class StatusDetailCard extends StatelessWidget {
               Icon(
                 Icons.info_outline,
                 size: 14,
-                color: AppColors.of(context).danger,
+                color: Theme.of(context).colorScheme.error,
               ),
               const SizedBox(width: 8),
               Expanded(
@@ -94,7 +94,7 @@ class StatusDetailCard extends StatelessWidget {
                   'your clearance can proceed.',
                   style: TextStyle(
                     fontSize: 12,
-                    color: AppColors.of(context).danger,
+                    color: Theme.of(context).colorScheme.error,
                   ),
                 ),
               ),
@@ -114,13 +114,13 @@ class StatusDetailCard extends StatelessWidget {
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: isBlocked
-              ? AppColors.of(context).warning.withValues(alpha: 0.06)
-              : AppColors.of(context).info.withValues(alpha: 0.06),
+              ? AppColors.warning.withValues(alpha: 0.06)
+              : Theme.of(context).colorScheme.primary.withValues(alpha: 0.06),
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
             color: isBlocked
-                ? AppColors.of(context).warning.withValues(alpha: 0.3)
-                : AppColors.of(context).info.withValues(alpha: 0.3),
+                ? AppColors.warning.withValues(alpha: 0.3)
+                : Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
           ),
         ),
         child: Row(
@@ -129,8 +129,8 @@ class StatusDetailCard extends StatelessWidget {
               isBlocked ? Icons.lock_outline : Icons.directions_walk_outlined,
               size: 14,
               color: isBlocked
-                  ? AppColors.of(context).warning
-                  : AppColors.of(context).info,
+                  ? AppColors.warning
+                  : Theme.of(context).colorScheme.primary,
             ),
             const SizedBox(width: 8),
             Expanded(
@@ -141,8 +141,8 @@ class StatusDetailCard extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 12,
                   color: isBlocked
-                      ? AppColors.of(context).warning
-                      : AppColors.of(context).info,
+                      ? AppColors.warning
+                      : Theme.of(context).colorScheme.primary,
                 ),
               ),
             ),
@@ -172,3 +172,4 @@ class StatusDetailCard extends StatelessWidget {
         '${dt.minute.toString().padLeft(2, '0')}';
   }
 }
+

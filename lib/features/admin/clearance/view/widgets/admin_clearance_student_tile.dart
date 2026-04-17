@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:student_clearance_tracker/features/admin/clearance/viewmodel/admin_clearance_viewmodel.dart';
 
 class AdminClearanceStudentTile extends StatelessWidget {
@@ -37,7 +36,7 @@ class AdminClearanceStudentTile extends StatelessWidget {
           context.read<AdminClearanceViewModel>().selectStudent(student),
       child: Container(
         color: isSelected
-            ? AppColors.of(context).info.withValues(alpha: 0.06)
+            ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.06)
             : null,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: Row(
@@ -55,7 +54,7 @@ class AdminClearanceStudentTile extends StatelessWidget {
                             fontWeight: FontWeight.w500,
                             fontSize: 13,
                             color: isSelected
-                                ? AppColors.of(context).info
+                                ? Theme.of(context).colorScheme.primary
                                 : Theme.of(context).colorScheme.onSurface,
                           ),
                         ),
@@ -64,7 +63,7 @@ class AdminClearanceStudentTile extends StatelessWidget {
                         Icon(
                           Icons.flag,
                           size: 14,
-                          color: AppColors.of(context).statusFlagged,
+                          color: Theme.of(context).colorScheme.error,
                         ),
                     ],
                   ),
@@ -84,11 +83,11 @@ class AdminClearanceStudentTile extends StatelessWidget {
                       borderRadius: BorderRadius.circular(4),
                       child: LinearProgressIndicator(
                         value: total > 0 ? signed / total : 0,
-                        backgroundColor: AppColors.of(context).border,
+                        backgroundColor: Theme.of(context).dividerColor,
                         valueColor: AlwaysStoppedAnimation<Color>(
                           isComplete
-                              ? AppColors.of(context).statusSigned
-                              : AppColors.of(context).info,
+                              ? Theme.of(context).colorScheme.tertiary
+                              : Theme.of(context).colorScheme.primary,
                         ),
                         minHeight: 4,
                       ),
@@ -113,3 +112,4 @@ class AdminClearanceStudentTile extends StatelessWidget {
     );
   }
 }
+
