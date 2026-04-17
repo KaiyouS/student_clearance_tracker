@@ -1,144 +1,90 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:student_clearance_tracker/core/models/office.dart';
-import 'package:student_clearance_tracker/core/repositories/office_repository.dart';
 import 'package:student_clearance_tracker/core/widgets/app_card.dart';
 import 'package:student_clearance_tracker/core/widgets/confirm_dialog.dart';
 import 'package:student_clearance_tracker/features/admin/offices/view/office_form_dialog.dart';
+import 'package:student_clearance_tracker/features/admin/offices/viewmodel/offices_viewmodel.dart';
 
-class OfficesScreen extends StatefulWidget {
+class OfficesScreen extends StatelessWidget {
   const OfficesScreen({super.key});
 
   @override
-  State<OfficesScreen> createState() => _OfficesScreenState();
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (_) => OfficesViewModel()..loadOffices(),
+      child: const _OfficesScreenContent(),
+    );
+  }
 }
 
-class _OfficesScreenState extends State<OfficesScreen> {
-  final _repo = OfficeRepository();
+class _OfficesScreenContent extends StatelessWidget {
+  const _OfficesScreenContent();
 
-  List<Office> _offices = [];
-  List<Office> _filtered = [];
-  bool _isLoading = true;
-  String? _error;
-  String _search = '';
-
-  @override
-  void initState() {
-    super.initState();
-    _load();
-  }
-
-  // ── Data ──────────────────────────────────────────────────
-
-  Future<void> _load() async {
-    setState(() {
-      _isLoading = true;
-      _error = null;
-    });
-    try {
-      final offices = await _repo.getAll();
-      setState(() {
-        _offices = offices;
-        _isLoading = false;
-      });
-      _applySearch(_search);
-    } catch (e) {
-      setState(() {
-        _error = e.toString();
-        _isLoading = false;
-      });
-    }
-  }
-
-  void _applySearch(String query) {
-    setState(() {
-      _search = query;
-      _filtered = query.isEmpty
-          ? List.from(_offices)
-          : _offices
-                .where(
-                  (o) =>
-                      o.name.toLowerCase().contains(query.toLowerCase()) ||
-                      (o.description ?? '').toLowerCase().contains(
-                        query.toLowerCase(),
-                      ),
-                )
-                .toList();
-    });
-  }
-
-  // ── CRUD actions ──────────────────────────────────────────
-
-  Future<void> _create() async {
+  Future<void> _handleCreate(BuildContext context) async {
     final result = await OfficeFormDialog.show(context);
     if (result == null) return;
-
-    try {
-      await _repo.create(
-        Office(
-          id: 0, // ignored by DB (SERIAL)
-          name: result['name']!,
-          description: result['description']!.isEmpty
-              ? null
-              : result['description'],
-        ),
-      );
-      _load();
-    } catch (e) {
-      _showError('Failed to create office: $e');
+    
+    if (!context.mounted) return;
+    final vm = context.read<OfficesViewModel>();
+    
+    final success = await vm.createOffice(
+      result['name']!,
+      result['description']!.isEmpty ? null : result['description'],
+    );
+    
+    if (!success && context.mounted && vm.errorMessage != null) {
+      _showError(context, vm.errorMessage!);
     }
   }
 
-  Future<void> _edit(Office office) async {
+  Future<void> _handleEdit(BuildContext context, Office office) async {
     final result = await OfficeFormDialog.show(context, office: office);
     if (result == null) return;
 
-    try {
-      await _repo.update(
-        office.id,
-        Office(
-          id: office.id,
-          name: result['name']!,
-          description: result['description']!.isEmpty
-              ? null
-              : result['description'],
-        ),
-      );
-      _load();
-    } catch (e) {
-      _showError('Failed to update office: $e');
+    if (!context.mounted) return;
+    final vm = context.read<OfficesViewModel>();
+    
+    final success = await vm.updateOffice(
+      office.id,
+      result['name']!,
+      result['description']!.isEmpty ? null : result['description'],
+    );
+
+    if (!success && context.mounted && vm.errorMessage != null) {
+      _showError(context, vm.errorMessage!);
     }
   }
 
-  Future<void> _delete(Office office) async {
+  Future<void> _handleDelete(BuildContext context, Office office) async {
     final confirmed = await ConfirmDialog.show(
       context,
       title: 'Delete Office',
-      message:
-          'Are you sure you want to delete "${office.name}"? '
-          'This cannot be undone.',
+      message: 'Are you sure you want to delete "${office.name}"? This cannot be undone.',
     );
     if (!confirmed) return;
 
-    try {
-      await _repo.delete(office.id);
-      _load();
-    } catch (e) {
-      _showError('Failed to delete office: $e');
+    if (!context.mounted) return;
+    final vm = context.read<OfficesViewModel>();
+    
+    final success = await vm.deleteOffice(office.id);
+    
+    if (!success && context.mounted && vm.errorMessage != null) {
+      _showError(context, vm.errorMessage!);
     }
   }
 
-  void _showError(String message) {
-    if (!mounted) return;
+  void _showError(BuildContext context, String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message), backgroundColor: AppColors.of(context).danger),
     );
   }
 
-  // ── UI ────────────────────────────────────────────────────
-
   @override
   Widget build(BuildContext context) {
+    final vm = context.watch<OfficesViewModel>();
+
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       body: Padding(
@@ -146,7 +92,6 @@ class _OfficesScreenState extends State<OfficesScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header row
             Row(
               children: [
                 Expanded(
@@ -155,76 +100,61 @@ class _OfficesScreenState extends State<OfficesScreen> {
                     children: [
                       Text(
                         'Offices',
-                        style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).colorScheme.onSurface,
-                        ),
+                        style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface),
                       ),
-                      SizedBox(height: 4),
+                      const SizedBox(height: 4),
                       Text(
                         'Manage offices and their clearance descriptions.',
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
-                          fontSize: 14,
-                        ),
+                        style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65), fontSize: 14),
                       ),
                     ],
                   ),
                 ),
                 ElevatedButton.icon(
-                  onPressed: _create,
-                  icon: Icon(Icons.add),
-                  label: Text('Add Office'),
+                  onPressed: vm.isLoading ? null : () => _handleCreate(context),
+                  icon: const Icon(Icons.add),
+                  label: const Text('Add Office'),
                 ),
               ],
             ),
             const SizedBox(height: 24),
 
-            // Search bar
             SizedBox(
               width: 320,
               child: TextField(
-                onChanged: _applySearch,
-                decoration: const InputDecoration(
-                  hintText: 'Search offices...',
-                  prefixIcon: Icon(Icons.search),
-                ),
+                onChanged: context.read<OfficesViewModel>().search,
+                decoration: const InputDecoration(hintText: 'Search offices...', prefixIcon: Icon(Icons.search)),
               ),
             ),
             const SizedBox(height: 16),
 
-            // Content
-            Expanded(child: _buildContent()),
+            Expanded(child: _buildContent(context, vm)),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildContent() {
-    if (_isLoading) {
+  Widget _buildContent(BuildContext context, OfficesViewModel vm) {
+    if (vm.isLoading && vm.filteredOffices.isEmpty) {
       return const Center(child: CircularProgressIndicator());
     }
-    if (_error != null) {
+    if (vm.errorMessage != null && vm.filteredOffices.isEmpty) {
       return Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
-              'Failed to load offices.',
-              style: TextStyle(color: AppColors.of(context).danger),
-            ),
+            Text('Failed to load offices.', style: TextStyle(color: AppColors.of(context).danger)),
             const SizedBox(height: 8),
-            ElevatedButton(onPressed: _load, child: Text('Retry')),
+            ElevatedButton(onPressed: vm.loadOffices, child: const Text('Retry')),
           ],
         ),
       );
     }
-    if (_filtered.isEmpty) {
+    if (vm.filteredOffices.isEmpty) {
       return Center(
         child: Text(
-          _search.isEmpty ? 'No offices yet.' : 'No offices match "$_search".',
+          vm.searchQuery.isEmpty ? 'No offices yet.' : 'No offices match "${vm.searchQuery}".',
           style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65)),
         ),
       );
@@ -237,64 +167,39 @@ class _OfficesScreenState extends State<OfficesScreen> {
         child: SingleChildScrollView(
           child: Table(
             columnWidths: const {
-              0: FlexColumnWidth(2), // name
-              1: FlexColumnWidth(3), // description
-              2: FixedColumnWidth(120), // actions
+              0: FlexColumnWidth(2),
+              1: FlexColumnWidth(3),
+              2: FixedColumnWidth(120),
             },
             children: [
-              // Header row
               TableRow(
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surface,
-                ),
+                decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface),
                 children: [
-                  _headerCell('Office Name'),
-                  _headerCell('Description'),
-                  _headerCell(''),
+                  _headerCell(context, 'Office Name'),
+                  _headerCell(context, 'Description'),
+                  _headerCell(context, ''),
                 ],
               ),
-              // Data rows
-              ..._filtered.map(
+              ...vm.filteredOffices.map(
                 (office) => TableRow(
-                  decoration: BoxDecoration(
-                    border: Border(
-                      top: BorderSide(color: AppColors.of(context).border),
-                    ),
-                  ),
+                  decoration: BoxDecoration(border: Border(top: BorderSide(color: AppColors.of(context).border))),
                   children: [
-                    _dataCell(
-                      Text(
-                        office.name,
-                        style: TextStyle(
-                          fontWeight: FontWeight.w500,
-                          color: Theme.of(context).colorScheme.onSurface,
-                        ),
-                      ),
-                    ),
-                    _dataCell(
-                      Text(
-                        office.description ?? '—',
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
+                    _dataCell(Text(office.name, style: TextStyle(fontWeight: FontWeight.w500, color: Theme.of(context).colorScheme.onSurface))),
+                    _dataCell(Text(office.description ?? '—', style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65)), maxLines: 2, overflow: TextOverflow.ellipsis)),
                     _dataCell(
                       Row(
                         children: [
                           IconButton(
-                            icon: Icon(Icons.edit_outlined, size: 18),
+                            icon: const Icon(Icons.edit_outlined, size: 18),
                             color: AppColors.of(context).info,
                             tooltip: 'Edit',
-                            onPressed: () => _edit(office),
+                            onPressed: vm.isLoading ? null : () => _handleEdit(context, office),
                           ),
                           IconButton(
-                            icon: Icon(Icons.delete_outline, size: 18),
+                            icon: const Icon(Icons.delete_outline, size: 18),
                             color: AppColors.of(context).danger,
                             tooltip: 'Delete',
-                            onPressed: () => _delete(office),
+                            onPressed: vm.isLoading ? null : () => _handleDelete(context, office),
                           ),
                         ],
                       ),
@@ -309,15 +214,11 @@ class _OfficesScreenState extends State<OfficesScreen> {
     );
   }
 
-  Widget _headerCell(String label) => Padding(
+  Widget _headerCell(BuildContext context, String label) => Padding(
     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
     child: Text(
       label,
-      style: TextStyle(
-        fontWeight: FontWeight.w600,
-        fontSize: 13,
-        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
-      ),
+      style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65)),
     ),
   );
 
