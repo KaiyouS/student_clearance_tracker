@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:provider/provider.dart';
 import 'package:student_clearance_tracker/core/models/step_with_info.dart';
-import 'package:student_clearance_tracker/core/providers/student_provider.dart';
+import 'package:student_clearance_tracker/features/student/clearance/viewmodel/student_provider.dart';
 import 'package:student_clearance_tracker/core/widgets/status_badge.dart';
 import 'package:student_clearance_tracker/main.dart';
-import 'package:student_clearance_tracker/student/screens/step_detail_screen.dart';
+import 'package:student_clearance_tracker/features/student/clearance/view/step_detail_screen.dart';
 
 class StudentClearanceScreen extends StatelessWidget {
   const StudentClearanceScreen({super.key});

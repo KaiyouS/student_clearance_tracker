@@ -14,10 +14,10 @@ import 'package:student_clearance_tracker/admin/screens/prerequisites_screen.dar
 import 'package:student_clearance_tracker/admin/screens/schools_screen.dart';
 import 'package:student_clearance_tracker/admin/screens/staff_screen.dart';
 import 'package:student_clearance_tracker/admin/screens/students_screen.dart';
-import 'package:student_clearance_tracker/student/screens/home_screen.dart';
-import 'package:student_clearance_tracker/student/shell/student_shell.dart';
-import 'package:student_clearance_tracker/student/screens/student_clearance_screen.dart';
-import 'package:student_clearance_tracker/student/screens/student_profile_screen.dart';
+import 'package:student_clearance_tracker/features/student/home/view/home_screen.dart';
+import 'package:student_clearance_tracker/features/student/shell/student_shell.dart';
+import 'package:student_clearance_tracker/features/student/clearance/view/student_clearance_screen.dart';
+import 'package:student_clearance_tracker/features/student/profile/view/student_profile_screen.dart';
 import 'package:student_clearance_tracker/features/auth/view/update_password_screen.dart';
 // import 'package:provider/provider.dart';
 // import 'core/providers/staff_provider.dart';

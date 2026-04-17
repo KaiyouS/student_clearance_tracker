@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:student_clearance_tracker/core/models/student.dart';
 import 'package:student_clearance_tracker/core/models/user_profile.dart';
-import 'package:student_clearance_tracker/core/providers/student_provider.dart';
+import 'package:student_clearance_tracker/features/student/clearance/viewmodel/student_provider.dart';
 import 'package:student_clearance_tracker/core/services/auth_service.dart';
 import 'package:student_clearance_tracker/core/widgets/account_status_badge.dart';
 import 'package:student_clearance_tracker/core/widgets/theme_toggle.dart';

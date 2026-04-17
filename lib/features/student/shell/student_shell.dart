@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:student_clearance_tracker/core/providers/student_provider.dart';
+import 'package:student_clearance_tracker/features/student/clearance/viewmodel/student_provider.dart';
 import 'package:student_clearance_tracker/main.dart';
 
 class StudentShell extends StatefulWidget {
