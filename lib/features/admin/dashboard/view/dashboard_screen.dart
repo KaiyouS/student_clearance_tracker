@@ -1,75 +1,96 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:student_clearance_tracker/core/theme/app_colors.dart';
-import 'package:student_clearance_tracker/core/repositories/dashboard_repository.dart';
+import 'package:student_clearance_tracker/features/admin/dashboard/viewmodel/dashboard_viewmodel.dart';
 
-class AdminDashboardScreen extends StatefulWidget {
+class AdminDashboardScreen extends StatelessWidget {
   const AdminDashboardScreen({super.key});
 
   @override
-  State<AdminDashboardScreen> createState() => _AdminDashboardScreenState();
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      // The .. syntax calls loadStats() immediately after creating the ViewModel
+      create: (_) => DashboardViewModel()..loadStats(),
+      child: const _AdminDashboardScreenContent(),
+    );
+  }
 }
 
-class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
-  final _repo = DashboardRepository();
-
-  late Future<DashboardStats> _statsFuture;
-
-  @override
-  void initState() {
-    super.initState();
-    _statsFuture = _repo.getStats();
-  }
+class _AdminDashboardScreenContent extends StatelessWidget {
+  const _AdminDashboardScreenContent();
 
   @override
   Widget build(BuildContext context) {
+    final vm = context.watch<DashboardViewModel>();
+
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
-      body: FutureBuilder<DashboardStats>(
-        future: _statsFuture,
-        builder: (context, snapshot) {
-          // Loading
-          if (snapshot.connectionState == ConnectionState.waiting) {
+      body: Builder(
+        builder: (context) {
+          if (vm.isLoading) {
             return const Center(child: CircularProgressIndicator());
           }
 
-          // Error
-          if (snapshot.hasError) {
+          if (vm.errorMessage != null) {
             return Center(
-              child: Text(
-                'Failed to load dashboard.\n${snapshot.error}',
-                textAlign: TextAlign.center,
-                style: TextStyle(color: AppColors.of(context).danger),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Failed to load dashboard.\n${vm.errorMessage}',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: AppColors.of(context).danger),
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () => context.read<DashboardViewModel>().loadStats(),
+                    child: const Text('Retry'),
+                  ),
+                ],
               ),
             );
           }
 
-          final stats = snapshot.data!;
+          final stats = vm.stats!;
 
           return SingleChildScrollView(
             padding: const EdgeInsets.all(32),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Header
-                Text(
-                  'Dashboard',
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.onSurface,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  'Current period: ${stats.currentPeriodLabel}',
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
-                    fontSize: 14,
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Dashboard',
+                          style: TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Current period: ${stats.currentPeriodLabel}',
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.refresh),
+                      color: AppColors.of(context).info,
+                      onPressed: () => context.read<DashboardViewModel>().loadStats(),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 32),
 
-                // Stats grid
                 Wrap(
                   spacing: 16,
                   runSpacing: 16,
