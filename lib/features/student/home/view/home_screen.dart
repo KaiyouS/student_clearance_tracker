@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:student_clearance_tracker/core/models/step_with_info.dart';
-import 'package:student_clearance_tracker/features/student/clearance/viewmodel/student_provider.dart';
+import 'package:student_clearance_tracker/features/student/shell/viewmodel/student_shell_viewmodel.dart';
 import 'package:student_clearance_tracker/main.dart';
 
 class StudentHomeScreen extends StatelessWidget {
@@ -11,33 +11,40 @@ class StudentHomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isLoading = context.select<StudentProvider, bool>((p) => p.isLoading);
-    final error = context.select<StudentProvider, String?>((p) => p.error);
-    final firstName = context.select<StudentProvider, String?>(
+    final isLoading = context.select<StudentShellViewModel, bool>(
+      (p) => p.isLoading,
+    );
+    final error = context.select<StudentShellViewModel, String?>(
+      (p) => p.error,
+    );
+    final firstName = context.select<StudentShellViewModel, String?>(
       (p) => p.profile?.firstName,
     );
-    final periodLabel = context.select<StudentProvider, String?>(
+    final periodLabel = context.select<StudentShellViewModel, String?>(
       (p) => p.currentPeriod?.label,
     );
-    final hasSteps = context.select<StudentProvider, bool>((p) => p.hasSteps);
-    final isComplete = context.select<StudentProvider, bool>(
+    final hasSteps = context.select<StudentShellViewModel, bool>(
+      (p) => p.hasSteps,
+    );
+    final isComplete = context.select<StudentShellViewModel, bool>(
       (p) => p.isComplete,
     );
-    final totalSteps = context.select<StudentProvider, int>(
+    final totalSteps = context.select<StudentShellViewModel, int>(
       (p) => p.totalSteps,
     );
-    final signedSteps = context.select<StudentProvider, int>(
+    final signedSteps = context.select<StudentShellViewModel, int>(
       (p) => p.signedSteps,
     );
-    final pendingSteps = context.select<StudentProvider, int>(
+    final pendingSteps = context.select<StudentShellViewModel, int>(
       (p) => p.pendingSteps,
     );
-    final flaggedSteps = context.select<StudentProvider, int>(
+    final flaggedSteps = context.select<StudentShellViewModel, int>(
       (p) => p.flaggedSteps,
     );
-    final nextActionableStep = context.select<StudentProvider, StepWithInfo?>(
-      (p) => p.nextActionableStep,
-    );
+    final nextActionableStep = context
+        .select<StudentShellViewModel, StepWithInfo?>(
+          (p) => p.nextActionableStep,
+        );
 
     if (isLoading) {
       return const Center(child: CircularProgressIndicator());
@@ -61,7 +68,7 @@ class StudentHomeScreen extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             ElevatedButton(
-              onPressed: () => context.read<StudentProvider>().loadData(
+              onPressed: () => context.read<StudentShellViewModel>().loadData(
                 supabase.auth.currentUser!.id,
               ),
               child: const Text('Retry'),
@@ -72,7 +79,7 @@ class StudentHomeScreen extends StatelessWidget {
     }
 
     return RefreshIndicator(
-      onRefresh: () => context.read<StudentProvider>().loadData(
+      onRefresh: () => context.read<StudentShellViewModel>().loadData(
         supabase.auth.currentUser!.id,
       ),
       child: SingleChildScrollView(

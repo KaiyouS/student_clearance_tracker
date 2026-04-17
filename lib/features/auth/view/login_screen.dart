@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:student_clearance_tracker/core/repositories/user_profile_repository.dart';
 import 'package:student_clearance_tracker/features/staff/shell/viewmodel/staff_shell_viewmodel.dart';
-import 'package:student_clearance_tracker/features/student/clearance/viewmodel/student_provider.dart';
+import 'package:student_clearance_tracker/features/student/shell/viewmodel/student_shell_viewmodel.dart';
 import 'package:student_clearance_tracker/core/services/auth_service.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -84,7 +84,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (roles.contains('student')) {
         if (!mounted) return;
-        await context.read<StudentProvider>().loadData(user.id);
+        await context.read<StudentShellViewModel>().loadData(user.id);
       }
 
       // Route based on role

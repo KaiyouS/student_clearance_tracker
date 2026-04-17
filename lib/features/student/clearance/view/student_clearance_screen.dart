@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:provider/provider.dart';
 import 'package:student_clearance_tracker/core/models/step_with_info.dart';
-import 'package:student_clearance_tracker/features/student/clearance/viewmodel/student_provider.dart';
+import 'package:student_clearance_tracker/features/student/shell/viewmodel/student_shell_viewmodel.dart';
 import 'package:student_clearance_tracker/core/widgets/status_badge.dart';
 import 'package:student_clearance_tracker/main.dart';
 import 'package:student_clearance_tracker/features/student/clearance/view/step_detail_screen.dart';
@@ -12,11 +12,13 @@ class StudentClearanceScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isLoading = context.select<StudentProvider, bool>((p) => p.isLoading);
-    final steps = context.select<StudentProvider, List<StepWithInfo>>(
+    final isLoading = context.select<StudentShellViewModel, bool>(
+      (p) => p.isLoading,
+    );
+    final steps = context.select<StudentShellViewModel, List<StepWithInfo>>(
       (p) => p.steps,
     );
-    final _ = context.select<StudentProvider, int>(
+    final _ = context.select<StudentShellViewModel, int>(
       (p) => p.changedStepsVersion,
     );
 
@@ -25,7 +27,7 @@ class StudentClearanceScreen extends StatelessWidget {
     }
 
     return RefreshIndicator(
-      onRefresh: () => context.read<StudentProvider>().loadData(
+      onRefresh: () => context.read<StudentShellViewModel>().loadData(
         supabase.auth.currentUser!.id,
       ),
       child: steps.isEmpty ? const _EmptySteps() : _StepsList(steps: steps),
@@ -84,7 +86,7 @@ class _StepsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.read<StudentProvider>();
+    final provider = context.read<StudentShellViewModel>();
 
     return CustomScrollView(
       physics: const AlwaysScrollableScrollPhysics(),

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:student_clearance_tracker/features/student/clearance/viewmodel/student_provider.dart';
+import 'package:student_clearance_tracker/features/student/shell/viewmodel/student_shell_viewmodel.dart';
 import 'package:student_clearance_tracker/main.dart';
 
 class StudentShell extends StatefulWidget {
@@ -21,7 +21,7 @@ class _StudentShellState extends State<StudentShell> {
     super.initState();
     // Load student data if not already loaded
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final provider = context.read<StudentProvider>();
+      final provider = context.read<StudentShellViewModel>();
       final user = supabase.auth.currentUser;
 
       if (user != null && !provider.initialized) {
@@ -32,18 +32,21 @@ class _StudentShellState extends State<StudentShell> {
 
   @override
   Widget build(BuildContext context) {
-    final isLoading = context.select<StudentProvider, bool>((p) => p.isLoading);
-    final latestNotification = context.select<StudentProvider, InAppNotification?>(
-      (p) => p.latestNotification,
+    final isLoading = context.select<StudentShellViewModel, bool>(
+      (p) => p.isLoading,
     );
-    final notificationCount = context.select<StudentProvider, int>(
+    final latestNotification = context
+        .select<StudentShellViewModel, InAppNotification?>(
+          (p) => p.latestNotification,
+        );
+    final notificationCount = context.select<StudentShellViewModel, int>(
       (p) => p.notifications.length,
     );
-    final unseenUpdates = context.select<StudentProvider, int>(
+    final unseenUpdates = context.select<StudentShellViewModel, int>(
       (p) => p.unseenUpdates,
     );
 
-    final provider = context.read<StudentProvider>();
+    final provider = context.read<StudentShellViewModel>();
     final location = GoRouterState.of(context).matchedLocation;
 
     int currentIndex = 0;
@@ -85,7 +88,7 @@ class _StudentShellState extends State<StudentShell> {
               break;
             case 1:
               context.go('/student/clearance');
-              context.read<StudentProvider>().markClearanceVisited();
+              context.read<StudentShellViewModel>().markClearanceVisited();
               break;
             case 2:
               context.go('/student/profile');

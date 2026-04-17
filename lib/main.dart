@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:student_clearance_tracker/features/staff/shell/viewmodel/staff_shell_viewmodel.dart';
-import 'package:student_clearance_tracker/features/student/clearance/viewmodel/student_provider.dart';
+import 'package:student_clearance_tracker/features/student/shell/viewmodel/student_shell_viewmodel.dart';
 import 'package:student_clearance_tracker/core/providers/theme_provider.dart';
 import 'package:student_clearance_tracker/core/theme/app_theme.dart';
 import 'package:student_clearance_tracker/router/app_routes.dart';
@@ -41,7 +41,7 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider.value(value: themeProvider),
         ChangeNotifierProvider(create: (_) => StaffShellViewModel()),
-        ChangeNotifierProvider(create: (_) => StudentProvider()),
+        ChangeNotifierProvider(create: (_) => StudentShellViewModel()),
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, theme, _) => MaterialApp.router(

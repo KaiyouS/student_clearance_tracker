@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:student_clearance_tracker/core/models/student.dart';
 import 'package:student_clearance_tracker/core/models/user_profile.dart';
-import 'package:student_clearance_tracker/features/student/clearance/viewmodel/student_provider.dart';
+import 'package:student_clearance_tracker/features/student/shell/viewmodel/student_shell_viewmodel.dart';
 import 'package:student_clearance_tracker/core/services/auth_service.dart';
 import 'package:student_clearance_tracker/core/widgets/account_status_badge.dart';
 import 'package:student_clearance_tracker/core/widgets/theme_toggle.dart';
@@ -15,11 +15,15 @@ class StudentProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isLoading = context.select<StudentProvider, bool>((p) => p.isLoading);
-    final profile = context.select<StudentProvider, UserProfile?>(
+    final isLoading = context.select<StudentShellViewModel, bool>(
+      (p) => p.isLoading,
+    );
+    final profile = context.select<StudentShellViewModel, UserProfile?>(
       (p) => p.profile,
     );
-    final student = context.select<StudentProvider, Student?>((p) => p.student);
+    final student = context.select<StudentShellViewModel, Student?>(
+      (p) => p.student,
+    );
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     if (isLoading || profile == null) {
@@ -27,7 +31,7 @@ class StudentProfileScreen extends StatelessWidget {
     }
 
     return RefreshIndicator(
-      onRefresh: () => context.read<StudentProvider>().loadData(
+      onRefresh: () => context.read<StudentShellViewModel>().loadData(
         supabase.auth.currentUser!.id,
       ),
       child: SingleChildScrollView(

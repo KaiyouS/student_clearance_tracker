@@ -27,7 +27,7 @@ class InAppNotification {
       : '$officeName has flagged your clearance ⚠️';
 }
 
-class StudentProvider extends ChangeNotifier {
+class StudentShellViewModel extends ChangeNotifier {
   final _studentRepo = StudentRepository();
   final _clearanceRepo = ClearanceRepository();
   final _officeRepo = OfficeRepository();
