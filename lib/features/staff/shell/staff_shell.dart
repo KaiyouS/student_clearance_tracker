@@ -3,7 +3,7 @@ import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:student_clearance_tracker/core/models/office.dart';
-import 'package:student_clearance_tracker/core/providers/staff_provider.dart';
+import 'package:student_clearance_tracker/features/staff/clearance/viewmodel/staff_provider.dart';
 import 'package:student_clearance_tracker/core/services/auth_service.dart';
 import 'package:student_clearance_tracker/main.dart';
 

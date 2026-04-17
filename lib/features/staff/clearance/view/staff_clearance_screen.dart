@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:provider/provider.dart';
 import 'package:student_clearance_tracker/core/models/clearance_step.dart';
-import 'package:student_clearance_tracker/core/providers/staff_provider.dart';
+import 'package:student_clearance_tracker/features/staff/clearance/viewmodel/staff_provider.dart';
 import 'package:student_clearance_tracker/core/repositories/academic_period_repository.dart';
 import 'package:student_clearance_tracker/core/repositories/clearance_repository.dart';
 import 'package:student_clearance_tracker/core/widgets/app_card.dart';

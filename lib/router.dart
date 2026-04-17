@@ -21,8 +21,8 @@ import 'package:student_clearance_tracker/student/screens/student_profile_screen
 import 'package:student_clearance_tracker/features/auth/view/update_password_screen.dart';
 // import 'package:provider/provider.dart';
 // import 'core/providers/staff_provider.dart';
-import 'package:student_clearance_tracker/staff/shell/staff_shell.dart';
-import 'package:student_clearance_tracker/staff/screens/staff_clearance_screen.dart';
+import 'package:student_clearance_tracker/features/staff/shell/staff_shell.dart';
+import 'package:student_clearance_tracker/features/staff/clearance/view/staff_clearance_screen.dart';
 import 'package:student_clearance_tracker/main.dart';
 
 final _authService = AuthService();
