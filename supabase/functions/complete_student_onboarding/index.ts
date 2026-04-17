@@ -6,6 +6,9 @@ const corsHeaders = {
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 }
 
+const allowNonAdduEmails =
+  (Deno.env.get('ALLOW_NON_ADDU_EMAILS') ?? '').toLowerCase() === 'true'
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
@@ -43,7 +46,7 @@ Deno.serve(async (req) => {
     }
 
     const email = user.email?.toLowerCase() ?? ''
-    if (!email.endsWith('@addu.edu.ph')) {
+    if (!allowNonAdduEmails && !email.endsWith('@addu.edu.ph')) {
       return new Response(
         JSON.stringify({ error: 'Only addu.edu.ph student accounts are allowed.' }),
         { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }

@@ -21,7 +21,7 @@ class AuthService {
 
     await GoogleSignIn.instance.initialize(
       serverClientId: AppConfig.googleWebClientId,
-      hostedDomain: 'addu.edu.ph',
+      hostedDomain: AppConfig.allowNonAdduEmails ? null : 'addu.edu.ph',
     );
     _googleInitialized = true;
   }
@@ -79,6 +79,7 @@ class AuthService {
   }
 
   bool isAllowedStudentEmail(String? email) {
+    if (AppConfig.allowNonAdduEmails) return true;
     if (email == null) return false;
     return RegExp(
       r'^[^@\s]+@addu\.edu\.ph$',
