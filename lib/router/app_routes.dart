@@ -1,29 +1,14 @@
 import 'package:go_router/go_router.dart';
-import 'package:student_clearance_tracker/features/admin/clearance/view/admin_clearance_screen.dart';
-import 'package:student_clearance_tracker/features/admin/requirements/view/office_requirements_screen.dart';
 import 'package:student_clearance_tracker/core/models/user_profile.dart';
 import 'package:student_clearance_tracker/core/repositories/user_profile_repository.dart';
 import 'package:student_clearance_tracker/features/auth/view/change_password_screen.dart';
 import 'package:student_clearance_tracker/features/auth/view/login_screen.dart';
 import 'package:student_clearance_tracker/core/services/auth_service.dart';
-import 'package:student_clearance_tracker/features/admin/shell/admin_shell.dart';
-import 'package:student_clearance_tracker/features/admin/periods/view/academic_periods_screen.dart';
-import 'package:student_clearance_tracker/features/admin/dashboard/view/dashboard_screen.dart';
-import 'package:student_clearance_tracker/features/admin/offices/view/offices_screen.dart';
-import 'package:student_clearance_tracker/features/admin/prerequisites/view/prerequisites_screen.dart';
-import 'package:student_clearance_tracker/features/admin/schools/view/schools_screen.dart';
-import 'package:student_clearance_tracker/features/admin/staff/view/staff_screen.dart';
-import 'package:student_clearance_tracker/features/admin/students/view/students_screen.dart';
-import 'package:student_clearance_tracker/features/student/home/view/home_screen.dart';
-import 'package:student_clearance_tracker/features/student/shell/student_shell.dart';
-import 'package:student_clearance_tracker/features/student/clearance/view/student_clearance_screen.dart';
-import 'package:student_clearance_tracker/features/student/profile/view/student_profile_screen.dart';
 import 'package:student_clearance_tracker/features/auth/view/update_password_screen.dart';
-// import 'package:provider/provider.dart';
-// import 'core/providers/staff_provider.dart';
-import 'package:student_clearance_tracker/features/staff/shell/staff_shell.dart';
-import 'package:student_clearance_tracker/features/staff/clearance/view/staff_clearance_screen.dart';
 import 'package:student_clearance_tracker/main.dart';
+import 'admin_routes.dart';
+import 'staff_routes.dart';
+import 'student_routes.dart';
 
 final _authService = AuthService();
 const _accessCacheTtl = Duration(seconds: 30);
@@ -159,78 +144,10 @@ final router = GoRouter(
       path:    '/update-password',
       builder: (context, state) => const UpdatePasswordScreen(),
     ),
-    // Admin routes — wrapped in shell (sidebar layout)
-    ShellRoute(
-      builder: (context, state, child) => AdminShell(child: child),
-      routes: [
-        GoRoute(
-          path: '/admin/dashboard',
-          builder: (context, state) => const AdminDashboardScreen(),
-        ),
-        GoRoute(
-          path: '/admin/offices',
-          builder: (context, state) => const OfficesScreen(),
-        ),
-        GoRoute(
-          path: '/admin/prerequisites',
-          builder: (context, state) => const PrerequisitesScreen(),
-        ),
-        GoRoute(
-          path: '/admin/staff',
-          builder: (context, state) => const StaffScreen(),
-        ),
-        GoRoute(
-          path: '/admin/students',
-          builder: (context, state) => const StudentsScreen(),
-        ),
-        GoRoute(
-          path: '/admin/schools',
-          builder: (context, state) => const SchoolsScreen(),
-        ),
-        GoRoute(
-          path: '/admin/periods',
-          builder: (context, state) => const AcademicPeriodsScreen(),
-        ),
-        GoRoute(
-          path: '/admin/requirements',
-          builder: (context, state) => const OfficeRequirementsScreen(),
-        ),
-        GoRoute(
-          path: '/admin/clearance',
-          builder: (context, state) => const AdminClearanceScreen(),
-        ),
-      ],
-    ),
     
-    // Staff routes
-    ShellRoute(
-      builder: (context, state, child) => StaffShell(child: child),
-      routes: [
-        GoRoute(
-          path:    '/staff/clearance',
-          builder: (context, state) => const StaffClearanceScreen(),
-        ),
-      ],
-    ),
-    
-    // Student routes
-    ShellRoute(
-      builder: (context, state, child) => StudentShell(child: child),
-      routes: [
-        GoRoute(
-          path:    '/student/home',
-          builder: (context, state) => const StudentHomeScreen(),
-        ),
-        GoRoute(
-          path:    '/student/clearance',
-          builder: (context, state) => const StudentClearanceScreen(),
-        ),
-        GoRoute(
-          path:    '/student/profile',
-          builder: (context, state) => const StudentProfileScreen(),
-        ),
-      ],
-    ),
+    ...adminRoutes,
+    ...staffRoutes,
+    ...studentRoutes,
   ],
 );
 

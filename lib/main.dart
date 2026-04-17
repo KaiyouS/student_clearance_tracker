@@ -5,7 +5,7 @@ import 'package:student_clearance_tracker/features/staff/clearance/viewmodel/sta
 import 'package:student_clearance_tracker/features/student/clearance/viewmodel/student_provider.dart';
 import 'package:student_clearance_tracker/core/providers/theme_provider.dart';
 import 'package:student_clearance_tracker/core/theme/app_theme.dart';
-import 'package:student_clearance_tracker/router.dart';
+import 'package:student_clearance_tracker/router/app_routes.dart';
 import 'package:student_clearance_tracker/supabase_config.dart';
 
 void main() async {
