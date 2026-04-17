@@ -18,54 +18,107 @@ class LoginViewModel extends ChangeNotifier {
 
     try {
       final response = await _authService.signIn(email, password);
-      final user = response.user;
-      
-      if (user == null) throw Exception('Login failed.');
-
-      final profile = await _profileRepo.getById(user.id);
-
-      // Account status checks
-      if (profile == null) {
-        await _authService.signOut();
-        throw Exception('Account profile not found.');
-      }
-
-      if (profile.isLocked) {
-        await _authService.signOut();
-        throw Exception('Your account has been locked. Please contact the administrator.');
-      }
-
-      if (profile.isInactive) {
-        await _authService.signOut();
-        throw Exception('Your account is inactive. Please contact the administrator.');
-      }
-
-      // Force password change on first login
-      if (profile.needsPasswordChange) {
-        return '/change-password';
-      }
-
-      // Route based on role
-      final roles = await _authService.getUserRoles(user.id);
-      
-      if (roles.contains('super_admin') || roles.contains('office_staff')) {
-        return '/admin/dashboard';
-      } else if (roles.contains('student')) {
-        return '/student/home';
-      } else {
-        await _authService.signOut();
-        throw Exception('Your account has no assigned role.');
-      }
-      
+      return await _resolveDestinationAfterSignIn(
+        response,
+        allowGoogleOnboarding: false,
+      );
     } on AuthException catch (e) {
       errorMessage = e.message;
       return null;
-    } catch (e) {
+    } catch (_) {
       errorMessage = 'Something went wrong. Please try again.';
       return null;
     } finally {
       isLoading = false;
       notifyListeners();
     }
+  }
+
+  Future<String?> loginWithGoogle() async {
+    isLoading = true;
+    errorMessage = null;
+    notifyListeners();
+
+    try {
+      final response = await _authService.signInWithGoogle();
+      return await _resolveDestinationAfterSignIn(
+        response,
+        allowGoogleOnboarding: true,
+      );
+    } on AuthException catch (e) {
+      errorMessage = e.message;
+      return null;
+    } catch (_) {
+      errorMessage = 'Something went wrong. Please try again.';
+      return null;
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<String?> _resolveDestinationAfterSignIn(
+    AuthResponse response, {
+    required bool allowGoogleOnboarding,
+  }) async {
+    final user = response.user;
+    if (user == null) throw Exception('Login failed.');
+
+    final email = user.email;
+    if (allowGoogleOnboarding && !_authService.isAllowedStudentEmail(email)) {
+      await _authService.signOut();
+      throw AuthException('Use your addu.edu.ph Google account to continue.');
+    }
+
+    final profile = await _profileRepo.getById(user.id);
+
+    // First-time Google users go directly to student onboarding.
+    if (allowGoogleOnboarding && profile == null) {
+      return '/student/onboarding';
+    }
+
+    if (profile == null) {
+      await _authService.signOut();
+      throw Exception('Account profile not found.');
+    }
+
+    if (profile.isLocked) {
+      await _authService.signOut();
+      throw Exception(
+        'Your account has been locked. Please contact the administrator.',
+      );
+    }
+
+    if (profile.isInactive) {
+      await _authService.signOut();
+      throw Exception(
+        'Your account is inactive. Please contact the administrator.',
+      );
+    }
+
+    if (profile.needsPasswordChange) {
+      return '/change-password';
+    }
+
+    final roles = await _authService.getUserRoles(user.id);
+
+    if (allowGoogleOnboarding) {
+      if (roles.contains('student')) {
+        return '/student/home';
+      }
+
+      await _authService.signOut();
+      throw Exception('Google sign in is only available for student accounts.');
+    }
+
+    if (roles.contains('super_admin') || roles.contains('office_staff')) {
+      return '/admin/dashboard';
+    }
+    if (roles.contains('student')) {
+      return '/student/home';
+    }
+
+    await _authService.signOut();
+    throw Exception('Your account has no assigned role.');
   }
 }

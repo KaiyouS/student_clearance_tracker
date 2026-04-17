@@ -23,21 +23,21 @@ class StudentRepository {
     required String email,
     required String studentNo,
     required String firstName,
-    String?         middleName,
+    String? middleName,
     required String lastName,
-    int?            programId,
-    int?            yearLevel,
+    int? programId,
+    int? yearLevel,
   }) async {
     final response = await supabase.functions.invoke(
       'create_student',
       body: {
-        'email':       email,
-        'student_no':  studentNo,
-        'first_name':  firstName,
+        'email': email,
+        'student_no': studentNo,
+        'first_name': firstName,
         'middle_name': middleName,
-        'last_name':   lastName,
-        'program_id':  programId,
-        'year_level':  yearLevel,
+        'last_name': lastName,
+        'program_id': programId,
+        'year_level': yearLevel,
       },
     );
     if (response.status != 200) {
@@ -50,17 +50,17 @@ class StudentRepository {
     required String id,
     required String studentNo,
     required String firstName,
-    String?         middleName,
+    String? middleName,
     required String lastName,
-    int?            programId,
-    int?            yearLevel,
+    int? programId,
+    int? yearLevel,
   }) async {
     await supabase
         .from('user_profiles')
         .update({
-          'first_name':  firstName,
+          'first_name': firstName,
           'middle_name': middleName,
-          'last_name':   lastName,
+          'last_name': lastName,
         })
         .eq('id', id);
 
@@ -72,5 +72,34 @@ class StudentRepository {
           'year_level': yearLevel,
         })
         .eq('id', id);
+  }
+
+  Future<void> completeOnboarding({
+    required String studentNo,
+    required String firstName,
+    String? middleName,
+    required String lastName,
+    int? programId,
+    int? yearLevel,
+  }) async {
+    final response = await supabase.functions.invoke(
+      'complete_student_onboarding',
+      body: {
+        'student_no': studentNo,
+        'first_name': firstName,
+        'middle_name': middleName,
+        'last_name': lastName,
+        'program_id': programId,
+        'year_level': yearLevel,
+      },
+    );
+
+    if (response.status != 200) {
+      final data = response.data;
+      final error = data is Map<String, dynamic>
+          ? data['error'] as String?
+          : null;
+      throw Exception(error ?? 'Failed to complete onboarding.');
+    }
   }
 }

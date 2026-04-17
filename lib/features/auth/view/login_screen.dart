@@ -57,6 +57,14 @@ class _LoginScreenContentState extends State<_LoginScreenContent> {
     }
   }
 
+  Future<void> _handleGoogleLogin() async {
+    final vm = context.read<LoginViewModel>();
+    final destinationRoute = await vm.loginWithGoogle();
+    if (destinationRoute != null && mounted) {
+      context.go(destinationRoute);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<LoginViewModel>();

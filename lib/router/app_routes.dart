@@ -3,6 +3,7 @@ import 'package:student_clearance_tracker/core/models/user_profile.dart';
 import 'package:student_clearance_tracker/core/repositories/user_profile_repository.dart';
 import 'package:student_clearance_tracker/features/auth/view/change_password_screen.dart';
 import 'package:student_clearance_tracker/features/auth/view/login_screen.dart';
+import 'package:student_clearance_tracker/features/auth/view/student_onboarding_screen.dart';
 import 'package:student_clearance_tracker/core/services/auth_service.dart';
 import 'package:student_clearance_tracker/features/auth/view/update_password_screen.dart';
 import 'package:student_clearance_tracker/main.dart';
@@ -52,19 +53,36 @@ Future<_AccessSnapshot> _getAccessSnapshot(String userId) async {
     roles: roles,
     fetchedAt: DateTime.now(),
   );
-  _accessSnapshot = snapshot;
+  // Never cache null-profile snapshots; onboarding completion should reflect immediately.
+  if (profile != null) {
+    _accessSnapshot = snapshot;
+  } else {
+    _clearAccessSnapshot();
+  }
   return snapshot;
+}
+
+bool _isGoogleUser() {
+  final user = supabase.auth.currentUser;
+  if (user == null) return false;
+
+  final provider = user.appMetadata['provider'];
+  if (provider == 'google') return true;
+
+  return user.identities?.any((identity) => identity.provider == 'google') ??
+      false;
 }
 
 final router = GoRouter(
   initialLocation: '/login',
   redirect: (context, state) async {
-    final session  = supabase.auth.currentSession;
+    final session = supabase.auth.currentSession;
     final location = state.matchedLocation;
 
-    final isLoggingIn    = location == '/login';
-    final isChangingPw   = location == '/change-password';
-    final isUpdatingPw   = location == '/update-password'; 
+    final isLoggingIn = location == '/login';
+    final isChangingPw = location == '/change-password';
+    final isUpdatingPw = location == '/update-password';
+    final isStudentOnboarding = location == '/student/onboarding';
 
     // Not logged in → always go to login
     if (session == null) {
@@ -72,13 +90,34 @@ final router = GoRouter(
       return isLoggingIn ? null : '/login';
     }
 
+    if (_isGoogleUser() &&
+        !_authService.isAllowedStudentEmail(session.user.email)) {
+      _clearAccessSnapshot();
+      await supabase.auth.signOut();
+      return '/login';
+    }
+
     // ── Logged in — load cached access context ──
     final access = await _getAccessSnapshot(session.user.id);
     final profile = access.profile;
     final roles = access.roles;
 
-    // Profile missing → something is wrong → back to login
+    // First-time Google student account: route to onboarding until profile is created.
     if (profile == null) {
+      if (_isGoogleUser()) {
+        return isStudentOnboarding ? null : '/student/onboarding';
+      }
+      _clearAccessSnapshot();
+      await supabase.auth.signOut();
+      return '/login';
+    }
+
+    // Profile exists already; onboarding page should not be reachable.
+    if (isStudentOnboarding) {
+      return _shellRoute(roles);
+    }
+
+    if (_isGoogleUser() && !roles.contains('student')) {
       _clearAccessSnapshot();
       await supabase.auth.signOut();
       return '/login';
@@ -105,7 +144,7 @@ final router = GoRouter(
 
     // Updating password is allowed for students in profile flow.
     if (isUpdatingPw) return null;
-    
+
     final isAdminRoute = location.startsWith('/admin');
     final isStaffRoute = location.startsWith('/staff');
     final isStudentRoute = location.startsWith('/student');
@@ -132,19 +171,20 @@ final router = GoRouter(
     return null; // all good, let them through
   },
   routes: [
+    GoRoute(path: '/login', builder: (context, state) => const LoginScreen()),
     GoRoute(
-      path: '/login', 
-      builder: (context, state) => const LoginScreen()
+      path: '/student/onboarding',
+      builder: (context, state) => const StudentOnboardingScreen(),
     ),
     GoRoute(
       path: '/change-password',
       builder: (context, state) => const ChangePasswordScreen(),
     ),
     GoRoute(
-      path:    '/update-password',
+      path: '/update-password',
       builder: (context, state) => const UpdatePasswordScreen(),
     ),
-    
+
     ...adminRoutes,
     ...staffRoutes,
     ...studentRoutes,
@@ -152,8 +192,8 @@ final router = GoRouter(
 );
 
 String _shellRoute(List<String> roles) {
-  if (roles.contains('super_admin'))  return '/admin/dashboard';
+  if (roles.contains('super_admin')) return '/admin/dashboard';
   if (roles.contains('office_staff')) return '/staff/clearance';
-  if (roles.contains('student'))      return '/student/home';
+  if (roles.contains('student')) return '/student/home';
   return '/login';
 }
