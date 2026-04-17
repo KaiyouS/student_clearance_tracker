@@ -42,6 +42,14 @@ Deno.serve(async (req) => {
       )
     }
 
+    const email = user.email?.toLowerCase() ?? ''
+    if (!email.endsWith('@addu.edu.ph')) {
+      return new Response(
+        JSON.stringify({ error: 'Only addu.edu.ph student accounts are allowed.' }),
+        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
     const adminClient = createClient(
       Deno.env.get('SUPABASE_URL')!,
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
@@ -71,7 +79,7 @@ Deno.serve(async (req) => {
       password,
     } = await req.json()
 
-    if (!student_no || !first_name || !last_name || !password) {
+    if (!student_no || !first_name || !last_name) {
       return new Response(
         JSON.stringify({ error: 'Missing required fields.' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -92,14 +100,16 @@ Deno.serve(async (req) => {
       )
     }
 
-    // ── 4. Set password on the auth user ──────────────────
-    const { error: passwordError } =
-      await adminClient.auth.admin.updateUserById(user.id, {
-        password,
-        email_confirm: true,
-      })
+    // ── 4. Optionally set password on the auth user ───────
+    if (typeof password === 'string' && password.trim().length > 0) {
+      const { error: passwordError } =
+        await adminClient.auth.admin.updateUserById(user.id, {
+          password,
+          email_confirm: true,
+        })
 
-    if (passwordError) throw passwordError
+      if (passwordError) throw passwordError
+    }
 
     // ── 5. Insert user_profiles ───────────────────────────
     const { error: profileError } = await adminClient
