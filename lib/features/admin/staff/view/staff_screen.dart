@@ -1,179 +1,107 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:student_clearance_tracker/core/models/office_staff.dart';
-import 'package:student_clearance_tracker/core/repositories/staff_repository.dart';
 import 'package:student_clearance_tracker/core/widgets/app_card.dart';
 import 'package:student_clearance_tracker/core/widgets/confirm_dialog.dart';
-import 'package:student_clearance_tracker/core/repositories/user_profile_repository.dart';
 import 'package:student_clearance_tracker/admin/widgets/account_status_menu.dart';
 import 'package:student_clearance_tracker/features/admin/staff/view/staff_form_dialog.dart';
+import 'package:student_clearance_tracker/features/admin/staff/viewmodel/staff_viewmodel.dart';
 
-class StaffScreen extends StatefulWidget {
+class StaffScreen extends StatelessWidget {
   const StaffScreen({super.key});
 
   @override
-  State<StaffScreen> createState() => _StaffScreenState();
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (_) => StaffViewModel()..loadStaff(),
+      child: const _StaffScreenContent(),
+    );
+  }
 }
 
-class _StaffScreenState extends State<StaffScreen> {
-  final _repo = StaffRepository();
-  final _profileRepo = UserProfileRepository();
+class _StaffScreenContent extends StatelessWidget {
+  const _StaffScreenContent();
 
-  List<OfficeStaff> _staff = [];
-  List<OfficeStaff> _filtered = [];
-  bool _isLoading = true;
-  bool _isSaving = false;
-  String? _error;
-  String _search = '';
-
-  @override
-  void initState() {
-    super.initState();
-    _load();
-  }
-
-  // ── Data ──────────────────────────────────────────────────
-
-  Future<void> _load() async {
-    setState(() {
-      _isLoading = true;
-      _error = null;
-    });
-    try {
-      final staff = await _repo.getAll();
-      setState(() {
-        _staff = staff;
-        _isLoading = false;
-      });
-      _applySearch(_search);
-    } catch (e) {
-      setState(() {
-        _error = e.toString();
-        _isLoading = false;
-      });
-    }
-  }
-
-  void _applySearch(String query) {
-    setState(() {
-      _search = query;
-      _filtered = query.isEmpty
-          ? List.from(_staff)
-          : _staff
-                .where(
-                  (s) =>
-                      s.fullName.toLowerCase().contains(query.toLowerCase()) ||
-                      s.employeeNo.toLowerCase().contains(query.toLowerCase()),
-                )
-                .toList();
-    });
-  }
-
-  // ── CRUD ──────────────────────────────────────────────────
-
-  Future<void> _create() async {
+  Future<void> _handleCreate(BuildContext context) async {
     final result = await StaffFormDialog.show(context);
     if (result == null) return;
 
-    setState(() => _isSaving = true);
-    try {
-      await _repo.create(
-        email: result['email'],
-        employeeNo: result['employee_no'],
-        firstName: result['first_name'],
-        middleName: result['middle_name'].isEmpty
-            ? null
-            : result['middle_name'],
-        lastName: result['last_name'],
-        officeIds: List<int>.from(result['office_ids']),
-      );
-      _showSuccess(
-        'Staff member created. '
-        'They can log in with their email and employee number as password.',
-      );
-      _load();
-    } catch (e) {
-      _showError('Failed to create staff: $e');
-    } finally {
-      setState(() => _isSaving = false);
+    if (!context.mounted) return;
+    final vm = context.read<StaffViewModel>();
+    
+    final success = await vm.createStaff(result);
+    
+    if (success && context.mounted) {
+      _showSuccess(context, 'Staff member created. They can log in with their email and employee number as password.');
+    } else if (!success && context.mounted && vm.errorMessage != null) {
+      _showError(context, vm.errorMessage!);
     }
   }
 
-  Future<void> _edit(OfficeStaff staff) async {
+  Future<void> _handleEdit(BuildContext context, OfficeStaff staff) async {
     final result = await StaffFormDialog.show(context, staff: staff);
     if (result == null) return;
 
-    setState(() => _isSaving = true);
-    try {
-      await _repo.update(
-        id: staff.id,
-        employeeNo: result['employee_no'],
-        firstName: result['first_name'],
-        middleName: result['middle_name'].isEmpty
-            ? null
-            : result['middle_name'],
-        lastName: result['last_name'],
-        officeIds: List<int>.from(result['office_ids']),
-      );
-      _showSuccess('Staff member updated.');
-      _load();
-    } catch (e) {
-      _showError('Failed to update staff: $e');
-    } finally {
-      setState(() => _isSaving = false);
+    if (!context.mounted) return;
+    final vm = context.read<StaffViewModel>();
+    
+    final success = await vm.updateStaff(staff.id, result);
+
+    if (success && context.mounted) {
+      _showSuccess(context, 'Staff member updated.');
+    } else if (!success && context.mounted && vm.errorMessage != null) {
+      _showError(context, vm.errorMessage!);
     }
   }
 
-  Future<void> _delete(OfficeStaff staff) async {
+  Future<void> _handleDelete(BuildContext context, OfficeStaff staff) async {
     final confirmed = await ConfirmDialog.show(
       context,
       title: 'Delete Staff Member',
-      message:
-          'Are you sure you want to delete "${staff.fullName}"? '
-          'Their account will be permanently removed.',
+      message: 'Are you sure you want to delete "${staff.fullName}"? Their account will be permanently removed.',
     );
     if (!confirmed) return;
 
-    setState(() => _isSaving = true);
-    try {
-      await _repo.delete(staff.id);
-      _showSuccess('Staff member deleted.');
-      _load();
-    } catch (e) {
-      _showError('Failed to delete staff: $e');
-    } finally {
-      setState(() => _isSaving = false);
+    if (!context.mounted) return;
+    final vm = context.read<StaffViewModel>();
+    
+    final success = await vm.deleteStaff(staff.id);
+    
+    if (success && context.mounted) {
+      _showSuccess(context, 'Staff member deleted.');
+    } else if (!success && context.mounted && vm.errorMessage != null) {
+      _showError(context, vm.errorMessage!);
     }
   }
 
-  Future<void> _updateStatus(OfficeStaff staff, String newStatus) async {
-    try {
-      await _profileRepo.updateStatus(staff.id, newStatus);
-      _showSuccess('Account status updated to $newStatus.');
-      _load();
-    } catch (e) {
-      _showError('Failed to update status: $e');
+  Future<void> _handleUpdateStatus(BuildContext context, OfficeStaff staff, String newStatus) async {
+    final vm = context.read<StaffViewModel>();
+    final success = await vm.updateStatus(staff.id, newStatus);
+    
+    if (success && context.mounted) {
+      _showSuccess(context, 'Account status updated to $newStatus.');
+    } else if (!success && context.mounted && vm.errorMessage != null) {
+      _showError(context, vm.errorMessage!);
     }
   }
 
-  void _showSuccess(String message) {
-    if (!mounted) return;
+  void _showSuccess(BuildContext context, String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message), backgroundColor: AppColors.of(context).success),
     );
   }
 
-  void _showError(String message) {
-    if (!mounted) return;
+  void _showError(BuildContext context, String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message), backgroundColor: AppColors.of(context).danger),
     );
   }
 
-  // ── UI ────────────────────────────────────────────────────
-
   @override
   Widget build(BuildContext context) {
+    final vm = context.watch<StaffViewModel>();
+
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       body: Padding(
@@ -181,90 +109,66 @@ class _StaffScreenState extends State<StaffScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header
             Row(
               children: [
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'Staff',
-                        style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).colorScheme.onSurface,
-                        ),
-                      ),
-                      SizedBox(height: 4),
-                      Text(
-                        'Manage office staff and their office assignments.',
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
-                          fontSize: 14,
-                        ),
-                      ),
+                      Text('Staff', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface)),
+                      const SizedBox(height: 4),
+                      Text('Manage office staff and their office assignments.', style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65), fontSize: 14)),
                     ],
                   ),
                 ),
-                if (_isSaving)
+                if (vm.isSaving)
                   const Padding(
                     padding: EdgeInsets.only(right: 16),
-                    child: SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    ),
+                    child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)),
                   ),
                 ElevatedButton.icon(
-                  onPressed: _isSaving ? null : _create,
-                  icon: Icon(Icons.add),
-                  label: Text('Add Staff'),
+                  onPressed: vm.isSaving ? null : () => _handleCreate(context),
+                  icon: const Icon(Icons.add),
+                  label: const Text('Add Staff'),
                 ),
               ],
             ),
             const SizedBox(height: 24),
-
-            // Search
             SizedBox(
               width: 320,
               child: TextField(
-                onChanged: _applySearch,
-                decoration: const InputDecoration(
-                  hintText: 'Search by name or employee no...',
-                  prefixIcon: Icon(Icons.search),
-                ),
+                onChanged: context.read<StaffViewModel>().search,
+                decoration: const InputDecoration(hintText: 'Search by name or employee no...', prefixIcon: Icon(Icons.search)),
               ),
             ),
             const SizedBox(height: 16),
-
-            Expanded(child: _buildContent()),
+            Expanded(child: _buildContent(context, vm)),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildContent() {
-    if (_isLoading) {
+  Widget _buildContent(BuildContext context, StaffViewModel vm) {
+    if (vm.isLoading && vm.filteredStaff.isEmpty) {
       return const Center(child: CircularProgressIndicator());
     }
-    if (_error != null) {
+    if (vm.errorMessage != null && vm.filteredStaff.isEmpty) {
       return Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(_error!, style: TextStyle(color: AppColors.of(context).danger)),
+            Text(vm.errorMessage!, style: TextStyle(color: AppColors.of(context).danger)),
             const SizedBox(height: 8),
-            ElevatedButton(onPressed: _load, child: Text('Retry')),
+            ElevatedButton(onPressed: vm.loadStaff, child: const Text('Retry')),
           ],
         ),
       );
     }
-    if (_filtered.isEmpty) {
+    if (vm.filteredStaff.isEmpty) {
       return Center(
         child: Text(
-          _search.isEmpty ? 'No staff yet.' : 'No staff match "$_search".',
+          vm.searchQuery.isEmpty ? 'No staff yet.' : 'No staff match "${vm.searchQuery}".',
           style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65)),
         ),
       );
@@ -277,78 +181,52 @@ class _StaffScreenState extends State<StaffScreen> {
         child: SingleChildScrollView(
           child: Table(
             columnWidths: const {
-              0: FlexColumnWidth(2), // name
-              1: FixedColumnWidth(140), // employee no
-              2: FlexColumnWidth(3), // offices
-              3: FixedColumnWidth(130), // status
-              4: FixedColumnWidth(120), // actions
+              0: FlexColumnWidth(2),
+              1: FixedColumnWidth(140),
+              2: FlexColumnWidth(3),
+              3: FixedColumnWidth(130),
+              4: FixedColumnWidth(120),
             },
             children: [
               TableRow(
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surface,
-                ),
+                decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface),
                 children: [
-                  _headerCell('Name'),
-                  _headerCell('Employee No.'),
-                  _headerCell('Assigned Offices'),
-                  _headerCell('Status'),
-                  _headerCell(''),
+                  _headerCell(context, 'Name'),
+                  _headerCell(context, 'Employee No.'),
+                  _headerCell(context, 'Assigned Offices'),
+                  _headerCell(context, 'Status'),
+                  _headerCell(context, ''),
                 ],
               ),
-              ..._filtered.map(
+              ...vm.filteredStaff.map(
                 (staff) => TableRow(
-                  decoration: BoxDecoration(
-                    border: Border(
-                      top: BorderSide(color: AppColors.of(context).border),
-                    ),
-                  ),
+                  decoration: BoxDecoration(border: Border(top: BorderSide(color: AppColors.of(context).border))),
                   children: [
                     _dataCell(
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            staff.fullName,
-                            style: TextStyle(
-                              fontWeight: FontWeight.w500,
-                              color: Theme.of(context).colorScheme.onSurface,
-                            ),
-                          ),
+                          Text(staff.fullName, style: TextStyle(fontWeight: FontWeight.w500, color: Theme.of(context).colorScheme.onSurface)),
                         ],
                       ),
                     ),
                     _dataCell(
-                      Text(
-                        staff.employeeNo,
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
-                          fontSize: 13,
-                        ),
-                      ),
+                      Text(staff.employeeNo, style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65), fontSize: 13)),
                     ),
                     _dataCell(
                       staff.offices == null || staff.offices!.isEmpty
-                          ? Text(
-                              'No offices assigned',
-                              style: TextStyle(
-                                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
-                                fontSize: 13,
-                              ),
-                            )
+                          ? Text('No offices assigned', style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65), fontSize: 13))
                           : Wrap(
                               spacing: 6,
                               runSpacing: 4,
-                              children: staff.offices!
-                                  .map((o) => _OfficeBadge(name: o.name))
-                                  .toList(),
+                              children: staff.offices!.map((o) => _OfficeBadge(name: o.name)).toList(),
                             ),
                     ),
                     _dataCell(
                       staff.profile != null
                           ? AccountStatusMenu(
                               currentStatus: staff.profile!.accountStatus,
-                              onStatusChanged: (s) => _updateStatus(staff, s),
+                              onStatusChanged: (s) => _handleUpdateStatus(context, staff, s),
                             )
                           : const SizedBox.shrink(),
                     ),
@@ -356,16 +234,16 @@ class _StaffScreenState extends State<StaffScreen> {
                       Row(
                         children: [
                           IconButton(
-                            icon: Icon(Icons.edit_outlined, size: 18),
+                            icon: const Icon(Icons.edit_outlined, size: 18),
                             color: AppColors.of(context).info,
                             tooltip: 'Edit',
-                            onPressed: _isSaving ? null : () => _edit(staff),
+                            onPressed: vm.isSaving ? null : () => _handleEdit(context, staff),
                           ),
                           IconButton(
-                            icon: Icon(Icons.delete_outline, size: 18),
+                            icon: const Icon(Icons.delete_outline, size: 18),
                             color: AppColors.of(context).danger,
                             tooltip: 'Delete',
-                            onPressed: _isSaving ? null : () => _delete(staff),
+                            onPressed: vm.isSaving ? null : () => _handleDelete(context, staff),
                           ),
                         ],
                       ),
@@ -380,15 +258,11 @@ class _StaffScreenState extends State<StaffScreen> {
     );
   }
 
-  Widget _headerCell(String label) => Padding(
+  Widget _headerCell(BuildContext context, String label) => Padding(
     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
     child: Text(
       label,
-      style: TextStyle(
-        fontWeight: FontWeight.w600,
-        fontSize: 13,
-        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
-      ),
+      style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65)),
     ),
   );
 
@@ -410,17 +284,11 @@ class _OfficeBadge extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.of(context).info.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: AppColors.of(context).info.withValues(alpha: 0.25),
-        ),
+        border: Border.all(color: AppColors.of(context).info.withValues(alpha: 0.25)),
       ),
       child: Text(
         name,
-        style: TextStyle(
-          fontSize: 11,
-          color: AppColors.of(context).info,
-          fontWeight: FontWeight.w500,
-        ),
+        style: TextStyle(fontSize: 11, color: AppColors.of(context).info, fontWeight: FontWeight.w500),
       ),
     );
   }
