@@ -5,35 +5,35 @@ import 'app_text_styles.dart';
 
 abstract final class AppTheme {
   static ThemeData get light => _build(Brightness.light);
-  static ThemeData get dark  => _build(Brightness.dark);
+  static ThemeData get dark => _build(Brightness.dark);
 
   static ThemeData _build(Brightness brightness) {
     final isDark = brightness == Brightness.dark;
-    final colorScheme = ColorScheme.fromSeed(
-      seedColor: AppColors.primary,
-      brightness: brightness,
-      surface: isDark ? AppColors.darkSurface : AppColors.lightSurface,
-    ).copyWith(
-      error: AppColors.danger,
-      tertiary: AppColors.accent,
-      outline: isDark ? AppColors.darkBorder : AppColors.lightBorder,
-    );
+    final colorScheme =
+        ColorScheme.fromSeed(
+          seedColor: AppColors.primary,
+          brightness: brightness,
+          surface: isDark ? AppColors.darkSurface : AppColors.lightSurface,
+        ).copyWith(
+          error: AppColors.danger,
+          tertiary: AppColors.accent,
+          outline: isDark ? AppColors.darkBorder : AppColors.lightBorder,
+        );
 
     return ThemeData(
-      useMaterial3:            true,
-      brightness:              brightness,
-      colorScheme:             colorScheme,
-      textTheme:               _textTheme(isDark),
-      scaffoldBackgroundColor:
-          isDark ? AppColors.darkBackground : AppColors.lightBackground,
-      cardColor:
-          isDark ? AppColors.darkSurface    : AppColors.lightSurface,
-      dividerColor:
-          isDark ? AppColors.darkBorder     : AppColors.lightBorder,
+      useMaterial3: true,
+      brightness: brightness,
+      colorScheme: colorScheme,
+      textTheme: _textTheme(isDark),
+      scaffoldBackgroundColor: isDark
+          ? AppColors.darkBackground
+          : AppColors.lightBackground,
+      cardColor: isDark ? AppColors.darkSurface : AppColors.lightSurface,
+      dividerColor: isDark ? AppColors.darkBorder : AppColors.lightBorder,
 
       // Input fields
       inputDecorationTheme: InputDecorationTheme(
-        filled:    true,
+        filled: true,
         fillColor: isDark ? AppColors.darkSurface : AppColors.lightSurface,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
@@ -58,7 +58,8 @@ abstract final class AppTheme {
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primary,
           foregroundColor: Colors.white,
-          minimumSize: const Size.fromHeight(AppDimensions.buttonHeight),
+          // minimumSize: const Size.fromHeight(AppDimensions.buttonHeight),
+          minimumSize: Size(0, AppDimensions.buttonHeight),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
           ),
@@ -67,23 +68,33 @@ abstract final class AppTheme {
 
       // App bar
       appBarTheme: AppBarTheme(
-        backgroundColor: isDark ? AppColors.darkSurface : AppColors.lightSurface,
-        foregroundColor: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+        backgroundColor: isDark
+            ? AppColors.darkSurface
+            : AppColors.lightSurface,
+        foregroundColor: isDark
+            ? AppColors.darkTextPrimary
+            : AppColors.lightTextPrimary,
         elevation: 0,
         surfaceTintColor: Colors.transparent,
       ),
 
       // Bottom nav (student app)
       navigationBarTheme: NavigationBarThemeData(
-        backgroundColor: isDark ? AppColors.darkSurface : AppColors.lightSurface,
+        backgroundColor: isDark
+            ? AppColors.darkSurface
+            : AppColors.lightSurface,
         indicatorColor: colorScheme.primary.withValues(alpha: 0.12),
       ),
     );
   }
 
   static TextTheme _textTheme(bool isDark) {
-    final primary = isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
-    final secondary = isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
+    final primary = isDark
+        ? AppColors.darkTextPrimary
+        : AppColors.lightTextPrimary;
+    final secondary = isDark
+        ? AppColors.darkTextSecondary
+        : AppColors.lightTextSecondary;
 
     return TextTheme(
       displaySmall: AppTextStyles.heading1.copyWith(color: primary),
