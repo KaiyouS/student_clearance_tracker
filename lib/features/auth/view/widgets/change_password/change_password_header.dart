@@ -1,0 +1,48 @@
+import 'package:flutter/material.dart';
+import 'package:student_clearance_tracker/core/theme/app_dimensions.dart';
+import 'package:student_clearance_tracker/core/theme/app_text_styles.dart';
+
+class ChangePasswordHeader extends StatelessWidget {
+  const ChangePasswordHeader({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Container(
+          width: 56,
+          height: 56,
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Icon(
+            Icons.lock_reset_outlined,
+            color: Theme.of(context).colorScheme.primary,
+            size: 28,
+          ),
+        ),
+        const SizedBox(height: AppDimensions.lg),
+        Text(
+          'Set a New Password',
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: Theme.of(context).colorScheme.onSurface,
+          ),
+        ),
+        const SizedBox(height: AppDimensions.sm),
+        Text(
+          'Your account requires a password change before you can continue. Choose a strong password you haven\'t used before.',
+          style: AppTextStyles.bodyMd.copyWith(
+            color: Theme.of(
+              context,
+            ).colorScheme.onSurface.withValues(alpha: 0.65),
+            height: 1.5,
+          ),
+        ),
+      ],
+    );
+  }
+}

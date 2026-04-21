@@ -3,7 +3,10 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:student_clearance_tracker/core/services/auth_service.dart';
 import 'package:student_clearance_tracker/core/theme/app_dimensions.dart';
-import 'package:student_clearance_tracker/core/theme/app_text_styles.dart';
+import 'package:student_clearance_tracker/features/auth/view/widgets/change_password/change_password_actions.dart';
+import 'package:student_clearance_tracker/features/auth/view/widgets/change_password/change_password_card.dart';
+import 'package:student_clearance_tracker/features/auth/view/widgets/change_password/change_password_header.dart';
+import 'package:student_clearance_tracker/features/auth/view/widgets/password_input_field.dart';
 import 'package:student_clearance_tracker/features/auth/viewmodel/change_password_viewmodel.dart';
 
 class ChangePasswordScreen extends StatelessWidget {
@@ -32,9 +35,6 @@ class _ChangePasswordScreenContentState
   final _newPasswordController = TextEditingController();
   final _confirmController = TextEditingController();
 
-  bool _obscureNew = true;
-  bool _obscureConfirm = true;
-
   @override
   void dispose() {
     _newPasswordController.dispose();
@@ -62,77 +62,19 @@ class _ChangePasswordScreenContentState
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       body: Center(
-        child: Container(
-          width: 440,
-          padding: const EdgeInsets.all(40),
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surface,
-            borderRadius: BorderRadius.circular(AppDimensions.radiusLg),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.08),
-                blurRadius: 24,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
+        child: ChangePasswordCard(
           child: Form(
             key: _formKey,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Container(
-                  width: 56,
-                  height: 56,
-                  decoration: BoxDecoration(
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.primary.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(
-                    Icons.lock_reset_outlined,
-                    color: Theme.of(context).colorScheme.primary,
-                    size: 28,
-                  ),
-                ),
-                const SizedBox(height: AppDimensions.lg),
-                Text(
-                  'Set a New Password',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.onSurface,
-                  ),
-                ),
-                const SizedBox(height: AppDimensions.sm),
-                Text(
-                  'Your account requires a password change before you can continue. Choose a strong password you haven\'t used before.',
-                  style: AppTextStyles.bodyMd.copyWith(
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.onSurface.withValues(alpha: 0.65),
-                    height: 1.5,
-                  ),
-                ),
+                const ChangePasswordHeader(),
                 const SizedBox(height: AppDimensions.xl),
-                TextFormField(
+                PasswordInputField(
                   controller: _newPasswordController,
-                  obscureText: _obscureNew,
-                  decoration: InputDecoration(
-                    labelText: 'New Password',
-                    prefixIcon: const Icon(Icons.lock_outlined),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscureNew
-                            ? Icons.visibility_outlined
-                            : Icons.visibility_off_outlined,
-                      ),
-                      onPressed: () =>
-                          setState(() => _obscureNew = !_obscureNew),
-                    ),
-                  ),
+                  labelText: 'New Password',
+                  textInputAction: TextInputAction.next,
                   validator: (v) {
                     if (v == null || v.trim().isEmpty) {
                       return 'Password is required';
@@ -144,22 +86,10 @@ class _ChangePasswordScreenContentState
                   },
                 ),
                 const SizedBox(height: AppDimensions.md),
-                TextFormField(
+                PasswordInputField(
                   controller: _confirmController,
-                  obscureText: _obscureConfirm,
-                  decoration: InputDecoration(
-                    labelText: 'Confirm Password',
-                    prefixIcon: const Icon(Icons.lock_outlined),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscureConfirm
-                            ? Icons.visibility_outlined
-                            : Icons.visibility_off_outlined,
-                      ),
-                      onPressed: () =>
-                          setState(() => _obscureConfirm = !_obscureConfirm),
-                    ),
-                  ),
+                  labelText: 'Confirm Password',
+                  textInputAction: TextInputAction.done,
                   validator: (v) {
                     if (v == null || v.trim().isEmpty) {
                       return 'Please confirm your password';
@@ -171,48 +101,14 @@ class _ChangePasswordScreenContentState
                   },
                   onFieldSubmitted: (_) => _handleSubmit(),
                 ),
-                const SizedBox(height: AppDimensions.sm),
-                if (vm.errorMessage != null)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: AppDimensions.sm),
-                    child: Text(
-                      vm.errorMessage!,
-                      style: AppTextStyles.bodySm.copyWith(
-                        color: Theme.of(context).colorScheme.error,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                const SizedBox(height: AppDimensions.sm),
-                ElevatedButton(
-                  onPressed: vm.isLoading ? null : _handleSubmit,
-                  child: vm.isLoading
-                      ? SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            color: Theme.of(context).colorScheme.surface,
-                            strokeWidth: 2,
-                          ),
-                        )
-                      : const Text('Set Password & Continue'),
-                ),
-                const SizedBox(height: AppDimensions.md),
-                Center(
-                  child: TextButton(
-                    onPressed: () async {
-                      await AuthService().signOut();
-                      if (context.mounted) context.go('/login');
-                    },
-                    child: Text(
-                      'Sign out',
-                      style: AppTextStyles.bodySm.copyWith(
-                        color: Theme.of(
-                          context,
-                        ).colorScheme.onSurface.withValues(alpha: 0.65),
-                      ),
-                    ),
-                  ),
+                ChangePasswordActions(
+                  isLoading: vm.isLoading,
+                  errorMessage: vm.errorMessage,
+                  onSubmit: _handleSubmit,
+                  onSignOut: () async {
+                    await AuthService().signOut();
+                    if (context.mounted) context.go('/login');
+                  },
                 ),
               ],
             ),
