@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:student_clearance_tracker/features/auth/view/widgets/email_input_field.dart';
+import 'package:student_clearance_tracker/features/auth/view/widgets/login/login_actions.dart';
+import 'package:student_clearance_tracker/features/auth/view/widgets/login/login_card.dart';
+import 'package:student_clearance_tracker/features/auth/view/widgets/login/login_header.dart';
+import 'package:student_clearance_tracker/features/auth/view/widgets/password_input_field.dart';
 import 'package:student_clearance_tracker/features/auth/viewmodel/login_viewmodel.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -52,91 +57,25 @@ class _LoginScreenContentState extends State<_LoginScreenContent> {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       body: Center(
-        child: Container(
-          width: 400,
-          padding: const EdgeInsets.all(32),
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surface,
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.08),
-                blurRadius: 24,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
+        child: LoginCard(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(
-                'Student Clearance Tracker',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.onSurface,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Sign in to your account',
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
-                ),
-                textAlign: TextAlign.center,
-              ),
+              const LoginHeader(),
               const SizedBox(height: 32),
-              TextField(
-                controller: _emailController,
-                keyboardType: TextInputType.emailAddress,
-                decoration: const InputDecoration(
-                  labelText: 'Email',
-                  prefixIcon: Icon(Icons.email_outlined),
-                ),
-              ),
+              EmailInputField(controller: _emailController),
               const SizedBox(height: 16),
-              TextField(
+              PasswordInputField(
                 controller: _passwordController,
-                obscureText: true,
-                decoration: const InputDecoration(
-                  labelText: 'Password',
-                  prefixIcon: Icon(Icons.lock_outlined),
-                ),
-                onSubmitted: (_) => _handleLogin(),
+                textInputAction: TextInputAction.done,
+                onFieldSubmitted: (_) => _handleLogin(),
               ),
               const SizedBox(height: 8),
-              if (vm.errorMessage != null)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: Text(
-                    vm.errorMessage!,
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.error,
-                      fontSize: 13,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              const SizedBox(height: 8),
-              ElevatedButton(
-                onPressed: vm.isLoading ? null : _handleLogin,
-                child: vm.isLoading
-                    ? SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                          color: Theme.of(context).colorScheme.surface,
-                          strokeWidth: 2,
-                        ),
-                      )
-                    : Text(
-                        'Sign In',
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.onSurface,
-                        ),
-                      ),
+              LoginActions(
+                isLoading: vm.isLoading,
+                errorMessage: vm.errorMessage,
+                onSignIn: _handleLogin,
               ),
             ],
           ),
