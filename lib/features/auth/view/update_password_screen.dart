@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:student_clearance_tracker/core/theme/app_dimensions.dart';
-import 'package:student_clearance_tracker/core/theme/app_text_styles.dart';
+import 'package:student_clearance_tracker/features/auth/view/widgets/password_input_field.dart';
+import 'package:student_clearance_tracker/features/auth/view/widgets/update_password/update_password_actions.dart';
+import 'package:student_clearance_tracker/features/auth/view/widgets/update_password/update_password_card.dart';
+import 'package:student_clearance_tracker/features/auth/view/widgets/update_password/update_password_header.dart';
 import 'package:student_clearance_tracker/features/auth/viewmodel/update_password_viewmodel.dart';
 
 class UpdatePasswordScreen extends StatelessWidget {
@@ -31,10 +34,6 @@ class _UpdatePasswordScreenContentState
   final _currentPasswordController = TextEditingController();
   final _newPasswordController = TextEditingController();
   final _confirmController = TextEditingController();
-
-  bool _obscureCurrent = true;
-  bool _obscureNew = true;
-  bool _obscureConfirm = true;
 
   @override
   void dispose() {
@@ -78,62 +77,17 @@ class _UpdatePasswordScreenContentState
           onPressed: () => context.pop(),
         ),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(AppDimensions.lg),
+      body: UpdatePasswordCard(
         child: Form(
           key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Container(
-                padding: const EdgeInsets.all(14),
-                decoration: BoxDecoration(
-                  color: Theme.of(
-                    context,
-                  ).colorScheme.primary.withValues(alpha: 0.08),
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.primary.withValues(alpha: 0.2),
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.info_outline,
-                      size: 16,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Text(
-                        'Enter your current password to confirm your identity, then choose a new password.',
-                        style: AppTextStyles.bodySm.copyWith(
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              const UpdatePasswordHeader(),
               const SizedBox(height: AppDimensions.lg),
-              TextFormField(
+              PasswordInputField(
                 controller: _currentPasswordController,
-                obscureText: _obscureCurrent,
-                decoration: InputDecoration(
-                  labelText: 'Current Password',
-                  prefixIcon: const Icon(Icons.lock_outlined),
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      _obscureCurrent
-                          ? Icons.visibility_outlined
-                          : Icons.visibility_off_outlined,
-                    ),
-                    onPressed: () =>
-                        setState(() => _obscureCurrent = !_obscureCurrent),
-                  ),
-                ),
+                labelText: 'Current Password',
                 validator: (v) => (v == null || v.trim().isEmpty)
                     ? 'Current password is required'
                     : null,
@@ -142,21 +96,9 @@ class _UpdatePasswordScreenContentState
               const SizedBox(height: AppDimensions.md),
               const Divider(),
               const SizedBox(height: AppDimensions.md),
-              TextFormField(
+              PasswordInputField(
                 controller: _newPasswordController,
-                obscureText: _obscureNew,
-                decoration: InputDecoration(
-                  labelText: 'New Password',
-                  prefixIcon: const Icon(Icons.lock_reset_outlined),
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      _obscureNew
-                          ? Icons.visibility_outlined
-                          : Icons.visibility_off_outlined,
-                    ),
-                    onPressed: () => setState(() => _obscureNew = !_obscureNew),
-                  ),
-                ),
+                labelText: 'New Password',
                 validator: (v) {
                   if (v == null || v.trim().isEmpty) {
                     return 'New password is required';
@@ -170,24 +112,12 @@ class _UpdatePasswordScreenContentState
                   return null;
                 },
                 textInputAction: TextInputAction.next,
+                prefixIcon: Icons.lock_reset_outlined,
               ),
               const SizedBox(height: AppDimensions.md),
-              TextFormField(
+              PasswordInputField(
                 controller: _confirmController,
-                obscureText: _obscureConfirm,
-                decoration: InputDecoration(
-                  labelText: 'Confirm New Password',
-                  prefixIcon: const Icon(Icons.lock_outlined),
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      _obscureConfirm
-                          ? Icons.visibility_outlined
-                          : Icons.visibility_off_outlined,
-                    ),
-                    onPressed: () =>
-                        setState(() => _obscureConfirm = !_obscureConfirm),
-                  ),
-                ),
+                labelText: 'Confirm New Password',
                 validator: (v) {
                   if (v == null || v.trim().isEmpty) {
                     return 'Please confirm your new password';
@@ -197,36 +127,13 @@ class _UpdatePasswordScreenContentState
                   }
                   return null;
                 },
+                textInputAction: TextInputAction.done,
                 onFieldSubmitted: (_) => _handleSubmit(),
               ),
-              const SizedBox(height: AppDimensions.sm),
-              if (vm.errorMessage != null)
-                Padding(
-                  padding: const EdgeInsets.only(
-                    top: AppDimensions.sm,
-                    bottom: AppDimensions.xs,
-                  ),
-                  child: Text(
-                    vm.errorMessage!,
-                    style: AppTextStyles.bodySm.copyWith(
-                      color: Theme.of(context).colorScheme.error,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              const SizedBox(height: AppDimensions.md),
-              ElevatedButton(
-                onPressed: vm.isLoading ? null : _handleSubmit,
-                child: vm.isLoading
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                          color: Colors.white,
-                          strokeWidth: 2,
-                        ),
-                      )
-                    : const Text('Update Password'),
+              UpdatePasswordActions(
+                isLoading: vm.isLoading,
+                errorMessage: vm.errorMessage,
+                onSubmit: _handleSubmit,
               ),
             ],
           ),
