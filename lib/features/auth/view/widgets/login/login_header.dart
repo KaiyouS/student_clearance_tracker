@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:student_clearance_tracker/core/constants/app_config.dart';
 
 class LoginHeader extends StatelessWidget {
   const LoginHeader({super.key});
@@ -8,7 +9,7 @@ class LoginHeader extends StatelessWidget {
     return Column(
       children: [
         Text(
-          'Student Clearance Tracker',
+          AppConfig.appName,
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,

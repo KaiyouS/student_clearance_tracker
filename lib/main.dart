@@ -44,7 +44,7 @@ class MyApp extends StatelessWidget {
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, theme, _) => MaterialApp.router(
-          title: 'Clearance Tracker',
+          title: AppConfig.appName,
           debugShowCheckedModeBanner: false,
           theme: AppTheme.light,
           darkTheme: AppTheme.dark,

@@ -1,6 +1,6 @@
 {
-    "name": "student_clearance_tracker",
-    "short_name": "student_clearance_tracker",
+    "name": "GradPass",
+    "short_name": "GradPass",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#FFFFFF",
