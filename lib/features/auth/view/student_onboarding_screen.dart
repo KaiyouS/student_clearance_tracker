@@ -70,10 +70,10 @@ class _StudentOnboardingViewState extends State<_StudentOnboardingView> {
       backgroundColor: Theme.of(context).colorScheme.surface,
       body: Center(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.all(20), // Slightly reduced for mobile edge spacing
           child: Container(
-            width: 620,
-            padding: const EdgeInsets.all(28),
+            constraints: const BoxConstraints(maxWidth: 620), // Responsive width
+            padding: const EdgeInsets.all(24), // Slightly reduced inner padding
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.circular(14),
@@ -142,33 +142,29 @@ class _StudentOnboardingViewState extends State<_StudentOnboardingView> {
                         : null,
                   ),
                   const SizedBox(height: 14),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextFormField(
-                          controller: _firstNameController,
-                          decoration: const InputDecoration(
-                            labelText: 'First Name',
-                            prefixIcon: Icon(Icons.person_outline),
-                          ),
-                          validator: (value) =>
-                              value == null || value.trim().isEmpty
-                              ? 'Required'
-                              : null,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: TextFormField(
-                          controller: _middleNameController,
-                          decoration: const InputDecoration(
-                            labelText: 'Middle Name',
-                          ),
-                        ),
-                      ),
-                    ],
+                  
+                  TextFormField(
+                    controller: _firstNameController,
+                    decoration: const InputDecoration(
+                      labelText: 'First Name',
+                      prefixIcon: Icon(Icons.person_outline),
+                    ),
+                    validator: (value) =>
+                        value == null || value.trim().isEmpty
+                        ? 'Required'
+                        : null,
                   ),
                   const SizedBox(height: 14),
+                  TextFormField(
+                    controller: _middleNameController,
+                    decoration: const InputDecoration(
+                      labelText: 'Middle Name',
+                      // Optional: add the same icon for consistency now that it's stacked
+                      prefixIcon: Icon(Icons.person_outline), 
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  
                   TextFormField(
                     controller: _lastNameController,
                     decoration: const InputDecoration(
@@ -181,6 +177,7 @@ class _StudentOnboardingViewState extends State<_StudentOnboardingView> {
                   ),
                   const SizedBox(height: 14),
                   DropdownButtonFormField<int>(
+                    isExpanded: true, // Prevents overflow if program names are long
                     initialValue: _programId,
                     decoration: const InputDecoration(
                       labelText: 'Program',
@@ -195,7 +192,10 @@ class _StudentOnboardingViewState extends State<_StudentOnboardingView> {
                         .map(
                           (program) => DropdownMenuItem<int>(
                             value: program.id,
-                            child: Text(program.name),
+                            child: Text(
+                              program.name,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
                         )
                         .toList(),

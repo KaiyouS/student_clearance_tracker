@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:student_clearance_tracker/core/repositories/user_profile_repository.dart';
 import 'package:student_clearance_tracker/core/services/auth_service.dart';
@@ -25,8 +26,8 @@ class LoginViewModel extends ChangeNotifier {
     } on AuthException catch (e) {
       errorMessage = e.message;
       return null;
-    } catch (_) {
-      errorMessage = 'Something went wrong. Please try again.';
+    } catch (e) {
+      errorMessage = _toReadableError(e);
       return null;
     } finally {
       isLoading = false;
@@ -49,8 +50,12 @@ class LoginViewModel extends ChangeNotifier {
     } on AuthException catch (e) {
       errorMessage = e.message;
       return null;
-    } catch (_) {
-      errorMessage = 'Something went wrong. Please try again.';
+    } on GoogleSignInException catch (e) {
+      errorMessage =
+          e.description ?? 'Google sign in failed. Please try again.';
+      return null;
+    } catch (e) {
+      errorMessage = _toReadableError(e);
       return null;
     } finally {
       isLoading = false;
@@ -144,5 +149,15 @@ class LoginViewModel extends ChangeNotifier {
     }
 
     return null;
+  }
+
+  String _toReadableError(Object error) {
+    final text = error.toString();
+    if (text.startsWith('Exception: ')) {
+      return text.substring('Exception: '.length);
+    }
+
+    if (text.isNotEmpty) return text;
+    return 'Something went wrong. Please try again.';
   }
 }
