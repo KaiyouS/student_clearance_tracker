@@ -30,7 +30,7 @@ abstract final class AppTheme {
       colorScheme: colorScheme,
       textTheme: _textTheme(isDark),
       scaffoldBackgroundColor: colorScheme.surface,
-      dividerColor: isDark ? AppColors.darkBorder : AppColors.lightBorder,
+      dividerColor: isDark ? AppColors.darkBorder : AppColors.lightBorder,  
 
       // ── Cards ──
       cardTheme: CardThemeData(
@@ -86,14 +86,14 @@ abstract final class AppTheme {
 
       // ── Overlays (Dialogs & Bottom Sheets) ──
       dialogTheme: DialogThemeData(
-        backgroundColor: colorScheme.surfaceContainerHighest,
+        backgroundColor: colorScheme.surfaceContainer,
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppDimensions.radiusLg),
-        ),
+        ),  
       ),
       bottomSheetTheme: BottomSheetThemeData(
-        backgroundColor: colorScheme.surfaceContainerHighest,
+        backgroundColor: colorScheme.surfaceContainer,
         elevation: 0,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(AppDimensions.radiusLg)),

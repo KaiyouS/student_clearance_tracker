@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 abstract final class AppTextStyles {
-  static const heading1 = TextStyle(fontSize: 28, fontWeight: FontWeight.bold);
+  static const heading1 = TextStyle(fontSize: 32, fontWeight: FontWeight.bold);
   static const heading2 = TextStyle(fontSize: 22, fontWeight: FontWeight.bold);
   static const heading3 = TextStyle(fontSize: 18, fontWeight: FontWeight.w600);
   static const titleMd  = TextStyle(fontSize: 16, fontWeight: FontWeight.w600);
