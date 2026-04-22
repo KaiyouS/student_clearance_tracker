@@ -13,7 +13,7 @@ TableRow buildAcademicPeriodsTableRow({
     decoration: BoxDecoration(
       color: period.isCurrent
           ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.04)
-          : null,
+          : Theme.of(context).colorScheme.surfaceContainer,
       border: Border(top: BorderSide(color: Theme.of(context).dividerColor)),
     ),
     children: [

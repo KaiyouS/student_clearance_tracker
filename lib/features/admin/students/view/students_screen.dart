@@ -209,12 +209,12 @@ class _StudentsScreenContent extends StatelessWidget {
               1: FlexColumnWidth(2),
               2: FlexColumnWidth(3),
               3: FixedColumnWidth(130),
-              4: FixedColumnWidth(120),
+              4: FixedColumnWidth(130),
             },
             children: [
               TableRow(
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surface,
+                  color: Theme.of(context).colorScheme.surfaceContainer,
                 ),
                 children: [
                   _headerCell(context, 'Name'),
@@ -227,6 +227,7 @@ class _StudentsScreenContent extends StatelessWidget {
               ...vm.filteredStudents.map(
                 (student) => TableRow(
                   decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surfaceContainer,
                     border: Border(
                       top: BorderSide(color: Theme.of(context).dividerColor),
                     ),

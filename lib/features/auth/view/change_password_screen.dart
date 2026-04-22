@@ -58,7 +58,8 @@ class _ChangePasswordScreenContentState
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<ChangePasswordViewModel>();
-
+    final isKeyboardOpen = MediaQuery.of(context).viewInsets.bottom > 0;
+    
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       body: Center(
@@ -69,8 +70,15 @@ class _ChangePasswordScreenContentState
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const ChangePasswordHeader(),
-                const SizedBox(height: AppDimensions.xl),
+                if (isKeyboardOpen) ...[
+                  const SizedBox(height: AppDimensions.xl),
+                  const SizedBox(height: AppDimensions.xl),
+                  const SizedBox(height: AppDimensions.xl),
+                ],
+                if (!isKeyboardOpen) ...[
+                  const ChangePasswordHeader(),
+                  const SizedBox(height: AppDimensions.xl),
+                ],
                 PasswordInputField(
                   controller: _newPasswordController,
                   labelText: 'New Password',
@@ -101,6 +109,7 @@ class _ChangePasswordScreenContentState
                   },
                   onFieldSubmitted: (_) => _handleSubmit(),
                 ),
+                const SizedBox(height: AppDimensions.lg),
                 ChangePasswordActions(
                   isLoading: vm.isLoading,
                   errorMessage: vm.errorMessage,

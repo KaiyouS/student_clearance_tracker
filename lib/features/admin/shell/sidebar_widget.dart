@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:student_clearance_tracker/core/constants/app_assets.dart';
+import 'package:student_clearance_tracker/core/constants/app_config.dart';
 import 'package:student_clearance_tracker/core/services/auth_service.dart';
+import 'package:student_clearance_tracker/core/theme/app_dimensions.dart';
+import 'package:student_clearance_tracker/core/theme/app_text_styles.dart';
 import 'package:student_clearance_tracker/core/widgets/theme_toggle.dart';
 
 class SidebarWidget extends StatelessWidget {
@@ -19,20 +23,47 @@ class SidebarWidget extends StatelessWidget {
         children: [
           // App title / logo area
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-            child: Text(
-              'Clearance\nTracker',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Theme.of(context).colorScheme.primary,
-                height: 1.2,
-              ),
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Align(
+                  alignment: Alignment.center,
+                  child: SizedBox.square(
+                    dimension: 75,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(24),
+                      child: Image.asset(
+                        AppAssets.appLogo,
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: AppDimensions.sm),
+                Text(
+                  AppConfig.appName,
+                  style: AppTextStyles.heading2.copyWith(
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
             ),
+            // Text(
+            //   AppConfig.appName,
+            //   style: TextStyle(
+            //     fontSize: 20,
+            //     fontWeight: FontWeight.bold,
+            //     color: Theme.of(context).colorScheme.primary,
+            //     height: 1.2,
+            //   ),
+            // ),
           ),
 
-          Divider(height: 1, color: Theme.of(context).dividerColor),
-          const SizedBox(height: 8),
+          // Divider(height: 1, color: Theme.of(context).dividerColor),
+          // const SizedBox(height: 8),
 
           // Nav items
           _NavItem(
@@ -104,7 +135,7 @@ class SidebarWidget extends StatelessWidget {
   }
 }
 
-// â”€â”€ Individual nav item â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// —— Individual nav item ——————————————————————————————————————
 class _NavItem extends StatelessWidget {
   final IconData icon;
   final String label;
@@ -165,7 +196,7 @@ class _NavItem extends StatelessWidget {
   }
 }
 
-// â”€â”€ Sign out button â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// —— Sign out button ——————————————————————————————————————————
 class _SignOutButton extends StatelessWidget {
   final _authService = AuthService();
 

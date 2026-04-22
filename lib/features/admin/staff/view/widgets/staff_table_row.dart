@@ -13,6 +13,7 @@ TableRow buildStaffTableRow({
   return TableRow(
     decoration: BoxDecoration(
       border: Border(top: BorderSide(color: Theme.of(context).dividerColor)),
+      color: Theme.of(context).colorScheme.surfaceContainer,
     ),
     children: [
       _dataCell(

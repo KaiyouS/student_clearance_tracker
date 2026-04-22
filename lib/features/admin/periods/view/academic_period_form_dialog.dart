@@ -161,7 +161,7 @@ class _AcademicPeriodFormDialogState extends State<AcademicPeriodFormDialog> {
   }
 }
 
-// â”€â”€ Simple date picker field â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// —— Simple date picker field ——————————————————————————————————
 class _DatePickerField extends StatelessWidget {
   final String label;
   final String value;

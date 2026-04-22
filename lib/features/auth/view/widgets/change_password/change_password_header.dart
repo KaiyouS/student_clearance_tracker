@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:student_clearance_tracker/core/constants/app_assets.dart';
 import 'package:student_clearance_tracker/core/theme/app_dimensions.dart';
 import 'package:student_clearance_tracker/core/theme/app_text_styles.dart';
 
@@ -9,24 +10,21 @@ class ChangePasswordHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+      // crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Container(
-          width: 56,
-          height: 56,
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: PhosphorIcon(
-            PhosphorIconsLight.key,
-            color: Theme.of(context).colorScheme.primary,
-            size: 28,
+        SizedBox(
+          width: 100,
+          height: 100,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(24),
+            child: Image.asset(AppAssets.appLogo, fit: BoxFit.cover),
           ),
         ),
-        const SizedBox(height: AppDimensions.lg),
+
+        const SizedBox(height: AppDimensions.sm),
         Text(
           'Set a New Password',
+          textAlign: TextAlign.start,
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,

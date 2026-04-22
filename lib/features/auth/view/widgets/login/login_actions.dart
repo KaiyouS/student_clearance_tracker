@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 
 class LoginActions extends StatelessWidget {
   final bool isLoading;
@@ -44,7 +45,7 @@ class LoginActions extends StatelessWidget {
               : Text(
                   'Sign In',
                   style: TextStyle(
-                    color: Theme.of(context).colorScheme.onSurface,
+                    color: AppColors.darkTextPrimary,
                   ),
                 ),
         ),

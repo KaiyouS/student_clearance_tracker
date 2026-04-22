@@ -193,15 +193,16 @@ class _OfficesScreenContent extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppDimensions.radiusLg),
         child: SingleChildScrollView(
           child: Table(
+            
             columnWidths: const {
               0: FlexColumnWidth(2),
               1: FlexColumnWidth(3),
-              2: FixedColumnWidth(120),
+              2: FixedColumnWidth(130),
             },
             children: [
               TableRow(
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surface,
+                  color: Theme.of(context).colorScheme.surfaceContainer,
                 ),
                 children: [
                   _headerCell(context, 'Office Name'),
@@ -212,6 +213,7 @@ class _OfficesScreenContent extends StatelessWidget {
               ...vm.filteredOffices.map(
                 (office) => TableRow(
                   decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surfaceContainer,
                     border: Border(
                       top: BorderSide(color: Theme.of(context).dividerColor),
                     ),

@@ -35,10 +35,14 @@ class _StudentShellState extends State<StudentShell> {
     final isLoading = context.select<StudentShellViewModel, bool>(
       (p) => p.isLoading,
     );
-    final latestNotification = context
-        .select<StudentShellViewModel, InAppNotification?>(
-          (p) => p.latestNotification,
-        );
+    // final latestNotification = context
+    //     .select<StudentShellViewModel, InAppNotification?>(
+    //       (p) => p.latestNotification,
+    //     );
+    final latestNotification = InAppNotification(
+      officeName: 'Test A',
+      status: "signed", // Change to 'flagged' to test the red error color!
+    );
     final notificationCount = context.select<StudentShellViewModel, int>(
       (p) => p.notifications.length,
     );
@@ -53,79 +57,137 @@ class _StudentShellState extends State<StudentShell> {
     if (location == '/student/clearance') currentIndex = 1;
     if (location == '/student/profile') currentIndex = 2;
 
+    // Determine if we are on a wide screen (Web/Desktop)
+    double screenWidth = MediaQuery.of(context).size.width;
+    bool isMobile = screenWidth < 600;
+
+    // Centralize the navigation logic so both Navbars can use it
+    void handleNavigation(int index) {
+      final leavingClearance = currentIndex == 1 && index != 1;
+      if (leavingClearance) {
+        provider.clearChangedSteps();
+      }
+
+      switch (index) {
+        case 0:
+          context.go('/student/home');
+          break;
+        case 1:
+          context.go('/student/clearance');
+          provider.markClearanceVisited();
+          break;
+        case 2:
+          context.go('/student/profile');
+          break;
+      }
+    }
+
+    // Package your main screen content (including the banner) into a variable
+    Widget mainContent = Stack(
+      children: [
+        isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : widget.child,
+
+        // In-app notification banner
+        if (latestNotification != null)
+          _NotificationBanner(
+            key: ValueKey(latestNotification.time.microsecondsSinceEpoch),
+            notification: latestNotification,
+            onDismiss: () {
+              if (notificationCount > 0) {
+                provider.dismissNotification(notificationCount - 1);
+              }
+            },
+          ),
+      ],
+    );
+
     return Scaffold(
-      body: Stack(
-        children: [
-          isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : widget.child,
-
-          // In-app notification banner (web + mobile foreground)
-          if (latestNotification != null)
-            _NotificationBanner(
-              key: ValueKey(latestNotification.time.microsecondsSinceEpoch),
-              notification: latestNotification,
-              onDismiss: () {
-                if (notificationCount > 0) {
-                  provider.dismissNotification(notificationCount - 1);
-                }
-              },
+      // If Desktop, put the NavigationRail and mainContent side-by-side in a Row
+      body: isMobile
+          ? mainContent
+          : Row(
+              children: [
+                NavigationRail(
+                  selectedIndex: currentIndex,
+                  onDestinationSelected: handleNavigation,
+                  labelType:
+                      NavigationRailLabelType.all, // Shows text under icons
+                  destinations: [
+                    const NavigationRailDestination(
+                      icon: PhosphorIcon(PhosphorIconsLight.house),
+                      selectedIcon: PhosphorIcon(PhosphorIconsLight.house),
+                      label: Text('Home'),
+                    ),
+                    NavigationRailDestination(
+                      icon: Badge(
+                        isLabelVisible: unseenUpdates > 0,
+                        label: Text(unseenUpdates.toString()),
+                        child: const PhosphorIcon(
+                          PhosphorIconsLight.listChecks,
+                        ),
+                      ),
+                      selectedIcon: Badge(
+                        isLabelVisible: unseenUpdates > 0,
+                        label: Text(unseenUpdates.toString()),
+                        child: const PhosphorIcon(
+                          PhosphorIconsLight.listChecks,
+                        ),
+                      ),
+                      label: const Text('Clearance'),
+                    ),
+                    const NavigationRailDestination(
+                      icon: PhosphorIcon(PhosphorIconsLight.user),
+                      selectedIcon: PhosphorIcon(PhosphorIconsLight.user),
+                      label: Text('Profile'),
+                    ),
+                  ],
+                ),
+                // A subtle divider line separating the rail from the content
+                const VerticalDivider(thickness: 1, width: 1),
+                // Expanded makes the mainContent take up the rest of the screen
+                Expanded(child: mainContent),
+              ],
             ),
-        ],
-      ),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: currentIndex,
-        onDestinationSelected: (i) {
-          final leavingClearance = currentIndex == 1 && i != 1;
 
-          if (leavingClearance) {
-            provider.clearChangedSteps();
-          }
-
-          switch (i) {
-            case 0:
-              context.go('/student/home');
-              break;
-            case 1:
-              context.go('/student/clearance');
-              context.read<StudentShellViewModel>().markClearanceVisited();
-              break;
-            case 2:
-              context.go('/student/profile');
-              break;
-          }
-        },
-        destinations: [
-          const NavigationDestination(
-            icon: PhosphorIcon(PhosphorIconsLight.house),
-            selectedIcon: PhosphorIcon(PhosphorIconsLight.house),
-            label: 'Home',
-          ),
-          NavigationDestination(
-            icon: Badge(
-              isLabelVisible: unseenUpdates > 0,
-              label: Text(unseenUpdates.toString()),
-              child: PhosphorIcon(PhosphorIconsLight.listChecks),
-            ),
-            selectedIcon: Badge(
-              isLabelVisible: unseenUpdates > 0,
-              label: Text(unseenUpdates.toString()),
-              child: PhosphorIcon(PhosphorIconsLight.listChecks),
-            ),
-            label: 'Clearance',
-          ),
-          const NavigationDestination(
-            icon: PhosphorIcon(PhosphorIconsLight.user),
-            selectedIcon: PhosphorIcon(PhosphorIconsLight.user),
-            label: 'Profile',
-          ),
-        ],
-      ),
+      // If Mobile, show the bottom nav. If Desktop, hide it.
+      bottomNavigationBar: isMobile
+          ? NavigationBar(
+              selectedIndex: currentIndex,
+              onDestinationSelected: handleNavigation,
+              destinations: [
+                const NavigationDestination(
+                  icon: PhosphorIcon(PhosphorIconsLight.house),
+                  selectedIcon: PhosphorIcon(PhosphorIconsLight.house),
+                  label: 'Home',
+                ),
+                NavigationDestination(
+                  icon: Badge(
+                    isLabelVisible: unseenUpdates > 0,
+                    label: Text(unseenUpdates.toString()),
+                    child: const PhosphorIcon(PhosphorIconsLight.listChecks),
+                  ),
+                  selectedIcon: Badge(
+                    isLabelVisible: unseenUpdates > 0,
+                    label: Text(unseenUpdates.toString()),
+                    child: const PhosphorIcon(PhosphorIconsLight.listChecks),
+                  ),
+                  label: 'Clearance',
+                ),
+                const NavigationDestination(
+                  icon: PhosphorIcon(PhosphorIconsLight.user),
+                  selectedIcon: PhosphorIcon(PhosphorIconsLight.user),
+                  label: 'Profile',
+                ),
+              ],
+            )
+          : null,
     );
   }
 }
 
-// â”€â”€ In-app notification banner â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// In-app notification banner
 class _NotificationBanner extends StatefulWidget {
   final InAppNotification notification;
   final VoidCallback onDismiss;
@@ -192,7 +254,7 @@ class _NotificationBannerState extends State<_NotificationBanner>
         : Theme.of(context).colorScheme.error;
 
     return Positioned(
-      top: MediaQuery.of(context).padding.top + 8,
+      top: MediaQuery.of(context).padding.top + 16,
       left: 16,
       right: 16,
       child: SlideTransition(

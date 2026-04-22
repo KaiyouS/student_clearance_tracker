@@ -151,7 +151,7 @@ class _AdminDashboardScreenContent extends StatelessWidget {
   }
 }
 
-// â”€â”€ Stat card widget â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// —— Stat card widget —————————————————————————————————————————
 class _StatCard extends StatelessWidget {
   final String label;
   final int value;
@@ -168,12 +168,20 @@ class _StatCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 200,
+      width: 250,
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
+        color: Theme.of(context).colorScheme.surfaceContainer,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Theme.of(context).dividerColor),
+        border: Border.all(color: Theme.of(context).colorScheme.surfaceContainer),
+        boxShadow: [
+        BoxShadow(
+          color: Colors.black.withValues(alpha: 0.1), // Shadow color
+          spreadRadius: 1, // How much the shadow spreads
+          blurRadius: 10, // How soft the shadow is
+          offset: Offset(0, 5), // Changes position of shadow (x, y)
+        ),
+      ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

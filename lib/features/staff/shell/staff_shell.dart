@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:student_clearance_tracker/core/constants/app_config.dart';
 import 'package:student_clearance_tracker/core/models/office.dart';
 import 'package:student_clearance_tracker/features/staff/shell/viewmodel/staff_shell_viewmodel.dart';
 import 'package:student_clearance_tracker/core/services/auth_service.dart';
@@ -58,7 +59,7 @@ class _StaffShellState extends State<StaffShell> {
           children: [
             // App name
             Text(
-              'Clearance Tracker',
+              AppConfig.appName,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -142,7 +143,7 @@ class _StaffShellState extends State<StaffShell> {
   }
 }
 
-// â”€â”€ Office selector dropdown â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// —— Office selector dropdown ——————————————————————————————————
 class _OfficeSelector extends StatelessWidget {
   final List<Office> offices;
   final Office? selectedOffice;

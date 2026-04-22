@@ -31,7 +31,7 @@ class AcademicPeriodsTable extends StatelessWidget {
             children: [
               TableRow(
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surface,
+                  color: Theme.of(context).colorScheme.surfaceContainer,
                 ),
                 children: [
                   _headerCell(context, 'Label'),

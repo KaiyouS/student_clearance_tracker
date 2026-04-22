@@ -69,7 +69,7 @@ class _UpdatePasswordScreenContentState
     final vm = context.watch<UpdatePasswordViewModel>();
 
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surface,
+      backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.surface,
         title: const Text('Change Password'),
@@ -131,6 +131,7 @@ class _UpdatePasswordScreenContentState
                 textInputAction: TextInputAction.done,
                 onFieldSubmitted: (_) => _handleSubmit(),
               ),
+              const SizedBox(height: AppDimensions.sm),            
               UpdatePasswordActions(
                 isLoading: vm.isLoading,
                 errorMessage: vm.errorMessage,
