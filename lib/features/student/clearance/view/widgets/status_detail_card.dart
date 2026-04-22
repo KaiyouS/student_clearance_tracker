@@ -21,7 +21,7 @@ class StatusDetailCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
+        color: Theme.of(context).colorScheme.surfaceContainer,
         borderRadius: BorderRadius.circular(AppDimensions.radiusXl),
         border: Border.all(color: Theme.of(context).dividerColor),
       ),

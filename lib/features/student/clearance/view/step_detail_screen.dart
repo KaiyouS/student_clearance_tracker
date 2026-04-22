@@ -18,7 +18,7 @@ class StepDetailScreen extends StatelessWidget {
         backgroundColor: Theme.of(context).colorScheme.surface,
         appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.surface,
-          title: const Text('Step Details'),
+          title: const Text('Clearance Details'),
           leading: IconButton(
             icon: const PhosphorIcon(PhosphorIconsLight.arrowLeft),
             onPressed: () => Navigator.of(context).pop(),
