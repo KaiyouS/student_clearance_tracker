@@ -3,6 +3,7 @@ import 'package:student_clearance_tracker/core/models/program.dart';
 import 'package:student_clearance_tracker/core/repositories/program_repository.dart';
 import 'package:student_clearance_tracker/core/repositories/student_repository.dart';
 import 'package:student_clearance_tracker/core/services/auth_service.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class StudentOnboardingViewModel extends ChangeNotifier {
   final _programRepo = ProgramRepository();
@@ -53,7 +54,7 @@ class StudentOnboardingViewModel extends ChangeNotifier {
       final email = user?.email;
       if (user == null || !_authService.isAllowedStudentEmail(email)) {
         await _authService.signOut();
-        throw Exception('Use your addu.edu.ph Google account to continue.');
+        throw AuthException('Only institutional (.edu) email accounts are allowed.');
       }
 
       await _studentRepo.completeOnboarding(

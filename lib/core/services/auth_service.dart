@@ -14,16 +14,18 @@ class GoogleAuthSignInResult {
 }
 
 class AuthService {
-  static bool _googleInitialized = false;
+  static String? _googleInitializedDomain;
 
   Future<void> _ensureGoogleInitialized() async {
-    if (_googleInitialized) return;
+    final targetDomain = AppConfig.allowNonEduEmails ? null : 'addu.edu.ph';
+    
+    if (_googleInitializedDomain == (targetDomain ?? '')) return;
 
     await GoogleSignIn.instance.initialize(
       serverClientId: AppConfig.googleWebClientId,
-      hostedDomain: AppConfig.allowNonAdduEmails ? null : 'addu.edu.ph',
+      hostedDomain: targetDomain,
     );
-    _googleInitialized = true;
+    _googleInitializedDomain = targetDomain ?? '';
   }
 
   // Sign in with email and password
@@ -42,7 +44,7 @@ class AuthService {
       throw AuthException('Google sign in is not available on this platform.');
     }
 
-    // Force account selection to avoid silently reusing a previous non-ADdU account.
+    // Force account selection to avoid silently reusing a previous non-edu account.
     try {
       await GoogleSignIn.instance.signOut();
     } catch (_) {
@@ -63,7 +65,7 @@ class AuthService {
       } catch (_) {
         // Ignore cleanup failures.
       }
-      throw AuthException('Use your addu.edu.ph Google account to continue.');
+      throw AuthException('Only institutional (.edu) email accounts are allowed.');
     }
 
     final auth = account.authentication;
@@ -104,18 +106,17 @@ class AuthService {
   }
 
   bool isAllowedStudentEmail(String? email) {
-    if (AppConfig.allowNonAdduEmails) return true;
+    if (AppConfig.allowNonEduEmails) return true;
     if (email == null) return false;
-    return RegExp(
-      r'^[^@\s]+@addu\.edu\.ph$',
-      caseSensitive: false,
-    ).hasMatch(email.trim());
+    // Check the domain portion only, not the full email string
+    final domain = email.split('@').last.toLowerCase();
+    return domain.endsWith('.edu') || domain.contains('.edu.');
   }
 
   // Sign out
   Future<void> signOut() async {
     try {
-      if (_googleInitialized) {
+      if (_googleInitializedDomain != null) {
         await GoogleSignIn.instance.signOut();
       }
     } catch (_) {

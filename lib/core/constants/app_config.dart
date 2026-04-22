@@ -20,13 +20,13 @@ class AppConfig {
   // App Metadata
   static const String appName = 'GradPass';
 
-  static const String _allowNonAdduEmailsRaw = String.fromEnvironment(
-    'ALLOW_NON_ADDU_EMAILS',
+  static const String _allowNonEduEmailsRaw = String.fromEnvironment(
+    'ALLOW_NON_EDU_EMAILS',
     defaultValue: 'false',
   );
 
-  static bool get allowNonAdduEmails {
-    final normalized = _allowNonAdduEmailsRaw.trim().toLowerCase();
+  static bool get allowNonEduEmails {
+    final normalized = _allowNonEduEmailsRaw.trim().toLowerCase();
     return normalized == 'true' || normalized == '1' || normalized == 'yes';
   }
 }

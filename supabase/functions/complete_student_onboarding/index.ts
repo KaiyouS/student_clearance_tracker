@@ -46,9 +46,10 @@ Deno.serve(async (req) => {
     }
 
     const email = user.email?.toLowerCase() ?? ''
-    if (!allowNonAdduEmails && !email.endsWith('@addu.edu.ph')) {
+    const isEduEmail = email.endsWith('.edu') || email.endsWith('.edu.ph')
+    if (!allowNonEduEmails && !isEduEmail) {
       return new Response(
-        JSON.stringify({ error: 'Only addu.edu.ph student accounts are allowed.' }),
+        JSON.stringify({ error: 'Only institutional (.edu) email accounts are allowed.' }),
         { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }

@@ -1,6 +1,8 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:student_clearance_tracker/core/constants/app_assets.dart';
 import 'package:student_clearance_tracker/core/theme/app_dimensions.dart';
 import 'package:student_clearance_tracker/features/auth/view/widgets/email_input_field.dart';
 import 'package:student_clearance_tracker/features/auth/view/widgets/login/login_actions.dart';
@@ -106,7 +108,73 @@ class _LoginScreenContentState extends State<_LoginScreenContent> {
                       errorMessage: vm.errorMessage,
                       onSignIn: _handleLogin,
                     ),
-                    const SizedBox(height: AppDimensions.xl * 3),
+                    if (kIsWeb) SizedBox(height: AppDimensions.xl * 3),
+                    if (!kIsWeb) ...[
+                      SizedBox(height: AppDimensions.lg),
+                      Row(
+                        children: [
+                          const Expanded(child: Divider(thickness: 1)),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16.0,
+                            ),
+                            child: Text(
+                              'or',
+                              style: TextStyle(
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurface.withValues(alpha: 0.6),
+                                fontSize: 14,
+                              ),
+                            ),
+                          ),
+                          const Expanded(child: Divider(thickness: 1)),
+                        ],
+                      ),
+                      SizedBox(height: AppDimensions.lg),
+
+                      GestureDetector(
+                        onTap: vm.isLoading ? null : _handleGoogleLogin,
+                        child: Opacity(
+                          opacity: vm.isLoading ? 0.5 : 1.0,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Container(
+                                width: 48,
+                                height: 48,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(
+                                    AppDimensions.radiusSm,
+                                  ),
+                                ),
+                                padding: const EdgeInsets.all(
+                                  8,
+                                ),
+                                child: Image.asset(
+                                  AppAssets.googleLogo,
+                                  fit: BoxFit.contain,
+                                ),
+                              ),
+
+                              const SizedBox(
+                                height: 8,
+                              ),
+                              const Text(
+                                'Google',
+                                style: TextStyle(
+                                  color: Colors
+                                      .white,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   ],
                 ),
               ),

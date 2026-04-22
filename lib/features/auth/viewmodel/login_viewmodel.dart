@@ -74,7 +74,7 @@ class LoginViewModel extends ChangeNotifier {
     final email = _resolveGoogleEmail(user, googleEmailHint: googleEmailHint);
     if (allowGoogleOnboarding && !_authService.isAllowedStudentEmail(email)) {
       await _authService.signOut();
-      throw AuthException('Use your addu.edu.ph Google account to continue.');
+      throw AuthException('Use your .edu Google account to continue.');
     }
 
     final profile = await _profileRepo.getById(user.id);
