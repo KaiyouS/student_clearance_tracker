@@ -14,6 +14,7 @@ class EmailInputField extends StatelessWidget {
       textInputAction: TextInputAction.next,
       decoration: const InputDecoration(
         labelText: 'Email',
+        hintText: 'Email',
         prefixIcon: PhosphorIcon(PhosphorIconsLight.envelope),
       ),
       validator: (value) {

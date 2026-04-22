@@ -33,6 +33,7 @@ class _PasswordInputFieldState extends State<PasswordInputField> {
       obscureText: _obscureText,
       decoration: InputDecoration(
         labelText: widget.labelText,
+        hintText: widget.labelText,
         prefixIcon: PhosphorIcon(widget.prefixIcon),
         suffixIcon: IconButton(
           icon: PhosphorIcon(
