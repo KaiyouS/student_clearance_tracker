@@ -35,14 +35,10 @@ class _StudentShellState extends State<StudentShell> {
     final isLoading = context.select<StudentShellViewModel, bool>(
       (p) => p.isLoading,
     );
-    // final latestNotification = context
-    //     .select<StudentShellViewModel, InAppNotification?>(
-    //       (p) => p.latestNotification,
-    //     );
-    final latestNotification = InAppNotification(
-      officeName: 'Test A',
-      status: "signed", // Change to 'flagged' to test the red error color!
-    );
+    final latestNotification = context
+        .select<StudentShellViewModel, InAppNotification?>(
+          (p) => p.latestNotification,
+        );
     final notificationCount = context.select<StudentShellViewModel, int>(
       (p) => p.notifications.length,
     );
