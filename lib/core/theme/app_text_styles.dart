@@ -10,4 +10,5 @@ abstract final class AppTextStyles {
   static const bodySm   = TextStyle(fontSize: 13);
   static const caption  = TextStyle(fontSize: 12);
   static const label    = TextStyle(fontSize: 11, fontWeight: FontWeight.w600, letterSpacing: 0.5);
+  static const button   = TextStyle(fontSize: 16, fontWeight: FontWeight.bold);
 }

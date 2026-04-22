@@ -9,43 +9,55 @@ abstract final class AppTheme {
 
   static ThemeData _build(Brightness brightness) {
     final isDark = brightness == Brightness.dark;
-    final colorScheme =
-        ColorScheme.fromSeed(
-          seedColor: AppColors.primary,
-          brightness: brightness,
-          surface: isDark ? AppColors.darkSurface : AppColors.lightSurface,
-        ).copyWith(
-          error: AppColors.danger,
-          tertiary: AppColors.accent,
-          outline: isDark ? AppColors.darkBorder : AppColors.lightBorder,
-        );
+    
+    final colorScheme = ColorScheme.fromSeed(
+      seedColor: AppColors.primary,
+      brightness: brightness,
+      surface: isDark ? AppColors.darkBackground : AppColors.lightBackground,
+    ).copyWith(
+      primary: AppColors.primary,
+      error: AppColors.danger,
+      tertiary: AppColors.accent,
+      outline: isDark ? AppColors.darkBorder : AppColors.lightBorder,
+      surfaceContainer: isDark ? AppColors.darkSurfaceBase : AppColors.lightSurfaceBase,
+      surfaceContainerHigh: isDark ? AppColors.darkSurfaceElevated : AppColors.lightSurfaceElevated,
+      surfaceContainerHighest: isDark ? AppColors.darkSurfaceOverlay : AppColors.lightSurfaceOverlay,
+    );
 
     return ThemeData(
       useMaterial3: true,
       brightness: brightness,
       colorScheme: colorScheme,
       textTheme: _textTheme(isDark),
-      scaffoldBackgroundColor: isDark
-          ? AppColors.darkBackground
-          : AppColors.lightBackground,
-      cardColor: isDark ? AppColors.darkSurface : AppColors.lightSurface,
+      scaffoldBackgroundColor: colorScheme.surface,
       dividerColor: isDark ? AppColors.darkBorder : AppColors.lightBorder,
 
-      // Input fields
+      // ── Cards ──
+      cardTheme: CardThemeData(
+        color: colorScheme.surfaceContainer,
+        elevation: 2,
+        margin: EdgeInsets.zero,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppDimensions.radiusLg),
+          side: BorderSide.none,
+        ),
+      ),
+
+      // ── Input Fields ──
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: isDark ? AppColors.darkSurface : AppColors.lightSurface,
+        fillColor: colorScheme.surfaceContainerHighest,
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: AppDimensions.paddingHorizontal,
+          vertical: AppDimensions.paddingVertical,
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
-          borderSide: BorderSide(
-            color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
-          ),
+          borderSide: BorderSide.none,
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
-          borderSide: BorderSide(
-            color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
-          ),
+          borderSide: BorderSide.none,
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
@@ -53,48 +65,57 @@ abstract final class AppTheme {
         ),
       ),
 
-      // Buttons
+      // ── Buttons ──
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
+          elevation: 2,
           backgroundColor: AppColors.primary,
           foregroundColor: Colors.white,
-          // minimumSize: const Size.fromHeight(AppDimensions.buttonHeight),
-          minimumSize: Size(0, AppDimensions.buttonHeight),
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppDimensions.paddingHorizontal,
+            vertical: AppDimensions.paddingVertical,
+          ),
+          minimumSize: const Size(0, AppDimensions.buttonHeight),
+          textStyle: AppTextStyles.button,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
           ),
         ),
       ),
 
-      // App bar
+      // ── Overlays (Dialogs & Bottom Sheets) ──
+      dialogTheme: DialogThemeData(
+        backgroundColor: colorScheme.surfaceContainerHighest,
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppDimensions.radiusLg),
+        ),
+      ),
+      bottomSheetTheme: BottomSheetThemeData(
+        backgroundColor: colorScheme.surfaceContainerHighest,
+        elevation: 0,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(AppDimensions.radiusLg)),
+        ),
+      ),
+
+      // ── Navigation ──
       appBarTheme: AppBarTheme(
-        backgroundColor: isDark
-            ? AppColors.darkSurface
-            : AppColors.lightSurface,
-        foregroundColor: isDark
-            ? AppColors.darkTextPrimary
-            : AppColors.lightTextPrimary,
+        backgroundColor: colorScheme.surfaceContainer,
+        foregroundColor: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
         elevation: 0,
         surfaceTintColor: Colors.transparent,
       ),
-
-      // Bottom nav (student app)
       navigationBarTheme: NavigationBarThemeData(
-        backgroundColor: isDark
-            ? AppColors.darkSurface
-            : AppColors.lightSurface,
-        indicatorColor: colorScheme.primary.withValues(alpha: 0.12),
+        backgroundColor: colorScheme.surfaceContainer,
+        indicatorColor: AppColors.primary.withValues(alpha: 0.12),
       ),
     );
   }
 
   static TextTheme _textTheme(bool isDark) {
-    final primary = isDark
-        ? AppColors.darkTextPrimary
-        : AppColors.lightTextPrimary;
-    final secondary = isDark
-        ? AppColors.darkTextSecondary
-        : AppColors.lightTextSecondary;
+    final primary = isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
+    final secondary = isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
 
     return TextTheme(
       displaySmall: AppTextStyles.heading1.copyWith(color: primary),
