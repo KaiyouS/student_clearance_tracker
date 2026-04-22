@@ -100,8 +100,8 @@ class ClearanceStepCard extends StatelessWidget {
                   padding: const EdgeInsets.all(AppDimensions.md),
                   decoration: BoxDecoration(
                     color: isDark
-                        ? Theme.of(context).colorScheme.surface
-                        : Theme.of(context).colorScheme.surface,
+                        ? Theme.of(context).colorScheme.surfaceContainer
+                        : Theme.of(context).colorScheme.surfaceContainer,
                     borderRadius: BorderRadius.circular(AppDimensions.radiusLg),
                     border: Border.all(
                       color: step.status == 'flagged'

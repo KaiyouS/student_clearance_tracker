@@ -16,7 +16,7 @@ class ClearanceStepsList extends StatelessWidget {
       physics: const AlwaysScrollableScrollPhysics(),
       slivers: [
         SliverPadding(
-          padding: const EdgeInsets.fromLTRB(20, 24, 20, 12),
+          padding: const EdgeInsets.fromLTRB(20, 48, 20, 12),
           sliver: SliverToBoxAdapter(
             child: Text(
               'Clearance Steps',
@@ -27,7 +27,7 @@ class ClearanceStepsList extends StatelessWidget {
           ),
         ),
         SliverPadding(
-          padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+          padding: const EdgeInsets.fromLTRB(20, 15, 20, 24),
           sliver: SliverList(
             delegate: SliverChildBuilderDelegate(
               (context, i) =>
