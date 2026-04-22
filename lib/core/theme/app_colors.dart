@@ -21,12 +21,12 @@ abstract final class AppColors {
   static const lightBorder = Color(0xFFE5E7EB);
 
   // ── Dark Tokens (FoodPanda Stepping) ───────────────────────────────────────
-  static const darkBackground = Color(0xFF121212); // App "Floor"
-  static const darkSurfaceBase = Color(0xFF1E1E1E); // Default Cards (Level 1)
+  static const darkBackground = Color(0xFF090909); // App "Floor"
+  static const darkSurfaceBase = Color(0xFF121212); // Default Cards (Level 1)
   static const darkSurfaceElevated = Color(0xFF2C2C2C); // Important Cards (Level 2)
-  static const darkSurfaceOverlay = Color(0xFF383838); // Dialogs/Dropdowns (Level 3)
+  static const darkSurfaceOverlay = Color(0xFF2C2C2C); // Dialogs/Dropdowns/Fields (Level 3)
   
-  static const darkTextPrimary = Color(0xFFF9FAFB);
+  static const darkTextPrimary = Color(0xFFF9FAFB); 
   static const darkTextSecondary = Color(0xFF9CA3AF);
   static const darkBorder = Color(0xFF2D3748);
 
