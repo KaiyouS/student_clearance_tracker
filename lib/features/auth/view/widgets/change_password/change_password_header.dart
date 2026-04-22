@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:student_clearance_tracker/core/constants/app_assets.dart';
 import 'package:student_clearance_tracker/core/theme/app_dimensions.dart';
 import 'package:student_clearance_tracker/core/theme/app_text_styles.dart';
