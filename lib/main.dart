@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:student_clearance_tracker/core/constants/app_config.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -27,8 +28,13 @@ void main() async {
     // Already initialized — safe to ignore
     debugPrint('Supabase already initialized: $e');
   }
-
-  runApp(MyApp(themeProvider: themeProvider));
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]).then((_) {
+    runApp(MyApp(themeProvider: themeProvider));
+  });
 }
 
 final supabase = Supabase.instance.client;
