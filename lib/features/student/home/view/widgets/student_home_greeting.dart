@@ -18,7 +18,7 @@ class StudentHomeGreeting extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Hi, ${firstName ?? 'Student'}! 👋',
+          'Hello, ${firstName ?? 'Student'}!',
           style: Theme.of(
             context,
           ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
