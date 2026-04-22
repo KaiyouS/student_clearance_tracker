@@ -7,6 +7,9 @@ import 'package:student_clearance_tracker/features/student/shell/viewmodel/stude
 import 'package:student_clearance_tracker/core/providers/theme_provider.dart';
 import 'package:student_clearance_tracker/core/theme/app_theme.dart';
 import 'package:student_clearance_tracker/router/app_routes.dart';
+
+// —— SERRA, KAIYOU ————————————————————————————————————————————————————————————
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
