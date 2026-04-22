@@ -148,6 +148,14 @@ class _LoginScreenContentState extends State<_LoginScreenContent> {
                                   borderRadius: BorderRadius.circular(
                                     AppDimensions.radiusSm,
                                   ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey.withValues(alpha: 0.4),
+                                      spreadRadius: 2,
+                                      blurRadius: 10,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ]
                                 ),
                                 padding: const EdgeInsets.all(
                                   8,
