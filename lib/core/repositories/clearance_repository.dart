@@ -4,9 +4,16 @@ import 'package:student_clearance_tracker/core/models/clearance_step.dart';
 class ClearanceRepository {
   // ── Admin: all students' clearance status for current period ──
   Future<List<Map<String, dynamic>>> getAdminOverview() async {
+    final period = await supabase
+        .from('academic_periods')
+        .select('id')
+        .eq('is_current', true)
+        .single();
+    final periodId = period['id'] as int;
     final data = await supabase
         .from('student_clearance_status')
         .select()
+        .eq('academic_period_id', periodId)
         .order('full_name');
     return List<Map<String, dynamic>>.from(data);
   }
