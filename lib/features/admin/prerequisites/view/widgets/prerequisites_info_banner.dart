@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class PrerequisitesInfoBanner extends StatelessWidget {
   final String officeName;
@@ -18,12 +19,19 @@ class PrerequisitesInfoBanner extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Icon(Icons.info_outline, size: 16, color: Theme.of(context).colorScheme.primary),
+          PhosphorIcon(
+            PhosphorIconsLight.info,
+            size: 16,
+            color: Theme.of(context).colorScheme.primary,
+          ),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
               'The listed offices must sign the student\'s clearance before "$officeName" can sign.',
-              style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.primary),
+              style: TextStyle(
+                fontSize: 12,
+                color: Theme.of(context).colorScheme.primary,
+              ),
             ),
           ),
         ],
@@ -31,4 +39,3 @@ class PrerequisitesInfoBanner extends StatelessWidget {
     );
   }
 }
-

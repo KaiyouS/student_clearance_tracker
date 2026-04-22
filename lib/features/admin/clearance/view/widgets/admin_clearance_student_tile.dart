@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:student_clearance_tracker/features/admin/clearance/viewmodel/admin_clearance_viewmodel.dart';
 
 class AdminClearanceStudentTile extends StatelessWidget {
@@ -60,8 +61,8 @@ class AdminClearanceStudentTile extends StatelessWidget {
                         ),
                       ),
                       if (flagged > 0)
-                        Icon(
-                          Icons.flag,
+                        PhosphorIcon(
+                          PhosphorIconsLight.flag,
                           size: 14,
                           color: Theme.of(context).colorScheme.error,
                         ),
@@ -112,4 +113,3 @@ class AdminClearanceStudentTile extends StatelessWidget {
     );
   }
 }
-

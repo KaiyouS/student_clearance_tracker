@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:student_clearance_tracker/features/student/shell/viewmodel/student_shell_viewmodel.dart';
 
 class ClearanceStatusCard extends StatelessWidget {
@@ -42,8 +43,10 @@ class ClearanceStatusCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(
-                isComplete ? Icons.verified_outlined : Icons.pending_outlined,
+              PhosphorIcon(
+                isComplete
+                    ? PhosphorIconsLight.sealCheck
+                    : PhosphorIconsLight.hourglass,
                 color: color,
                 size: 24,
               ),
@@ -84,4 +87,3 @@ class ClearanceStatusCard extends StatelessWidget {
     );
   }
 }
-

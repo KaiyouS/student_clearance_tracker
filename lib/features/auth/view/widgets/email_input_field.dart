@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class EmailInputField extends StatelessWidget {
   final TextEditingController controller;
@@ -13,7 +14,7 @@ class EmailInputField extends StatelessWidget {
       textInputAction: TextInputAction.next,
       decoration: const InputDecoration(
         labelText: 'Email',
-        prefixIcon: Icon(Icons.email_outlined),
+        prefixIcon: PhosphorIcon(PhosphorIconsLight.envelope),
       ),
       validator: (value) {
         final email = value?.trim() ?? '';

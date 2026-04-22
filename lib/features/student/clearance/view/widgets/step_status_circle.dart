@@ -1,4 +1,5 @@
 ﻿import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 
 class StepStatusCircle extends StatelessWidget {
@@ -8,11 +9,11 @@ class StepStatusCircle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = AppColors.forStatus( status);
+    final color = AppColors.forStatus(status);
     final icon = switch (status) {
-      'signed' => Icons.check,
-      'flagged' => Icons.flag,
-      _ => Icons.circle_outlined,
+      'signed' => PhosphorIconsRegular.check,
+      'flagged' => PhosphorIconsRegular.flag,
+      _ => PhosphorIconsRegular.circle,
     };
 
     return Container(
@@ -23,8 +24,7 @@ class StepStatusCircle extends StatelessWidget {
         shape: BoxShape.circle,
         border: Border.all(color: color, width: 2),
       ),
-      child: Icon(icon, size: 14, color: color),
+      child: PhosphorIcon(icon, size: 14, color: color),
     );
   }
 }
-

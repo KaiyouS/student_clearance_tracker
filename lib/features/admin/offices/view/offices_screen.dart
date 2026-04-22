@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:student_clearance_tracker/core/models/office.dart';
 import 'package:student_clearance_tracker/core/theme/app_dimensions.dart';
 import 'package:student_clearance_tracker/core/theme/app_text_styles.dart';
@@ -123,7 +124,7 @@ class _OfficesScreenContent extends StatelessWidget {
                 ),
                 ElevatedButton.icon(
                   onPressed: vm.isLoading ? null : () => _handleCreate(context),
-                  icon: const Icon(Icons.add),
+                  icon: const PhosphorIcon(PhosphorIconsLight.plus),
                   label: const Text('Add Office'),
                 ),
               ],
@@ -136,7 +137,7 @@ class _OfficesScreenContent extends StatelessWidget {
                 onChanged: context.read<OfficesViewModel>().search,
                 decoration: const InputDecoration(
                   hintText: 'Search offices...',
-                  prefixIcon: Icon(Icons.search),
+                  prefixIcon: PhosphorIcon(PhosphorIconsLight.magnifyingGlass),
                 ),
               ),
             ),
@@ -241,7 +242,10 @@ class _OfficesScreenContent extends StatelessWidget {
                       Row(
                         children: [
                           IconButton(
-                            icon: const Icon(Icons.edit_outlined, size: 18),
+                            icon: const PhosphorIcon(
+                              PhosphorIconsLight.pencilSimple,
+                              size: 18,
+                            ),
                             color: Theme.of(context).colorScheme.primary,
                             tooltip: 'Edit',
                             onPressed: vm.isLoading
@@ -249,7 +253,10 @@ class _OfficesScreenContent extends StatelessWidget {
                                 : () => _handleEdit(context, office),
                           ),
                           IconButton(
-                            icon: const Icon(Icons.delete_outline, size: 18),
+                            icon: const PhosphorIcon(
+                              PhosphorIconsLight.trash,
+                              size: 18,
+                            ),
                             color: Theme.of(context).colorScheme.error,
                             tooltip: 'Delete',
                             onPressed: vm.isLoading

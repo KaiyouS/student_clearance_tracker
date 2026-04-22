@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:student_clearance_tracker/core/theme/app_dimensions.dart';
 import 'package:student_clearance_tracker/features/auth/view/widgets/password_input_field.dart';
@@ -73,7 +74,7 @@ class _UpdatePasswordScreenContentState
         backgroundColor: Theme.of(context).colorScheme.surface,
         title: const Text('Change Password'),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const PhosphorIcon(PhosphorIconsLight.arrowLeft),
           onPressed: () => context.pop(),
         ),
       ),
@@ -112,7 +113,7 @@ class _UpdatePasswordScreenContentState
                   return null;
                 },
                 textInputAction: TextInputAction.next,
-                prefixIcon: Icons.lock_reset_outlined,
+                prefixIcon: PhosphorIconsLight.key,
               ),
               const SizedBox(height: AppDimensions.md),
               PasswordInputField(

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:student_clearance_tracker/core/models/student.dart';
 import 'package:student_clearance_tracker/core/widgets/app_card.dart';
-import 'package:student_clearance_tracker/admin/widgets/account_status_menu.dart'; // Adjust if you moved this to core/widgets
+import 'package:student_clearance_tracker/admin/widgets/account_status_menu.dart';
 import 'package:student_clearance_tracker/features/admin/students/view/student_form_dialog.dart';
 import 'package:student_clearance_tracker/features/admin/students/viewmodel/students_viewmodel.dart';
 
@@ -30,7 +31,10 @@ class _StudentsScreenContent extends StatelessWidget {
     final success = await vm.createStudent(result);
 
     if (success && context.mounted) {
-      _showSuccess(context, 'Student created. They can log in with their email and student number as password.');
+      _showSuccess(
+        context,
+        'Student created. They can log in with their email and student number as password.',
+      );
     } else if (!success && context.mounted && vm.errorMessage != null) {
       _showError(context, vm.errorMessage!);
     }
@@ -51,10 +55,14 @@ class _StudentsScreenContent extends StatelessWidget {
     }
   }
 
-  Future<void> _handleUpdateStatus(BuildContext context, Student student, String newStatus) async {
+  Future<void> _handleUpdateStatus(
+    BuildContext context,
+    Student student,
+    String newStatus,
+  ) async {
     final vm = context.read<StudentsViewModel>();
     final success = await vm.updateStatus(student.id, newStatus);
-    
+
     if (success && context.mounted) {
       _showSuccess(context, 'Account status updated to $newStatus.');
     } else if (!success && context.mounted && vm.errorMessage != null) {
@@ -64,13 +72,19 @@ class _StudentsScreenContent extends StatelessWidget {
 
   void _showSuccess(BuildContext context, String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message), backgroundColor: Theme.of(context).colorScheme.tertiary),
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Theme.of(context).colorScheme.tertiary,
+      ),
     );
   }
 
   void _showError(BuildContext context, String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message), backgroundColor: Theme.of(context).colorScheme.error),
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Theme.of(context).colorScheme.error,
+      ),
     );
   }
 
@@ -91,20 +105,39 @@ class _StudentsScreenContent extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Students', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface)),
+                      Text(
+                        'Students',
+                        style: TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                      ),
                       const SizedBox(height: 4),
-                      Text('Manage student accounts, programs, and access.', style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65), fontSize: 14)),
+                      Text(
+                        'Manage student accounts, programs, and access.',
+                        style: TextStyle(
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onSurface.withValues(alpha: 0.65),
+                          fontSize: 14,
+                        ),
+                      ),
                     ],
                   ),
                 ),
                 if (vm.isSaving)
                   const Padding(
                     padding: EdgeInsets.only(right: 16),
-                    child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)),
+                    child: SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
                   ),
                 ElevatedButton.icon(
                   onPressed: vm.isSaving ? null : () => _handleCreate(context),
-                  icon: const Icon(Icons.add),
+                  icon: const PhosphorIcon(PhosphorIconsLight.plus),
                   label: const Text('Add Student'),
                 ),
               ],
@@ -114,7 +147,10 @@ class _StudentsScreenContent extends StatelessWidget {
               width: 320,
               child: TextField(
                 onChanged: context.read<StudentsViewModel>().search,
-                decoration: const InputDecoration(hintText: 'Search by name or student no...', prefixIcon: Icon(Icons.search)),
+                decoration: const InputDecoration(
+                  hintText: 'Search by name or student no...',
+                  prefixIcon: PhosphorIcon(PhosphorIconsLight.magnifyingGlass),
+                ),
               ),
             ),
             const SizedBox(height: 16),
@@ -134,9 +170,15 @@ class _StudentsScreenContent extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(vm.errorMessage!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
+            Text(
+              vm.errorMessage!,
+              style: TextStyle(color: Theme.of(context).colorScheme.error),
+            ),
             const SizedBox(height: 8),
-            ElevatedButton(onPressed: vm.loadStudents, child: const Text('Retry')),
+            ElevatedButton(
+              onPressed: vm.loadStudents,
+              child: const Text('Retry'),
+            ),
           ],
         ),
       );
@@ -144,8 +186,14 @@ class _StudentsScreenContent extends StatelessWidget {
     if (vm.filteredStudents.isEmpty) {
       return Center(
         child: Text(
-          vm.searchQuery.isEmpty ? 'No students yet.' : 'No students match "${vm.searchQuery}".',
-          style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65)),
+          vm.searchQuery.isEmpty
+              ? 'No students yet.'
+              : 'No students match "${vm.searchQuery}".',
+          style: TextStyle(
+            color: Theme.of(
+              context,
+            ).colorScheme.onSurface.withValues(alpha: 0.65),
+          ),
         ),
       );
     }
@@ -165,7 +213,9 @@ class _StudentsScreenContent extends StatelessWidget {
             },
             children: [
               TableRow(
-                decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surface,
+                ),
                 children: [
                   _headerCell(context, 'Name'),
                   _headerCell(context, 'Student No.'),
@@ -176,26 +226,58 @@ class _StudentsScreenContent extends StatelessWidget {
               ),
               ...vm.filteredStudents.map(
                 (student) => TableRow(
-                  decoration: BoxDecoration(border: Border(top: BorderSide(color: Theme.of(context).dividerColor))),
+                  decoration: BoxDecoration(
+                    border: Border(
+                      top: BorderSide(color: Theme.of(context).dividerColor),
+                    ),
+                  ),
                   children: [
                     _dataCell(
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(student.profile?.fullName ?? 'Unknown', style: TextStyle(fontWeight: FontWeight.w500, color: Theme.of(context).colorScheme.onSurface)),
+                          Text(
+                            student.profile?.fullName ?? 'Unknown',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w500,
+                              color: Theme.of(context).colorScheme.onSurface,
+                            ),
+                          ),
                         ],
                       ),
                     ),
                     _dataCell(
-                      Text(student.studentNo, style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65), fontSize: 13)),
+                      Text(
+                        student.studentNo,
+                        style: TextStyle(
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onSurface.withValues(alpha: 0.65),
+                          fontSize: 13,
+                        ),
+                      ),
                     ),
                     _dataCell(
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(student.program?.name ?? 'No Program', style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 13)),
+                          Text(
+                            student.program?.name ?? 'No Program',
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.onSurface,
+                              fontSize: 13,
+                            ),
+                          ),
                           if (student.yearLevel != null)
-                            Text('Year ${student.yearLevel}', style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65))),
+                            Text(
+                              'Year ${student.yearLevel}',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurface.withValues(alpha: 0.65),
+                              ),
+                            ),
                         ],
                       ),
                     ),
@@ -203,7 +285,8 @@ class _StudentsScreenContent extends StatelessWidget {
                       student.profile != null
                           ? AccountStatusMenu(
                               currentStatus: student.profile!.accountStatus,
-                              onStatusChanged: (s) => _handleUpdateStatus(context, student, s),
+                              onStatusChanged: (s) =>
+                                  _handleUpdateStatus(context, student, s),
                             )
                           : const SizedBox.shrink(),
                     ),
@@ -211,14 +294,24 @@ class _StudentsScreenContent extends StatelessWidget {
                       Row(
                         children: [
                           IconButton(
-                            icon: const Icon(Icons.edit_outlined, size: 18),
+                            icon: const PhosphorIcon(
+                              PhosphorIconsLight.pencilSimple,
+                              size: 18,
+                            ),
                             color: Theme.of(context).colorScheme.primary,
                             tooltip: 'Edit',
-                            onPressed: vm.isSaving ? null : () => _handleEdit(context, student),
+                            onPressed: vm.isSaving
+                                ? null
+                                : () => _handleEdit(context, student),
                           ),
                           IconButton(
-                            icon: const Icon(Icons.delete_outline, size: 18),
-                            color: Theme.of(context).dividerColor, // Grayed out as in original
+                            icon: const PhosphorIcon(
+                              PhosphorIconsLight.trash,
+                              size: 18,
+                            ),
+                            color: Theme.of(
+                              context,
+                            ).dividerColor, // Grayed out as in original
                             tooltip: 'Delete (Disabled)',
                             onPressed: null, // Disabled in your original file
                           ),
@@ -239,7 +332,11 @@ class _StudentsScreenContent extends StatelessWidget {
     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
     child: Text(
       label,
-      style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65)),
+      style: TextStyle(
+        fontWeight: FontWeight.w600,
+        fontSize: 13,
+        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
+      ),
     ),
   );
 

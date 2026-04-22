@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:student_clearance_tracker/core/models/clearance_step.dart';
 import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:student_clearance_tracker/core/theme/app_dimensions.dart';
@@ -84,8 +85,8 @@ class StatusDetailCard extends StatelessWidget {
           ),
           child: Row(
             children: [
-              Icon(
-                Icons.info_outline,
+              PhosphorIcon(
+                PhosphorIconsLight.info,
                 size: 14,
                 color: Theme.of(context).colorScheme.error,
               ),
@@ -126,8 +127,10 @@ class StatusDetailCard extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Icon(
-              isBlocked ? Icons.lock_outline : Icons.directions_walk_outlined,
+            PhosphorIcon(
+              isBlocked
+                  ? PhosphorIconsLight.lock
+                  : PhosphorIconsLight.personSimpleWalk,
               size: 14,
               color: isBlocked
                   ? AppColors.warning

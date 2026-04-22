@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:student_clearance_tracker/core/models/step_with_info.dart';
 import 'package:student_clearance_tracker/features/student/clearance/view/widgets/step_detail_body.dart';
 import 'package:student_clearance_tracker/features/student/clearance/viewmodel/step_detail_viewmodel.dart';
@@ -19,7 +20,7 @@ class StepDetailScreen extends StatelessWidget {
           backgroundColor: Theme.of(context).colorScheme.surface,
           title: const Text('Step Details'),
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
+            icon: const PhosphorIcon(PhosphorIconsLight.arrowLeft),
             onPressed: () => Navigator.of(context).pop(),
           ),
         ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:student_clearance_tracker/features/admin/periods/view/widgets/academic_periods_actions.dart';
 import 'package:student_clearance_tracker/features/admin/periods/viewmodel/periods_viewmodel.dart';
 
@@ -50,7 +51,7 @@ class AcademicPeriodsHeader extends StatelessWidget {
           ),
         ElevatedButton.icon(
           onPressed: isSaving ? null : () => handleCreatePeriodAction(context),
-          icon: const Icon(Icons.add),
+          icon: const PhosphorIcon(PhosphorIconsLight.plus),
           label: const Text('Add Period'),
         ),
       ],

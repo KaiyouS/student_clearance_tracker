@@ -1,4 +1,5 @@
 ﻿import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:student_clearance_tracker/core/models/academic_period.dart';
 
@@ -126,7 +127,9 @@ class _AcademicPeriodFormDialogState extends State<AcademicPeriodFormDialog> {
                   Text(
                     '-',
                     style: TextStyle(
-                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withValues(alpha: 0.65),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -178,7 +181,7 @@ class _DatePickerField extends StatelessWidget {
       child: InputDecorator(
         decoration: InputDecoration(
           labelText: label,
-          suffixIcon: Icon(Icons.calendar_today_outlined, size: 16),
+          suffixIcon: PhosphorIcon(PhosphorIconsLight.calendar, size: 16),
         ),
         child: Text(
           value,
@@ -193,5 +196,3 @@ class _DatePickerField extends StatelessWidget {
     );
   }
 }
-
-

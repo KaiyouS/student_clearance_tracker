@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:student_clearance_tracker/features/student/shell/viewmodel/student_shell_viewmodel.dart';
 import 'package:student_clearance_tracker/main.dart';
 
@@ -16,8 +17,8 @@ class HomeErrorState extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            Icons.error_outline,
+          PhosphorIcon(
+            PhosphorIconsLight.warningCircle,
             size: 48,
             color: Theme.of(context).colorScheme.error,
           ),
@@ -39,4 +40,3 @@ class HomeErrorState extends StatelessWidget {
     );
   }
 }
-

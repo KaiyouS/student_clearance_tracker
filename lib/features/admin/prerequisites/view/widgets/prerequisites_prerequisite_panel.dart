@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:student_clearance_tracker/core/widgets/app_card.dart';
 import 'package:student_clearance_tracker/features/admin/prerequisites/view/widgets/prerequisite_chip_row.dart';
 import 'package:student_clearance_tracker/features/admin/prerequisites/view/widgets/prerequisites_actions.dart';
@@ -62,7 +63,7 @@ class PrerequisitesPrerequisitePanel extends StatelessWidget {
               else
                 ElevatedButton.icon(
                   onPressed: () => handleAddPrerequisiteAction(context, office),
-                  icon: const Icon(Icons.add, size: 16),
+                  icon: const PhosphorIcon(PhosphorIconsLight.plus, size: 16),
                   label: const Text('Add Prerequisite'),
                 ),
             ],
@@ -97,4 +98,3 @@ class PrerequisitesPrerequisitePanel extends StatelessWidget {
     );
   }
 }
-

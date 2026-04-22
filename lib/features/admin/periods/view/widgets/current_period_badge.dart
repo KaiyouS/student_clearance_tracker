@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class CurrentPeriodBadge extends StatelessWidget {
   const CurrentPeriodBadge({super.key});
@@ -17,8 +18,8 @@ class CurrentPeriodBadge extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            Icons.radio_button_checked,
+          PhosphorIcon(
+            PhosphorIconsLight.radioButton,
             size: 12,
             color: Theme.of(context).colorScheme.primary,
           ),
@@ -36,4 +37,3 @@ class CurrentPeriodBadge extends StatelessWidget {
     );
   }
 }
-

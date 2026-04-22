@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:student_clearance_tracker/core/models/step_with_info.dart';
 import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:student_clearance_tracker/core/theme/app_dimensions.dart';
@@ -57,8 +58,8 @@ class ClearanceStepCard extends StatelessWidget {
               padding: const EdgeInsets.only(bottom: AppDimensions.sm),
               child: Row(
                 children: [
-                  Icon(
-                    Icons.arrow_downward,
+                  PhosphorIcon(
+                    PhosphorIconsLight.arrowDown,
                     size: 14,
                     color: AppColors.contentSecondary(context),
                   ),
@@ -177,7 +178,7 @@ class ClearanceStepCard extends StatelessWidget {
     if (step.isSigned) {
       details.add(
         StepDetailRow(
-          icon: Icons.check_circle_outline,
+          icon: PhosphorIconsLight.checkCircle,
           color: Theme.of(context).colorScheme.tertiary,
           text: step.updatedAt != null
               ? 'Signed on ${_formatDate(step.updatedAt!)}'
@@ -187,7 +188,7 @@ class ClearanceStepCard extends StatelessWidget {
     } else if (step.isFlagged) {
       details.add(
         StepDetailRow(
-          icon: Icons.flag_outlined,
+          icon: PhosphorIconsLight.flag,
           color: Theme.of(context).colorScheme.error,
           text: step.remarks != null
               ? 'Flagged: ${step.remarks}'
@@ -197,7 +198,7 @@ class ClearanceStepCard extends StatelessWidget {
     } else if (item.isBlocked) {
       details.add(
         StepDetailRow(
-          icon: Icons.lock_outline,
+          icon: PhosphorIconsLight.lock,
           color: AppColors.warning,
           text: 'Waiting for: ${item.waitingFor.join(', ')}',
         ),
@@ -205,7 +206,7 @@ class ClearanceStepCard extends StatelessWidget {
     } else {
       details.add(
         StepDetailRow(
-          icon: Icons.pending_outlined,
+          icon: PhosphorIconsLight.hourglass,
           color: AppColors.warning,
           text: 'Visit this office to get your clearance signed.',
         ),

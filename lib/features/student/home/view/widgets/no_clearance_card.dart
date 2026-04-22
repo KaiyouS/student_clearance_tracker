@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class NoClearanceCard extends StatelessWidget {
   const NoClearanceCard({super.key});
@@ -15,8 +16,8 @@ class NoClearanceCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-          Icon(
-            Icons.hourglass_empty_outlined,
+          PhosphorIcon(
+            PhosphorIconsLight.hourglass,
             size: 48,
             color: Theme.of(
               context,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:student_clearance_tracker/core/models/office.dart';
 import 'package:student_clearance_tracker/features/admin/prerequisites/view/widgets/prerequisites_actions.dart';
 
@@ -25,8 +26,8 @@ class PrerequisiteChipRow extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Icon(
-              Icons.arrow_forward,
+            PhosphorIcon(
+              PhosphorIconsLight.arrowRight,
               size: 16,
               color: Theme.of(
                 context,
@@ -60,7 +61,10 @@ class PrerequisiteChipRow extends StatelessWidget {
               ),
             ),
             IconButton(
-              icon: const Icon(Icons.remove_circle_outline, size: 18),
+              icon: const PhosphorIcon(
+                PhosphorIconsLight.minusCircle,
+                size: 18,
+              ),
               color: Theme.of(context).colorScheme.error,
               tooltip: 'Remove',
               onPressed: () =>
@@ -72,4 +76,3 @@ class PrerequisiteChipRow extends StatelessWidget {
     );
   }
 }
-

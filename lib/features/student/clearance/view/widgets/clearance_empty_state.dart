@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class ClearanceEmptyState extends StatelessWidget {
   const ClearanceEmptyState({super.key});
@@ -13,8 +14,8 @@ class ClearanceEmptyState extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(
-                Icons.checklist_outlined,
+              PhosphorIcon(
+                PhosphorIconsLight.listChecks,
                 size: 64,
                 color: Theme.of(
                   context,

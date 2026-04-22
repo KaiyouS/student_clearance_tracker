@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:student_clearance_tracker/core/models/school.dart';
 import 'package:student_clearance_tracker/core/widgets/confirm_dialog.dart';
 import 'package:student_clearance_tracker/features/admin/schools/view/widgets/school_program_form_dialogs.dart';
@@ -76,7 +77,9 @@ class SchoolListTile extends StatelessWidget {
     return ListTile(
       selected: isSelected,
       selectedColor: Theme.of(context).colorScheme.primary,
-      selectedTileColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.08),
+      selectedTileColor: Theme.of(
+        context,
+      ).colorScheme.primary.withValues(alpha: 0.08),
       title: Text(school.name, style: const TextStyle(fontSize: 13)),
       subtitle: school.description != null
           ? Text(
@@ -90,13 +93,13 @@ class SchoolListTile extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           IconButton(
-            icon: const Icon(Icons.edit_outlined, size: 16),
+            icon: const PhosphorIcon(PhosphorIconsLight.pencilSimple, size: 16),
             color: Theme.of(context).colorScheme.primary,
             tooltip: 'Edit',
             onPressed: vm.isSaving ? null : () => _handleEditSchool(context),
           ),
           IconButton(
-            icon: const Icon(Icons.delete_outline, size: 16),
+            icon: const PhosphorIcon(PhosphorIconsLight.trash, size: 16),
             color: Theme.of(context).colorScheme.error,
             tooltip: 'Delete',
             onPressed: vm.isSaving ? null : () => _handleDeleteSchool(context),
@@ -107,4 +110,3 @@ class SchoolListTile extends StatelessWidget {
     );
   }
 }
-

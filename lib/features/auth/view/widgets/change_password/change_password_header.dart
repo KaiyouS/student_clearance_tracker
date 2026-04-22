@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:student_clearance_tracker/core/theme/app_dimensions.dart';
 import 'package:student_clearance_tracker/core/theme/app_text_styles.dart';
 
@@ -17,8 +18,8 @@ class ChangePasswordHeader extends StatelessWidget {
             color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(12),
           ),
-          child: Icon(
-            Icons.lock_reset_outlined,
+          child: PhosphorIcon(
+            PhosphorIconsLight.key,
             color: Theme.of(context).colorScheme.primary,
             size: 28,
           ),

@@ -1,4 +1,5 @@
 ﻿import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:student_clearance_tracker/core/models/office.dart';
 import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 
@@ -64,7 +65,7 @@ class _AddPrerequisiteDialogState extends State<AddPrerequisiteDialog> {
               onChanged: (v) => setState(() => _search = v),
               decoration: const InputDecoration(
                 hintText: 'Search offices...',
-                prefixIcon: Icon(Icons.search),
+                prefixIcon: PhosphorIcon(PhosphorIconsLight.magnifyingGlass),
               ),
             ),
             const SizedBox(height: 12),
@@ -114,8 +115,8 @@ class _AddPrerequisiteDialogState extends State<AddPrerequisiteDialog> {
                       trailing: disabled
                           ? Tooltip(
                               message: 'Cannot be added',
-                              child: Icon(
-                                Icons.block,
+                              child: PhosphorIcon(
+                                PhosphorIconsLight.prohibit,
                                 size: 16,
                                 color: Theme.of(
                                   context,
@@ -150,4 +151,3 @@ class _AddPrerequisiteDialogState extends State<AddPrerequisiteDialog> {
     );
   }
 }
-

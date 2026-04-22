@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:student_clearance_tracker/core/models/clearance_step.dart';
 import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:student_clearance_tracker/core/theme/app_dimensions.dart';
@@ -48,8 +49,8 @@ class StaffClearanceStepRow extends StatelessWidget {
                   const SizedBox(height: AppDimensions.xs),
                   Row(
                     children: [
-                      Icon(
-                        Icons.lock_outline,
+                      PhosphorIcon(
+                        PhosphorIconsLight.lock,
                         size: 12,
                         color: AppColors.warning,
                       ),

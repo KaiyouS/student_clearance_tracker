@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:student_clearance_tracker/core/models/step_with_info.dart';
 import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:student_clearance_tracker/core/theme/app_dimensions.dart';
@@ -32,8 +33,8 @@ class NextStepCard extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Icon(
-              Icons.lock_clock_outlined,
+            PhosphorIcon(
+              PhosphorIconsLight.lockKey,
               color: AppColors.warning,
               size: AppDimensions.iconMd,
             ),
@@ -80,8 +81,8 @@ class NextStepCard extends StatelessWidget {
                 ).colorScheme.primary.withValues(alpha: 0.15),
                 shape: BoxShape.circle,
               ),
-              child: Icon(
-                Icons.arrow_circle_right_outlined,
+              child: PhosphorIcon(
+                PhosphorIconsLight.arrowCircleRight,
                 color: Theme.of(context).colorScheme.primary,
                 size: 22,
               ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:student_clearance_tracker/core/widgets/app_card.dart';
 import 'package:student_clearance_tracker/core/widgets/status_badge.dart';
 import 'package:student_clearance_tracker/features/admin/clearance/view/widgets/admin_clearance_actions.dart';
@@ -67,7 +68,10 @@ class AdminClearanceDetailPanel extends StatelessWidget {
                           student['student_id'],
                           student['full_name'] ?? 'Student',
                         ),
-                  icon: const Icon(Icons.auto_awesome, size: 14),
+                  icon: const PhosphorIcon(
+                    PhosphorIconsLight.sparkle,
+                    size: 14,
+                  ),
                   label: const Text('Generate'),
                   style: TextButton.styleFrom(
                     foregroundColor: Theme.of(context).colorScheme.primary,
@@ -86,8 +90,8 @@ class AdminClearanceDetailPanel extends StatelessWidget {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(
-                      Icons.checklist_outlined,
+                    PhosphorIcon(
+                      PhosphorIconsLight.listChecks,
                       size: 48,
                       color: Theme.of(context).dividerColor,
                     ),
@@ -129,4 +133,3 @@ class AdminClearanceDetailPanel extends StatelessWidget {
     );
   }
 }
-

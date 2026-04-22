@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class StepDetailRow extends StatelessWidget {
   final IconData icon;
@@ -17,13 +18,13 @@ class StepDetailRow extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, size: 14, color: color),
+        PhosphorIcon(icon, size: 14, color: color),
         const SizedBox(width: 6),
         Expanded(
           child: Text(text, style: TextStyle(fontSize: 12, color: color)),
         ),
-        Icon(
-          Icons.chevron_right,
+        PhosphorIcon(
+          PhosphorIconsLight.caretRight,
           size: 16,
           color: Theme.of(
             context,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:student_clearance_tracker/core/theme/app_text_styles.dart';
 
 class UpdatePasswordHeader extends StatelessWidget {
@@ -17,8 +18,8 @@ class UpdatePasswordHeader extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Icon(
-            Icons.info_outline,
+          PhosphorIcon(
+            PhosphorIconsLight.info,
             size: 16,
             color: Theme.of(context).colorScheme.primary,
           ),

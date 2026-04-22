@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:student_clearance_tracker/core/models/clearance_step.dart';
 import 'package:student_clearance_tracker/core/widgets/status_badge.dart';
@@ -70,8 +71,8 @@ class AdminClearanceStepRow extends StatelessWidget {
           StatusBadge(status: step.status),
           const SizedBox(width: 8),
           PopupMenuButton<String>(
-            icon: Icon(
-              Icons.more_vert,
+            icon: PhosphorIcon(
+              PhosphorIconsLight.dotsThreeVertical,
               size: 18,
               color: Theme.of(
                 context,
@@ -91,8 +92,8 @@ class AdminClearanceStepRow extends StatelessWidget {
                   value: 'signed',
                   child: Row(
                     children: [
-                      Icon(
-                        Icons.check_circle_outline,
+                      PhosphorIcon(
+                        PhosphorIconsLight.checkCircle,
                         size: 16,
                         color: Theme.of(context).colorScheme.tertiary,
                       ),
@@ -106,8 +107,8 @@ class AdminClearanceStepRow extends StatelessWidget {
                   value: 'flag',
                   child: Row(
                     children: [
-                      Icon(
-                        Icons.flag_outlined,
+                      PhosphorIcon(
+                        PhosphorIconsLight.flag,
                         size: 16,
                         color: Theme.of(context).colorScheme.error,
                       ),
@@ -121,8 +122,8 @@ class AdminClearanceStepRow extends StatelessWidget {
                   value: 'pending',
                   child: Row(
                     children: [
-                      Icon(
-                        Icons.refresh,
+                      PhosphorIcon(
+                        PhosphorIconsLight.arrowsClockwise,
                         size: 16,
                         color: Theme.of(
                           context,
@@ -146,4 +147,3 @@ String _formatDateTime(DateTime dt) {
       '${dt.hour.toString().padLeft(2, '0')}:'
       '${dt.minute.toString().padLeft(2, '0')}';
 }
-

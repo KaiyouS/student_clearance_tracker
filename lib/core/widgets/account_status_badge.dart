@@ -1,4 +1,5 @@
 ﻿import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 
 class AccountStatusBadge extends StatelessWidget {
@@ -6,12 +7,12 @@ class AccountStatusBadge extends StatelessWidget {
 
   const AccountStatusBadge({super.key, required this.status});
 
-  IconData get _icon => switch (status) {
-    'active' => Icons.check_circle_outline,
-    'inactive' => Icons.pause_circle_outline,
-    'locked' => Icons.lock_outline,
-    'pending' => Icons.hourglass_empty_outlined,
-    _ => Icons.help_outline,
+  PhosphorIconData get _icon => switch (status) {
+    'active' => PhosphorIconsLight.checkCircle,
+    'inactive' => PhosphorIconsLight.pauseCircle,
+    'locked' => PhosphorIconsLight.lock,
+    'pending' => PhosphorIconsLight.hourglass,
+    _ => PhosphorIconsLight.question,
   };
 
   @override
@@ -34,7 +35,7 @@ class AccountStatusBadge extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(_icon, size: 12, color: color),
+          PhosphorIcon(_icon, size: 12, color: color),
           const SizedBox(width: 4),
           Text(
             status[0].toUpperCase() + status.substring(1),
@@ -49,4 +50,3 @@ class AccountStatusBadge extends StatelessWidget {
     );
   }
 }
-

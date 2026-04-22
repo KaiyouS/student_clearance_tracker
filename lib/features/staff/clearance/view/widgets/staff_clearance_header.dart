@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:student_clearance_tracker/features/staff/clearance/viewmodel/staff_clearance_viewmodel.dart';
 import 'package:student_clearance_tracker/features/staff/shell/viewmodel/staff_shell_viewmodel.dart';
 
@@ -46,7 +47,7 @@ class StaffClearanceHeader extends StatelessWidget {
           ),
         ),
         IconButton(
-          icon: const Icon(Icons.refresh),
+          icon: const PhosphorIcon(PhosphorIconsLight.arrowsClockwise),
           color: Theme.of(context).colorScheme.primary,
           tooltip: 'Refresh',
           onPressed: isLoading
@@ -59,4 +60,3 @@ class StaffClearanceHeader extends StatelessWidget {
     );
   }
 }
-

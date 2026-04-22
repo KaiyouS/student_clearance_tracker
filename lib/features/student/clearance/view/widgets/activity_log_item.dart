@@ -1,5 +1,6 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:student_clearance_tracker/features/student/clearance/viewmodel/step_detail_viewmodel.dart';
 
@@ -14,7 +15,7 @@ class ActivityLogItem extends StatelessWidget {
     final logs = context.watch<StepDetailViewModel>().logs;
     final log = logs[index];
     final status = log['new_status'] as String? ?? 'pending';
-    final color = AppColors.forStatus( status);
+    final color = AppColors.forStatus(status);
     final changedAt = log['changed_at'] != null
         ? DateTime.parse(log['changed_at'])
         : null;
@@ -36,7 +37,7 @@ class ActivityLogItem extends StatelessWidget {
                 shape: BoxShape.circle,
                 border: Border.all(color: color, width: 2),
               ),
-              child: Icon(_iconFor(status), size: 12, color: color),
+              child: PhosphorIcon(_iconFor(status), size: 12, color: color),
             ),
             if (!isLast)
               Container(
@@ -62,9 +63,7 @@ class ActivityLogItem extends StatelessWidget {
                       TextSpan(
                         text: _capitalize(oldStatus),
                         style: TextStyle(
-                          color: AppColors.forStatus(
-                            oldStatus,
-                          ),
+                          color: AppColors.forStatus(oldStatus),
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -133,9 +132,9 @@ class ActivityLogItem extends StatelessWidget {
   }
 
   IconData _iconFor(String status) => switch (status) {
-    'signed' => Icons.check,
-    'flagged' => Icons.flag,
-    _ => Icons.circle,
+    'signed' => PhosphorIconsLight.check,
+    'flagged' => PhosphorIconsLight.flag,
+    _ => PhosphorIconsLight.circle,
   };
 
   String _capitalize(String s) =>
@@ -161,4 +160,3 @@ class ActivityLogItem extends StatelessWidget {
         '${dt.minute.toString().padLeft(2, '0')}';
   }
 }
-

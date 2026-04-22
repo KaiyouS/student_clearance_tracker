@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:student_clearance_tracker/core/models/office.dart';
 import 'package:student_clearance_tracker/features/staff/shell/viewmodel/staff_shell_viewmodel.dart';
 import 'package:student_clearance_tracker/core/services/auth_service.dart';
@@ -90,8 +91,8 @@ class _StaffShellState extends State<StaffShell> {
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
               child: Row(
                 children: [
-                  Icon(
-                    Icons.person_outline,
+                  PhosphorIcon(
+                    PhosphorIconsLight.user,
                     size: 16,
                     color: Theme.of(
                       context,
@@ -116,8 +117,8 @@ class _StaffShellState extends State<StaffShell> {
               await AuthService().signOut();
               if (context.mounted) context.go('/login');
             },
-            icon: Icon(
-              Icons.logout,
+            icon: PhosphorIcon(
+              PhosphorIconsLight.signOut,
               size: 16,
               color: Theme.of(context).colorScheme.error,
             ),
@@ -168,8 +169,8 @@ class _OfficeSelector extends StatelessWidget {
         child: DropdownButton<Office>(
           value: selectedOffice,
           isDense: true,
-          icon: Icon(
-            Icons.keyboard_arrow_down,
+          icon: PhosphorIcon(
+            PhosphorIconsLight.caretDown,
             size: 16,
             color: Theme.of(context).colorScheme.primary,
           ),
@@ -189,4 +190,3 @@ class _OfficeSelector extends StatelessWidget {
     );
   }
 }
-

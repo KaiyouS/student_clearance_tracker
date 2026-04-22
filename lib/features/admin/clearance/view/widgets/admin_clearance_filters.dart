@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:student_clearance_tracker/features/admin/clearance/viewmodel/admin_clearance_viewmodel.dart';
 
 class AdminClearanceFilters extends StatelessWidget {
@@ -19,7 +20,7 @@ class AdminClearanceFilters extends StatelessWidget {
             onChanged: context.read<AdminClearanceViewModel>().updateSearch,
             decoration: const InputDecoration(
               hintText: 'Search by name...',
-              prefixIcon: Icon(Icons.search),
+              prefixIcon: PhosphorIcon(PhosphorIconsLight.magnifyingGlass),
               isDense: true,
             ),
           ),
@@ -68,4 +69,3 @@ class AdminClearanceFilters extends StatelessWidget {
 
 String _capitalize(String s) =>
     s.isEmpty ? s : s[0].toUpperCase() + s.substring(1);
-

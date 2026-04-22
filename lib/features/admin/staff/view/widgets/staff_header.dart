@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:student_clearance_tracker/features/admin/staff/view/widgets/staff_actions.dart';
 import 'package:student_clearance_tracker/features/admin/staff/viewmodel/staff_viewmodel.dart';
 
@@ -48,7 +49,7 @@ class StaffHeader extends StatelessWidget {
           ),
         ElevatedButton.icon(
           onPressed: isSaving ? null : () => handleCreateStaffAction(context),
-          icon: const Icon(Icons.add),
+          icon: const PhosphorIcon(PhosphorIconsLight.plus),
           label: const Text('Add Staff'),
         ),
       ],

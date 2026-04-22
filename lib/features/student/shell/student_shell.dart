@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:student_clearance_tracker/features/student/shell/viewmodel/student_shell_viewmodel.dart';
 import 'package:student_clearance_tracker/main.dart';
@@ -96,26 +97,26 @@ class _StudentShellState extends State<StudentShell> {
         },
         destinations: [
           const NavigationDestination(
-            icon: Icon(Icons.home_outlined),
-            selectedIcon: Icon(Icons.home),
+            icon: PhosphorIcon(PhosphorIconsLight.house),
+            selectedIcon: PhosphorIcon(PhosphorIconsLight.house),
             label: 'Home',
           ),
           NavigationDestination(
             icon: Badge(
               isLabelVisible: unseenUpdates > 0,
               label: Text(unseenUpdates.toString()),
-              child: Icon(Icons.checklist_outlined),
+              child: PhosphorIcon(PhosphorIconsLight.listChecks),
             ),
             selectedIcon: Badge(
               isLabelVisible: unseenUpdates > 0,
               label: Text(unseenUpdates.toString()),
-              child: Icon(Icons.checklist),
+              child: PhosphorIcon(PhosphorIconsLight.listChecks),
             ),
             label: 'Clearance',
           ),
           const NavigationDestination(
-            icon: Icon(Icons.person_outline),
-            selectedIcon: Icon(Icons.person),
+            icon: PhosphorIcon(PhosphorIconsLight.user),
+            selectedIcon: PhosphorIcon(PhosphorIconsLight.user),
             label: 'Profile',
           ),
         ],
@@ -204,8 +205,10 @@ class _NotificationBannerState extends State<_NotificationBanner>
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: Row(
               children: [
-                Icon(
-                  isSigned ? Icons.check_circle : Icons.flag,
+                PhosphorIcon(
+                  isSigned
+                      ? PhosphorIconsLight.checkCircle
+                      : PhosphorIconsLight.flag,
                   color: Colors.white,
                   size: 20,
                 ),
@@ -221,7 +224,7 @@ class _NotificationBannerState extends State<_NotificationBanner>
                   ),
                 ),
                 IconButton(
-                  icon: Icon(Icons.close, size: 16),
+                  icon: PhosphorIcon(PhosphorIconsLight.x, size: 16),
                   color: Colors.white,
                   onPressed: _dismiss,
                   padding: EdgeInsets.zero,
@@ -235,4 +238,3 @@ class _NotificationBannerState extends State<_NotificationBanner>
     );
   }
 }
-

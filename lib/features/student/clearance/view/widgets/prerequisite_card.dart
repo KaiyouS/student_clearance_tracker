@@ -1,5 +1,6 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:student_clearance_tracker/features/student/clearance/viewmodel/step_detail_viewmodel.dart';
 
@@ -16,17 +17,15 @@ class PrerequisiteCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: AppColors.warning.withValues(alpha: 0.4),
-        ),
+        border: Border.all(color: AppColors.warning.withValues(alpha: 0.4)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(
-                Icons.lock_clock_outlined,
+              PhosphorIcon(
+                PhosphorIconsLight.lockKey,
                 color: AppColors.warning,
                 size: 18,
               ),
@@ -51,8 +50,8 @@ class PrerequisiteCard extends StatelessWidget {
               padding: const EdgeInsets.only(bottom: 6),
               child: Row(
                 children: [
-                  Icon(
-                    Icons.radio_button_unchecked,
+                  PhosphorIcon(
+                    PhosphorIconsLight.circle,
                     size: 14,
                     color: AppColors.warning,
                   ),
@@ -73,4 +72,3 @@ class PrerequisiteCard extends StatelessWidget {
     );
   }
 }
-

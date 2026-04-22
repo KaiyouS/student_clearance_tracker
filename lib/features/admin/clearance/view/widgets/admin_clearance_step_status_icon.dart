@@ -1,4 +1,5 @@
 ﻿import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 
 class AdminClearanceStepStatusIcon extends StatelessWidget {
@@ -8,11 +9,11 @@ class AdminClearanceStepStatusIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = AppColors.forStatus( status);
+    final color = AppColors.forStatus(status);
     final icon = switch (status) {
-      'signed' => Icons.check_circle,
-      'flagged' => Icons.flag,
-      _ => Icons.hourglass_empty_outlined,
+      'signed' => PhosphorIconsLight.checkCircle,
+      'flagged' => PhosphorIconsLight.flag,
+      _ => PhosphorIconsLight.hourglass,
     };
 
     return Container(
@@ -22,8 +23,7 @@ class AdminClearanceStepStatusIcon extends StatelessWidget {
         color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
       ),
-      child: Icon(icon, size: 16, color: color),
+      child: PhosphorIcon(icon, size: 16, color: color),
     );
   }
 }
-

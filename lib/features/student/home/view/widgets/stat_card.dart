@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class StatCard extends StatelessWidget {
   final String label;
@@ -25,7 +26,7 @@ class StatCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-          Icon(icon, color: color, size: 24),
+          PhosphorIcon(icon, color: color, size: 24),
           const SizedBox(height: 8),
           Text(
             value.toString(),

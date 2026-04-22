@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:student_clearance_tracker/core/services/auth_service.dart';
 import 'package:student_clearance_tracker/core/widgets/theme_toggle.dart';
 
@@ -35,55 +36,55 @@ class SidebarWidget extends StatelessWidget {
 
           // Nav items
           _NavItem(
-            icon: Icons.dashboard_outlined,
+            icon: PhosphorIconsLight.squaresFour,
             label: 'Dashboard',
             path: '/admin/dashboard',
             isActive: location == '/admin/dashboard',
           ),
           _NavItem(
-            icon: Icons.business_outlined,
+            icon: PhosphorIconsLight.buildings,
             label: 'Offices',
             path: '/admin/offices',
             isActive: location == '/admin/offices',
           ),
           _NavItem(
-            icon: Icons.people_outlined,
+            icon: PhosphorIconsLight.user,
             label: 'Staff',
             path: '/admin/staff',
             isActive: location == '/admin/staff',
           ),
           _NavItem(
-            icon: Icons.school_outlined,
+            icon: PhosphorIconsLight.graduationCap,
             label: 'Students',
             path: '/admin/students',
             isActive: location == '/admin/students',
           ),
           _NavItem(
-            icon: Icons.checklist_outlined,
+            icon: PhosphorIconsLight.listChecks,
             label: 'Clearance',
             path: '/admin/clearance',
             isActive: location == '/admin/clearance',
           ),
           _NavItem(
-            icon: Icons.account_tree_outlined,
+            icon: PhosphorIconsLight.treeStructure,
             label: 'Prerequisites',
             path: '/admin/prerequisites',
             isActive: location == '/admin/prerequisites',
           ),
           _NavItem(
-            icon: Icons.rule_outlined,
+            icon: PhosphorIconsLight.listDashes,
             label: 'Requirements',
             path: '/admin/requirements',
             isActive: location == '/admin/requirements',
           ),
           _NavItem(
-            icon: Icons.account_balance_outlined,
+            icon: PhosphorIconsLight.bank,
             label: 'Schools',
             path: '/admin/schools',
             isActive: location == '/admin/schools',
           ),
           _NavItem(
-            icon: Icons.calendar_month_outlined,
+            icon: PhosphorIconsLight.calendar,
             label: 'Academic Periods',
             path: '/admin/periods',
             isActive: location == '/admin/periods',
@@ -133,7 +134,7 @@ class _NavItem extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             child: Row(
               children: [
-                Icon(
+                PhosphorIcon(
                   icon,
                   size: 20,
                   color: isActive
@@ -187,8 +188,8 @@ class _SignOutButton extends StatelessWidget {
             padding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             child: Row(
               children: [
-                Icon(
-                  Icons.logout,
+                PhosphorIcon(
+                  PhosphorIconsLight.signOut,
                   size: 20,
                   color: Theme.of(context).colorScheme.error,
                 ),
@@ -208,4 +209,3 @@ class _SignOutButton extends StatelessWidget {
     );
   }
 }
-

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:student_clearance_tracker/core/widgets/app_card.dart';
 import 'package:student_clearance_tracker/features/admin/schools/view/widgets/program_list_tile.dart';
 import 'package:student_clearance_tracker/features/admin/schools/view/widgets/school_program_form_dialogs.dart';
@@ -89,7 +90,7 @@ class ProgramsPanel extends StatelessWidget {
                 onPressed: vm.isSaving
                     ? null
                     : () => _handleCreateProgram(context),
-                icon: const Icon(Icons.add, size: 16),
+                icon: const PhosphorIcon(PhosphorIconsLight.plus, size: 16),
                 label: const Text('Add Program'),
               ),
             ],
@@ -134,4 +135,3 @@ class ProgramsPanel extends StatelessWidget {
     );
   }
 }
-

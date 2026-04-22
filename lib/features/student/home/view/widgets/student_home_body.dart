@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:student_clearance_tracker/features/student/home/view/widgets/clearance_status_card.dart';
 import 'package:student_clearance_tracker/features/student/home/view/widgets/home_error_state.dart';
 import 'package:student_clearance_tracker/features/student/home/view/widgets/home_stats_row.dart';
@@ -61,7 +62,7 @@ class StudentHomeBody extends StatelessWidget {
                 width: double.infinity,
                 child: OutlinedButton.icon(
                   onPressed: () => context.go('/student/clearance'),
-                  icon: const Icon(Icons.checklist_outlined),
+                  icon: const PhosphorIcon(PhosphorIconsLight.listChecks),
                   label: const Text('View Clearance Steps'),
                 ),
               ),

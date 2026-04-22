@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class PasswordInputField extends StatefulWidget {
   final TextEditingController controller;
@@ -12,7 +13,7 @@ class PasswordInputField extends StatefulWidget {
     super.key,
     required this.controller,
     this.labelText = 'Password',
-    this.prefixIcon = Icons.lock_outlined,
+    this.prefixIcon = PhosphorIconsLight.lock,
     this.textInputAction,
     this.onFieldSubmitted,
     this.validator,
@@ -32,12 +33,10 @@ class _PasswordInputFieldState extends State<PasswordInputField> {
       obscureText: _obscureText,
       decoration: InputDecoration(
         labelText: widget.labelText,
-        prefixIcon: Icon(widget.prefixIcon),
+        prefixIcon: PhosphorIcon(widget.prefixIcon),
         suffixIcon: IconButton(
-          icon: Icon(
-            _obscureText
-                ? Icons.visibility_off_outlined
-                : Icons.visibility_outlined,
+          icon: PhosphorIcon(
+            _obscureText ? PhosphorIconsLight.eyeSlash : PhosphorIconsLight.eye,
           ),
           onPressed: () => setState(() => _obscureText = !_obscureText),
         ),

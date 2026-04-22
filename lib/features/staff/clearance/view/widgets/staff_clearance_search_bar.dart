@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:student_clearance_tracker/features/staff/clearance/viewmodel/staff_clearance_viewmodel.dart';
 
 class StaffClearanceSearchBar extends StatelessWidget {
@@ -13,7 +14,7 @@ class StaffClearanceSearchBar extends StatelessWidget {
         onChanged: context.read<StaffClearanceViewModel>().updateSearch,
         decoration: const InputDecoration(
           hintText: 'Search by name or student no...',
-          prefixIcon: Icon(Icons.search),
+          prefixIcon: PhosphorIcon(PhosphorIconsLight.magnifyingGlass),
           isDense: true,
         ),
       ),

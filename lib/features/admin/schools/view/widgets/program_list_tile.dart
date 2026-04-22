@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:student_clearance_tracker/core/models/program.dart';
 import 'package:student_clearance_tracker/core/widgets/confirm_dialog.dart';
 import 'package:student_clearance_tracker/features/admin/schools/view/widgets/school_program_form_dialogs.dart';
@@ -76,8 +77,8 @@ class ProgramListTile extends StatelessWidget {
           color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(6),
         ),
-        child: Icon(
-          Icons.school_outlined,
+        child: PhosphorIcon(
+          PhosphorIconsLight.graduationCap,
           size: 16,
           color: Theme.of(context).colorScheme.primary,
         ),
@@ -94,13 +95,13 @@ class ProgramListTile extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           IconButton(
-            icon: const Icon(Icons.edit_outlined, size: 18),
+            icon: const PhosphorIcon(PhosphorIconsLight.pencilSimple, size: 18),
             color: Theme.of(context).colorScheme.primary,
             tooltip: 'Edit',
             onPressed: vm.isSaving ? null : () => _handleEditProgram(context),
           ),
           IconButton(
-            icon: const Icon(Icons.delete_outline, size: 18),
+            icon: const PhosphorIcon(PhosphorIconsLight.trash, size: 18),
             color: Theme.of(context).colorScheme.error,
             tooltip: 'Delete',
             onPressed: vm.isSaving ? null : () => _handleDeleteProgram(context),
@@ -110,4 +111,3 @@ class ProgramListTile extends StatelessWidget {
     );
   }
 }
-

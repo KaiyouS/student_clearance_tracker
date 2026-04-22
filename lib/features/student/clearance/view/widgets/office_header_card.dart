@@ -1,5 +1,6 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:student_clearance_tracker/core/widgets/status_badge.dart';
 import 'package:student_clearance_tracker/features/student/clearance/viewmodel/step_detail_viewmodel.dart';
@@ -10,7 +11,7 @@ class OfficeHeaderCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final step = context.watch<StepDetailViewModel>().step;
-    final statusColor = AppColors.forStatus( step.status);
+    final statusColor = AppColors.forStatus(step.status);
 
     return Container(
       width: double.infinity,
@@ -33,8 +34,8 @@ class OfficeHeaderCard extends StatelessWidget {
                   color: statusColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Icon(
-                  Icons.business_outlined,
+                child: PhosphorIcon(
+                  PhosphorIconsLight.buildings,
                   color: statusColor,
                   size: 24,
                 ),
@@ -77,5 +78,3 @@ class OfficeHeaderCard extends StatelessWidget {
     );
   }
 }
-
-

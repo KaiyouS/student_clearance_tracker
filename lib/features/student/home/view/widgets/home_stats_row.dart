@@ -1,5 +1,6 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:student_clearance_tracker/features/student/home/view/widgets/stat_card.dart';
 import 'package:student_clearance_tracker/features/student/shell/viewmodel/student_shell_viewmodel.dart';
@@ -26,7 +27,7 @@ class HomeStatsRow extends StatelessWidget {
             label: 'Pending',
             value: pendingSteps,
             color: AppColors.warning,
-            icon: Icons.hourglass_empty_outlined,
+            icon: PhosphorIconsLight.hourglass,
           ),
         ),
         const SizedBox(width: 10),
@@ -35,7 +36,7 @@ class HomeStatsRow extends StatelessWidget {
             label: 'Flagged',
             value: flaggedSteps,
             color: Theme.of(context).colorScheme.error,
-            icon: Icons.flag_outlined,
+            icon: PhosphorIconsLight.flag,
           ),
         ),
         const SizedBox(width: 10),
@@ -44,11 +45,10 @@ class HomeStatsRow extends StatelessWidget {
             label: 'Signed',
             value: signedSteps,
             color: Theme.of(context).colorScheme.tertiary,
-            icon: Icons.check_circle_outline,
+            icon: PhosphorIconsLight.checkCircle,
           ),
         ),
       ],
     );
   }
 }
-

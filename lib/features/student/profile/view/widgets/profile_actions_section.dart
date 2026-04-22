@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:student_clearance_tracker/core/services/auth_service.dart';
 
 class ProfileActionsSection extends StatelessWidget {
@@ -13,7 +14,7 @@ class ProfileActionsSection extends StatelessWidget {
           width: double.infinity,
           child: OutlinedButton.icon(
             onPressed: () => context.push('/update-password'),
-            icon: const Icon(Icons.lock_reset_outlined),
+            icon: const PhosphorIcon(PhosphorIconsLight.key),
             label: const Text('Change Password'),
           ),
         ),
@@ -27,7 +28,10 @@ class ProfileActionsSection extends StatelessWidget {
                 context.go('/login');
               }
             },
-            icon: Icon(Icons.logout, color: Theme.of(context).colorScheme.error),
+            icon: PhosphorIcon(
+              PhosphorIconsLight.signOut,
+              color: Theme.of(context).colorScheme.error,
+            ),
             label: Text(
               'Sign Out',
               style: TextStyle(color: Theme.of(context).colorScheme.error),
@@ -41,4 +45,3 @@ class ProfileActionsSection extends StatelessWidget {
     );
   }
 }
-

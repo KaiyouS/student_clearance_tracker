@@ -1,5 +1,6 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:student_clearance_tracker/core/theme/app_colors.dart';
 import 'package:student_clearance_tracker/features/admin/dashboard/viewmodel/dashboard_viewmodel.dart';
 
@@ -39,11 +40,14 @@ class _AdminDashboardScreenContent extends StatelessWidget {
                   Text(
                     'Failed to load dashboard.\n${vm.errorMessage}',
                     textAlign: TextAlign.center,
-                    style: TextStyle(color: Theme.of(context).colorScheme.error),
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.error,
+                    ),
                   ),
                   const SizedBox(height: 16),
                   ElevatedButton(
-                    onPressed: () => context.read<DashboardViewModel>().loadStats(),
+                    onPressed: () =>
+                        context.read<DashboardViewModel>().loadStats(),
                     child: const Text('Retry'),
                   ),
                 ],
@@ -76,16 +80,21 @@ class _AdminDashboardScreenContent extends StatelessWidget {
                         Text(
                           'Current period: ${stats.currentPeriodLabel}',
                           style: TextStyle(
-                            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withValues(alpha: 0.65),
                             fontSize: 14,
                           ),
                         ),
                       ],
                     ),
                     IconButton(
-                      icon: const Icon(Icons.refresh),
+                      icon: const PhosphorIcon(
+                        PhosphorIconsLight.arrowsClockwise,
+                      ),
                       color: Theme.of(context).colorScheme.primary,
-                      onPressed: () => context.read<DashboardViewModel>().loadStats(),
+                      onPressed: () =>
+                          context.read<DashboardViewModel>().loadStats(),
                     ),
                   ],
                 ),
@@ -98,37 +107,37 @@ class _AdminDashboardScreenContent extends StatelessWidget {
                     _StatCard(
                       label: 'Total Students',
                       value: stats.totalStudents,
-                      icon: Icons.school_outlined,
+                      icon: PhosphorIconsLight.graduationCap,
                       color: Theme.of(context).colorScheme.primary,
                     ),
                     _StatCard(
                       label: 'Total Offices',
                       value: stats.totalOffices,
-                      icon: Icons.business_outlined,
+                      icon: PhosphorIconsLight.buildings,
                       color: Theme.of(context).colorScheme.primary,
                     ),
                     _StatCard(
                       label: 'Total Staff',
                       value: stats.totalStaff,
-                      icon: Icons.people_outlined,
+                      icon: PhosphorIconsLight.user,
                       color: Theme.of(context).colorScheme.primary,
                     ),
                     _StatCard(
                       label: 'Cleared Students',
                       value: stats.completedStudents,
-                      icon: Icons.check_circle_outline,
+                      icon: PhosphorIconsLight.checkCircle,
                       color: Theme.of(context).colorScheme.tertiary,
                     ),
                     _StatCard(
                       label: 'Pending Steps',
                       value: stats.pendingSteps,
-                      icon: Icons.hourglass_empty_outlined,
+                      icon: PhosphorIconsLight.hourglass,
                       color: AppColors.warning,
                     ),
                     _StatCard(
                       label: 'Flagged Steps',
                       value: stats.flaggedSteps,
-                      icon: Icons.flag_outlined,
+                      icon: PhosphorIconsLight.flag,
                       color: Theme.of(context).colorScheme.error,
                     ),
                   ],
@@ -175,7 +184,7 @@ class _StatCard extends StatelessWidget {
               color: color.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Icon(icon, color: color, size: 20),
+            child: PhosphorIcon(icon, color: color, size: 20),
           ),
           const SizedBox(height: 16),
           Text(
@@ -191,7 +200,9 @@ class _StatCard extends StatelessWidget {
             label,
             style: TextStyle(
               fontSize: 13,
-              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.65),
             ),
           ),
         ],

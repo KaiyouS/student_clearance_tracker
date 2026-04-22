@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:student_clearance_tracker/core/widgets/app_card.dart';
 import 'package:student_clearance_tracker/features/admin/schools/view/widgets/school_list_tile.dart';
 import 'package:student_clearance_tracker/features/admin/schools/view/widgets/school_program_form_dialogs.dart';
@@ -64,7 +65,7 @@ class SchoolsListPanel extends StatelessWidget {
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.add, size: 20),
+                  icon: const PhosphorIcon(PhosphorIconsLight.plus, size: 20),
                   color: Theme.of(context).colorScheme.primary,
                   tooltip: 'Add School',
                   onPressed: vm.isSaving
@@ -92,8 +93,10 @@ class SchoolsListPanel extends StatelessWidget {
                   )
                 : ListView.separated(
                     itemCount: vm.schools.length,
-                    separatorBuilder: (_, _) =>
-                        Divider(height: 1, color: Theme.of(context).dividerColor),
+                    separatorBuilder: (_, _) => Divider(
+                      height: 1,
+                      color: Theme.of(context).dividerColor,
+                    ),
                     itemBuilder: (context, i) {
                       final school = vm.schools[i];
                       final isSelected = vm.selectedSchool?.id == school.id;
@@ -110,4 +113,3 @@ class SchoolsListPanel extends StatelessWidget {
     );
   }
 }
-

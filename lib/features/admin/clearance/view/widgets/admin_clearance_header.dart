@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:student_clearance_tracker/features/admin/clearance/view/widgets/admin_clearance_actions.dart';
 import 'package:student_clearance_tracker/features/admin/clearance/viewmodel/admin_clearance_viewmodel.dart';
 
@@ -52,7 +53,7 @@ class AdminClearanceHeader extends StatelessWidget {
           onPressed: (vm.isGenerating || vm.currentPeriodId == null)
               ? null
               : () => handleGenerateForAllAction(context),
-          icon: const Icon(Icons.auto_awesome, size: 16),
+          icon: const PhosphorIcon(PhosphorIconsLight.sparkle, size: 16),
           label: const Text('Generate All'),
           style: ElevatedButton.styleFrom(
             backgroundColor: Theme.of(context).colorScheme.tertiary,
@@ -62,4 +63,3 @@ class AdminClearanceHeader extends StatelessWidget {
     );
   }
 }
-
